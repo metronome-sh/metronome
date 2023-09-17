@@ -1,15 +1,40 @@
 {
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
-  "plugins": ["prettier"],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb-typescript",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:react-hooks/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier",
+    "react",
+    "jsx-a11y",
+    "import",
+    "react-hooks",
+    "monorepo",
+    "simple-import-sort"
+  ],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "monorepo/no-internal-import": "error",
+    "monorepo/no-relative-import": "error",
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error"
   },
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "project": ["./packages/*/tsconfig.json"]
   },
   "settings": {
     "react": {
