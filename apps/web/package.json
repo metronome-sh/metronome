@@ -11,6 +11,8 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "dependencies": {
+    "@metronome/env": "workspace:*",
+    "@metronome/db": "workspace:*",
     "@remix-run/express": "^2.0.0",
     "@remix-run/node": "^2.0.0",
     "@remix-run/react": "^2.0.0",

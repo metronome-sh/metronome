@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
+    "dev": "pnpm -r --parallel dev",
     "docker:up": "docker-compose --env-file .env -f docker/docker-compose.dev.yml up -d",
     "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",
     "docker:down": "docker-compose --env-file .env -f docker/docker-compose.dev.yml down",
     "docker:restart": "docker-compose --env-file .env -f docker/docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
-    "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json"
+    "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix"
   },
   "keywords": [],
   "author": "",
@@ -25,11 +26,10 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-monorepo": "^0.3.2",
     "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.0.3"
   },
-  "dependencies": {
-    "eslint-plugin-simple-import-sort": "^10.0.0"
-  }
+  "dependencies": {}
 }
