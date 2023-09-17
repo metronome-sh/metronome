@@ -1,0 +1,22 @@
+{
+  "name": "@metronome/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/cjs/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "node --experimental-import-meta-resolve esbuild.mjs",
+    "dev": "node --experimental-import-meta-resolve esbuild.watch.mjs",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@types/node": "^20.6.2",
+    "concurrently": "^8.2.1",
+    "esbuild": "^0.19.3",
+    "vitest": "^0.34.4"
+  },
+  "dependencies": {}
+}

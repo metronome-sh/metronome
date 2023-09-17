@@ -1,0 +1,33 @@
+{
+  "name": "metronome",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
+    "docker:up": "docker-compose --env-file .env -f docker/docker-compose.dev.yml up -d",
+    "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",
+    "docker:down": "docker-compose --env-file .env -f docker/docker-compose.dev.yml down",
+    "docker:restart": "docker-compose --env-file .env -f docker/docker-compose.dev.yml restart",
+    "reset": "pnpm clean && pnpm i && pnpm -r build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-monorepo": "^0.3.2",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "eslint-plugin-prettier": "^5.0.0"
+  }
+}

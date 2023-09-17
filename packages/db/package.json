@@ -1,0 +1,32 @@
+{
+  "name": "@metronome/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/cjs/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "concurrently pnpm:build:*",
+    "build:esbuild": "node --experimental-import-meta-resolve esbuild.mjs",
+    "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
+    "dev": "node --experimental-import-meta-resolve esbuild.watch.mjs",
+    "dk": "drizzle-kit",
+    "migrate:up": "tsx ./drizzle/migrate.mts",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "drizzle-kit": "^0.19.13",
+    "esbuild": "^0.19.3",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4"
+  },
+  "dependencies": {
+    "@metronome/env": "workspace:*",
+    "drizzle-orm": "^0.28.6",
+    "postgres": "^3.3.5",
+    "tsx": "^3.12.10"
+  }
+}

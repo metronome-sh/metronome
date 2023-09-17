@@ -1,0 +1,42 @@
+version: "3"
+services:
+  db:
+    platform: linux/amd64
+    image: "timescale/timescaledb-ha:pg15.3-ts2.11.1"
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_DATABASE}"
+
+    volumes:
+      - "db:/home/postgres/pgdata/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["-c", "max_connections=9999"]
+
+  redis:
+    image: redis:6.2.6
+    command:
+      - redis-server
+      - --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis:/data"
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  
+volumes:
+  db:
+    driver: local
+  redis:
+    driver: local
