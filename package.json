@@ -9,7 +9,8 @@
     "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",
     "docker:down": "docker-compose --env-file .env -f docker/docker-compose.dev.yml down",
     "docker:restart": "docker-compose --env-file .env -f docker/docker-compose.dev.yml restart",
-    "reset": "pnpm clean && pnpm i && pnpm -r build"
+    "reset": "pnpm clean && pnpm i && pnpm -r build",
+    "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json"
   },
   "keywords": [],
   "author": "",

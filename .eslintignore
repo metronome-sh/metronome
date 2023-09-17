@@ -1,0 +1,5 @@
+**/scripts/**.mjs
+**/drizzle/migrate.mts
+**/templates/**/*
+**/dist/**/*
+drizzle.config.ts

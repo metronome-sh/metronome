@@ -1,8 +1,5 @@
 import { build } from 'esbuild';
 
-/**
- * @type {import('esbuild').BuildOptions}
- */
 export const esbuildConfig = {
   entryPoints: ['src/index.ts'],
   bundle: true,

@@ -5,10 +5,10 @@
   "main": "./dist/cjs/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "concurrently pnpm:build:*",
-    "build:esbuild": "node --experimental-import-meta-resolve esbuild.mjs",
+    "build": "concurrently --raw pnpm:build:*",
+    "build:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.mjs",
     "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
-    "dev": "node --experimental-import-meta-resolve esbuild.watch.mjs",
+    "dev": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
     "test": "vitest run"
   },
   "keywords": [],

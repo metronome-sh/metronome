@@ -10,6 +10,7 @@
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:react-hooks/recommended",
+    "plugin:react/jsx-runtime",
     "prettier"
   ],
   "plugins": [
@@ -26,7 +27,8 @@
     "monorepo/no-internal-import": "error",
     "monorepo/no-relative-import": "error",
     "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error"
+    "simple-import-sort/exports": "error",
+    "import/consistent-type-specifier-style": ["warn", "prefer-inline"]
   },
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -34,7 +36,7 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": ["./packages/*/tsconfig.json"]
+    "project": ["./**/tsconfig.json"]
   },
   "settings": {
     "react": {
