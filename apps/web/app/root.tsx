@@ -1,16 +1,32 @@
-import { Links, LiveReload, Meta, Outlet, Scripts } from '@remix-run/react';
+import type { LinksFunction } from '@remix-run/node';
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from '@remix-run/react';
+
+import styles from './tailwind.css';
+
+import { Test } from '@metronome/ui';
+
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
 export default function App() {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="data:image/x-icon;base64,AA" />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <h1>Hello world!</h1>
+      <body className="bg-blue-500">
+        <Test />
         <Outlet />
+        <ScrollRestoration />
         <Scripts />
         <LiveReload />
       </body>

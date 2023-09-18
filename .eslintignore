@@ -3,3 +3,4 @@
 **/templates/**/*
 **/dist/**/*
 drizzle.config.ts
+tailwind.config.ts
