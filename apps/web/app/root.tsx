@@ -10,8 +10,6 @@ import {
 
 import styles from './tailwind.css';
 
-import { Test } from '@metronome/ui';
-
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
 export default function App() {
@@ -23,8 +21,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="bg-blue-500">
-        <Test />
+      <body className="antialiased">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -12,6 +12,9 @@ const esbuildConfig = {
   packages: 'external',
   target: 'node14',
   logLevel: 'info',
+  loader: {
+    '.svg': 'dataurl',
+  },
 };
 
 export const esbuildConfigEsm = {

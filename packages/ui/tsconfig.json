@@ -13,11 +13,14 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "sourceMap": true,
     "jsx": "react-jsx",
     "inlineSources": false
   },
+
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }

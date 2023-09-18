@@ -23,6 +23,7 @@
     "simple-import-sort"
   ],
   "rules": {
+    "react/prop-types": "off",
     "prettier/prettier": "error",
     "monorepo/no-internal-import": "error",
     "monorepo/no-relative-import": "error",
@@ -41,6 +42,15 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": ["packages/*/tsconfig.json", "apps/*/tsconfig.json"]
+      }
     }
   }
 }

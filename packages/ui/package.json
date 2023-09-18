@@ -29,7 +29,13 @@
     "vitest": "^0.34.4"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.3.0",
+    "@remix-run/react": "^2.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
