@@ -98,6 +98,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      remix-custom-routes:
+        specifier: ^1.0.1
+        version: 1.0.1
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -6908,6 +6911,10 @@ packages:
       mdast-util-to-hast: 12.3.0
       unified: 10.1.2
     dev: true
+
+  /remix-custom-routes@1.0.1:
+    resolution: {integrity: sha512-nC9IFAHskzx0djXOA4KnRck8x2uDWtDw2cT0bN8XaOSlBumm5t+TOUKET6hiXMjMyjkr4FqqpH7lotD68dOA7A==}
+    dev: false
 
   /require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
