@@ -3,7 +3,7 @@ import base from '../../tailwind.config';
 
 export default {
   ...base,
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './.storybook/preview-body.html'],
   theme: {
     container: {
       center: true,
