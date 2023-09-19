@@ -1,5 +1,5 @@
 import { Brand } from '@metronome/ui';
-import type { MetaFunction } from '@remix-run/node';
+import { type MetaFunction } from '@remix-run/node';
 
 export const meta: MetaFunction = () => {
   return [
