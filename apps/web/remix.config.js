@@ -6,7 +6,7 @@ module.exports = {
   ignoredRouteFiles: ['**/*.*'],
   serverModuleFormat: 'cjs',
   tailwind: true,
-  watchPaths: ['../../packages/**/dist/**/*.{js,jsx,ts}'],
+  watchPaths: ['../../packages/**/dist/**/*.{js,jsx}'],
   routes: async () => {
     const appDirectory = path.resolve(__dirname, 'app');
     const routes = routeExtensions(appDirectory);

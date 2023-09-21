@@ -11,11 +11,9 @@ sourceMapSupport.install();
 installGlobals();
 
 const BUILD_PATH = path.resolve('build/index.js');
-const PACKAGES_PATH = path.resolve('../../packages');
+const VERSION_PATH = path.resolve('build/version.txt');
 
-const BUILD_DIR = path.join(process.cwd(), 'build');
-
-let build = require(BUILD_DIR);
+const build = reimportServer();
 
 const app = express();
 
@@ -40,7 +38,6 @@ app.all(
   process.env.NODE_ENV === 'development'
     ? createDevRequestHandler()
     : createRequestHandler({
-        // getLoadContext: getMetronomeAppLoadContext,
         build,
         mode: process.env.NODE_ENV,
       }),
@@ -56,29 +53,36 @@ app.listen(port, '0.0.0.0', async () => {
 });
 
 /**
+ * @returns {ServerBuild}
+ */
+function reimportServer() {
+  // 1. manually remove the server build from the require cache
+  Object.keys(require.cache).forEach((key) => {
+    // if (key.startsWith(BUILD_PATH)) {
+    delete require.cache[key];
+    // }
+  });
+
+  // 2. re-import the server build
+  return require(BUILD_PATH);
+}
+
+/**
  * @param {ServerBuild} initialBuild
  * @returns {import('@remix-run/express').RequestHandler}
  */
 function createDevRequestHandler() {
-  async function handleServerUpdate(path: any) {
-    for (const key in require.cache) {
-      if (key.startsWith(BUILD_DIR) || key.includes('packages')) {
-        console.log('deleting cache', key);
-        delete require.cache[key];
-      }
-    }
-
-    build = require(BUILD_DIR);
+  function handleServerUpdate() {
+    const build = reimportServer();
 
     console.log({ buildVersion: build.assets.version });
 
-    await broadcastDevReady(build);
+    broadcastDevReady(build);
   }
 
   chokidar
-    .watch([BUILD_PATH, `${PACKAGES_PATH}/**/dist/**/*.js`], {
+    .watch(VERSION_PATH, {
       ignoreInitial: true,
-      followSymlinks: true,
     })
     .on('add', handleServerUpdate)
     .on('change', handleServerUpdate);
