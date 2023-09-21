@@ -3,7 +3,7 @@ const path = require('path');
 
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
-  ignoredRouteFiles: ['**/.*'],
+  ignoredRouteFiles: ['**/*.*'],
   serverModuleFormat: 'cjs',
   tailwind: true,
   watchPaths: ['../../packages/**/dist/**/*.{js,jsx,ts}'],
@@ -12,7 +12,7 @@ module.exports = {
     const routes = routeExtensions(appDirectory);
     return routes;
   },
-  // appDirectory: "app",
+  appDirectory: 'app',
   // assetsBuildDirectory: "public/build",
   // publicPath: "/build/",
   // serverBuildPath: "build/index.js",

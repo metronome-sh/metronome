@@ -8,7 +8,9 @@
     "build": "concurrently --raw pnpm:build:*",
     "build:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.mjs",
     "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
-    "dev": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
+    "dev": "concurrently --raw pnpm:dev:*",
+    "dev:typings": "build:typings --watch",
+    "dev:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
     "test": "vitest run"
   },
   "keywords": [],

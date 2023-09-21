@@ -9,7 +9,7 @@ import generate from '@babel/generator';
 
 const cachePath = path.resolve(
   __dirname,
-  '../.storybook/../node_modules/.cache/remove-remix-functions-loader'
+  '../../node_modules/.cache/remove-remix-functions-loader',
 );
 
 if (!fs.existsSync(cachePath)) {
@@ -17,6 +17,7 @@ if (!fs.existsSync(cachePath)) {
 }
 
 const eslint = new ESLint({
+  useEslintrc: false,
   fix: true,
   plugins: { 'unused-imports': unusedImports },
   overrideConfig: {
@@ -26,14 +27,19 @@ const eslint = new ESLint({
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',
-        { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
       ],
     },
   },
 });
 
 export default async function (source) {
-  if (!(urlToRequest(this.resourcePath) as string).endsWith('route.tsx')) {
+  if (!urlToRequest(this.resourcePath).endsWith('route.tsx')) {
     return source;
   }
 
@@ -44,7 +50,7 @@ export default async function (source) {
     plugins: ['jsx', 'typescript'],
   });
 
-  traverse(ast as any, {
+  traverse(ast, {
     enter(path) {
       if (path.isExportNamedDeclaration()) {
         path.remove();
@@ -52,7 +58,7 @@ export default async function (source) {
     },
   });
 
-  const output = generate(ast as any);
+  const output = generate(ast);
 
   const cachedFilePath = path.resolve(cachePath, filename);
 

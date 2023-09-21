@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Brand } from '.';
-import { remixRootDecorator } from '~/storybook/mocks';
+import { remixRootDecorator, mockUseFetcher } from '@metronome/storybook';
 
 const meta: Meta<typeof Brand> = {
   title: 'Brand',
@@ -9,7 +9,12 @@ const meta: Meta<typeof Brand> = {
     layout: 'centered',
   },
   args: {},
-  decorators: [remixRootDecorator],
+  decorators: [
+    mockUseFetcher({
+      state: 'loading',
+    }),
+    remixRootDecorator,
+  ],
 };
 
 export default meta;

@@ -11,12 +11,40 @@
     "strict": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "~/storybook/*": ["./.storybook/*"]
     },
 
     // Remix takes care of building everything in `remix build`.
     "noEmit": true
   }
 }
+
+// {
+//   "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "app/routes/_index.stories.tsx.backup"],
+//   "exclude": ["**/*.stories.tsx", "**/*.stories.ts", "./.storybook/**/*"],
+//   "compilerOptions": {
+//     "lib": ["DOM", "DOM.Iterable", "ES2022"],
+//     "isolatedModules": true,
+//     "esModuleInterop": true,
+//     "jsx": "react-jsx",
+//     "moduleResolution": "Bundler",
+//     "resolveJsonModule": true,
+//     "target": "ES2022",
+//     "strict": true,
+//     "allowJs": true,
+//     "forceConsistentCasingInFileNames": true,
+//     // "rootDir": "./app",
+//     "baseUrl": ".",
+//     "paths": {
+//       "~/*": ["./app/*"]
+//       // "~/storybook/*": ["./.storybook/*"]
+//     },
+
+//     // Remix takes care of building everything in `remix build`.
+//     "noEmit": true
+//   }
+// }

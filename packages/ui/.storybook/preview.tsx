@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react';
 import '../tailwind.css';
+
 const preview: Preview = {
   globalTypes: {
     darkMode: {
@@ -10,6 +11,7 @@ const preview: Preview = {
     },
   },
   parameters: {
+    backgrounds: { disable: true },
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {

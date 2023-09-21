@@ -1,6 +1,6 @@
 import { useNavigation as useNavigationPrimitive } from '../../../../../node_modules/@remix-run/react/dist/index.js';
 import { useContext, useEffect, useState } from 'react';
-import { MockContext } from '../../../MockContext';
+import { MockContext } from '../../../../MockContext.js';
 
 export function useNavigation() {
   const { navigation } = useContext(MockContext);

@@ -1,6 +1,5 @@
-import { Brand } from '@metronome/ui';
-import { type MetaFunction } from '@remix-run/node';
-
+import type { MetaFunction } from '@remix-run/node';
+import AuthenticationGrantComponent from './authentication/authentication.grant.route';
 export const meta: MetaFunction = () => {
   return [
     { title: 'Metronome' },
@@ -8,10 +7,4 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Index() {
-  return (
-    <div className="h-screen w-full flex items-center justify-center bg-zinc-950">
-      <Brand />
-    </div>
-  );
-}
+export default AuthenticationGrantComponent;

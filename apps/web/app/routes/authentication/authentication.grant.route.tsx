@@ -1,4 +1,4 @@
-import { Brand } from '@metronome/ui';
+import { Brand, Container } from '@metronome/ui';
 import type { MetaFunction } from '@remix-run/node';
 
 export const meta: MetaFunction = () => {
@@ -10,9 +10,9 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-zinc-950">
+    <Container className="flex items-center justify-center">
       <Brand />
       <p className="text-lg text-white ml-2">Authentication</p>
-    </div>
+    </Container>
   );
 }

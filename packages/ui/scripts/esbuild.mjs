@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { replace } from 'esbuild-plugin-replace';
 
 /**
  * @type {import('esbuild').BuildOptions}
@@ -15,6 +16,13 @@ const esbuildConfig = {
   loader: {
     '.svg': 'dataurl',
   },
+  plugins: [
+    replace({
+      'process.env.METRONOME_DIFF': () => {
+        return JSON.stringify(Math.random().toString(36).substring(2, 10));
+      },
+    }),
+  ],
 };
 
 export const esbuildConfigEsm = {

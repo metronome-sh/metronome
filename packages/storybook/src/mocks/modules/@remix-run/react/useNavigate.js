@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 
 export function useNavigate() {
-  return (data: any) => {
+  return (data) => {
     action('navigate')(data);
   };
 }

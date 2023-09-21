@@ -21,7 +21,7 @@ const Svg: FunctionComponent<{ className?: string }> = ({ className }) => {
       fill="none"
       className={className}
     >
-      <g clip-path="url(#a)">
+      <g clipPath="url(#a)">
         <path
           stroke="currentColor"
           strokeLinecap="round"

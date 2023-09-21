@@ -1,0 +1,47 @@
+{
+  "name": "@metronome/storybook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/cjs/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "concurrently --raw pnpm:build:*",
+    "build:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.mjs",
+    "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
+    "dev": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
+    "test": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.5",
+    "@types/babel__traverse": "^7.20.2",
+    "@types/node": "^20.6.3",
+    "@types/react": "^18.2.22",
+    "concurrently": "^8.2.1",
+    "esbuild": "^0.19.3",
+    "esbuild-plugin-copy": "^2.1.1",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4"
+  },
+  "dependencies": {
+    "@babel/generator": "^7.22.15",
+    "@babel/parser": "^7.22.16",
+    "@babel/traverse": "^7.22.20",
+    "@remix-run/react": "^2.0.0",
+    "@remix-run/router": "^1.9.0",
+    "@remix-run/testing": "^2.0.0",
+    "@storybook/addon-actions": "^7.4.3",
+    "@storybook/react": "^7.4.3",
+    "@storybook/react-webpack5": "^7.4.3",
+    "eslint": "^8.49.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "loader-utils": "^3.2.1",
+    "react": "^18.2.0",
+    "react-router-dom": "^6.16.0",
+    "rewiremock": "^3.14.5",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
+    "webpack": "^5.88.2"
+  }
+}

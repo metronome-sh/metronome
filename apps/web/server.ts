@@ -62,21 +62,23 @@ app.listen(port, '0.0.0.0', async () => {
 function createDevRequestHandler() {
   async function handleServerUpdate(path: any) {
     for (const key in require.cache) {
-      if (
-        key.startsWith(BUILD_DIR) ||
-        (path.includes('packages') && key.includes('packages'))
-      ) {
+      if (key.startsWith(BUILD_DIR) || key.includes('packages')) {
+        console.log('deleting cache', key);
         delete require.cache[key];
       }
     }
 
     build = require(BUILD_DIR);
+
+    console.log({ buildVersion: build.assets.version });
+
     await broadcastDevReady(build);
   }
 
   chokidar
-    .watch([BUILD_PATH, `${PACKAGES_PATH}/**/dist/**/*`], {
+    .watch([BUILD_PATH, `${PACKAGES_PATH}/**/dist/**/*.js`], {
       ignoreInitial: true,
+      followSymlinks: true,
     })
     .on('add', handleServerUpdate)
     .on('change', handleServerUpdate);
