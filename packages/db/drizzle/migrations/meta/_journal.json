@@ -8,6 +8,13 @@
       "when": 1694929314244,
       "tag": "0000_lucky_justice",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1695344771455,
+      "tag": "0001_volatile_toxin",
+      "breakpoints": true
     }
   ]
 }

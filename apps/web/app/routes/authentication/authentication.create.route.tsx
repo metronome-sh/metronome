@@ -1,4 +1,12 @@
 import { Brand, Button, Card, Container, Input, Label } from '@metronome/ui';
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { users } from '@metronome/db';
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  if (await users.atLeastOneExists()) {
+    // throw
+  }
+}
 
 export default function Component() {
   return (
@@ -6,8 +14,10 @@ export default function Component() {
       <Brand className="h-9" />
       <Card className="w-full max-w-90">
         <Card.Header className="space-y-1">
-          <Card.Title className="text-lg">Authenticate</Card.Title>
-          <Card.Description>Log in to your instance.</Card.Description>
+          <Card.Title className="text-lg">Welcome to Metronome</Card.Title>
+          <Card.Description>
+            Create your instance user to get started.
+          </Card.Description>
         </Card.Header>
         <Card.Content className="grid gap-4">
           <div className="grid gap-2">
@@ -18,9 +28,13 @@ export default function Component() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" />
           </div>
+          <div className="grid gap-2">
+            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Input id="confirmPassword" type="password" />
+          </div>
         </Card.Content>
         <Card.Footer>
-          <Button className="w-full">Log in</Button>
+          <Button className="w-full">Create user</Button>
         </Card.Footer>
       </Card>
     </Container>

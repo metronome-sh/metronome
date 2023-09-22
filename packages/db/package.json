@@ -9,7 +9,7 @@
     "build:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.mjs",
     "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
     "dev": "concurrently --raw pnpm:dev:*",
-    "dev:typings": "build:typings --watch",
+    "dev:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/ --watch",
     "dev:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
     "dk": "drizzle-kit",
     "migrate:up": "tsx ./drizzle/migrate.mts",
@@ -19,6 +19,7 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "concurrently": "^8.2.1",
     "drizzle-kit": "^0.19.13",
     "esbuild": "^0.19.3",
@@ -26,8 +27,11 @@
     "vitest": "^0.34.4"
   },
   "dependencies": {
+    "@epic-web/remember": "^1.0.2",
     "@metronome/env": "workspace:*",
+    "bcrypt": "^5.1.1",
     "drizzle-orm": "^0.28.6",
+    "nanoid": "3",
     "postgres": "^3.3.5",
     "tsx": "^3.12.10"
   }

@@ -12,7 +12,7 @@ export const Container: FunctionComponent<ContainerProps> = ({
   return (
     <div
       className={cn(
-        'container mx-auto px-4 sm:px-6 lg:px-8 dark:bg-zinc-950 min-h-screen bg-teal-500',
+        'container mx-auto px-4 sm:px-6 lg:px-8 dark:bg-zinc-950 min-h-screen',
         className,
       )}
     >

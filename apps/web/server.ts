@@ -13,7 +13,7 @@ installGlobals();
 const BUILD_PATH = path.resolve('build/index.js');
 const VERSION_PATH = path.resolve('build/version.txt');
 
-const build = reimportServer();
+const initialBuild = reimportServer();
 
 const app = express();
 
@@ -38,8 +38,8 @@ app.all(
   process.env.NODE_ENV === 'development'
     ? createDevRequestHandler()
     : createRequestHandler({
-        build,
-        mode: process.env.NODE_ENV,
+        build: initialBuild,
+        mode: initialBuild.mode,
       }),
 );
 const port = Number(process.env.PORT || 3000);
@@ -48,7 +48,7 @@ app.listen(port, '0.0.0.0', async () => {
   console.log(`Express server listening on port ${port}`);
 
   if (process.env.NODE_ENV === 'development') {
-    await broadcastDevReady(build);
+    await broadcastDevReady(initialBuild);
   }
 });
 
@@ -58,9 +58,9 @@ app.listen(port, '0.0.0.0', async () => {
 function reimportServer() {
   // 1. manually remove the server build from the require cache
   Object.keys(require.cache).forEach((key) => {
-    // if (key.startsWith(BUILD_PATH)) {
-    delete require.cache[key];
-    // }
+    if (key.startsWith(BUILD_PATH) || key.includes('packages')) {
+      delete require.cache[key];
+    }
   });
 
   // 2. re-import the server build
@@ -72,10 +72,12 @@ function reimportServer() {
  * @returns {import('@remix-run/express').RequestHandler}
  */
 function createDevRequestHandler() {
-  function handleServerUpdate() {
-    const build = reimportServer();
+  let build = initialBuild;
 
-    console.log({ buildVersion: build.assets.version });
+  function handleServerUpdate() {
+    build = reimportServer();
+
+    // console.log({ buildVersion: build.assets.version });
 
     broadcastDevReady(build);
   }
