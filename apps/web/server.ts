@@ -6,6 +6,7 @@ import express from 'express';
 import morgan from 'morgan';
 import chokidar from 'chokidar';
 import sourceMapSupport from 'source-map-support';
+import { getMetronomeAppLoadContext } from '@metronome/server';
 
 sourceMapSupport.install();
 installGlobals();
@@ -38,6 +39,7 @@ app.all(
   process.env.NODE_ENV === 'development'
     ? createDevRequestHandler()
     : createRequestHandler({
+        getLoadContext: getMetronomeAppLoadContext,
         build: initialBuild,
         mode: initialBuild.mode,
       }),
@@ -90,6 +92,7 @@ function createDevRequestHandler() {
   return async (req: any, res: any, next: any) => {
     try {
       return createRequestHandler({
+        getLoadContext: getMetronomeAppLoadContext,
         build,
         mode: 'development',
       })(req, res, next);

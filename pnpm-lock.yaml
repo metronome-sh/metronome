@@ -65,6 +65,9 @@ importers:
       '@metronome/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@metronome/server':
+        specifier: workspace:*
+        version: link:../../packages/server
       '@metronome/storybook':
         specifier: workspace:*
         version: link:../../packages/storybook
@@ -233,6 +236,34 @@ importers:
       '@types/node':
         specifier: ^20.6.2
         version: 20.6.2
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      esbuild:
+        specifier: ^0.19.3
+        version: 0.19.3
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^0.34.4
+        version: 0.34.4(less@4.2.0)
+
+  packages/server:
+    dependencies:
+      '@remix-run/express':
+        specifier: ^2.0.1
+        version: 2.0.1(express@4.18.2)(typescript@5.2.2)
+      '@remix-run/node':
+        specifier: ^2.0.1
+        version: 2.0.1(typescript@5.2.2)
+      zod:
+        specifier: ^3.22.2
+        version: 3.22.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.6.2
+        version: 20.6.3
       concurrently:
         specifier: ^8.2.1
         version: 8.2.1
@@ -4853,7 +4884,7 @@ packages:
       eslint: 8.50.0
       eslint-import-resolver-node: 0.3.7
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.7)(eslint-plugin-import@2.28.1)(eslint@8.50.0)
-      eslint-plugin-import: 2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.50.0)
+      eslint-plugin-import: 2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.0)(eslint@8.50.0)
       eslint-plugin-jest: 26.9.0(@typescript-eslint/eslint-plugin@5.62.0)(eslint@8.50.0)(typescript@5.2.2)
       eslint-plugin-jest-dom: 4.0.3(eslint@8.50.0)
       eslint-plugin-jsx-a11y: 6.7.1(eslint@8.50.0)
@@ -9534,7 +9565,7 @@ packages:
       enhanced-resolve: 5.15.0
       eslint: 8.50.0
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.6.1)(eslint@8.50.0)
-      eslint-plugin-import: 2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.50.0)
+      eslint-plugin-import: 2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.0)(eslint@8.50.0)
       fast-glob: 3.3.1
       get-tsconfig: 4.7.2
       is-core-module: 2.13.0
@@ -9647,7 +9678,7 @@ packages:
       regexpp: 3.2.0
     dev: true
 
-  /eslint-plugin-import@2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.50.0):
+  /eslint-plugin-import@2.28.1(@typescript-eslint/parser@5.62.0)(eslint-import-resolver-typescript@3.6.0)(eslint@8.50.0):
     resolution: {integrity: sha512-9I9hFlITvOV55alzoKBI+K9q74kv0iKMeY6av5+umsNwayt59fz692daGyjR+oStBQgx6nwR9rXldDev3Clw+A==}
     engines: {node: '>=4'}
     peerDependencies:

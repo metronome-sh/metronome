@@ -14,7 +14,20 @@ export async function loader() {
   return null;
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({
+  request,
+  context: { form },
+}: MetronomeActionFunctionArgs) {
+  if (await users.atLeastOneExists()) {
+    throw redirect('/authentication/grant');
+  }
+
+  // form.validate(schema);
+
+  //
+
+  // const user = await users.create({ email, password, name: 'Metronome' });
+
   return null;
 }
 
@@ -31,8 +44,8 @@ export default function Component() {
         </Card.Header>
         <Card.Content className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="user">Username</Label>
-            <Input id="user" type="user" />
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
@@ -44,7 +57,7 @@ export default function Component() {
           </div>
         </Card.Content>
         <Card.Footer>
-          <Button className="w-full">Create user</Button>
+          <Button className="w-full">Create User</Button>
         </Card.Footer>
       </Card>
     </Container>

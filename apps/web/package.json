@@ -14,11 +14,12 @@
     "#*": "./*"
   },
   "dependencies": {
-    "@js-temporal/polyfill": "^0.4.4",
     "@metronome/db": "workspace:*",
     "@metronome/env": "workspace:*",
     "@metronome/storybook": "workspace:*",
     "@metronome/ui": "workspace:*",
+    "@metronome/server": "workspace:*",
+    "@js-temporal/polyfill": "^0.4.4",
     "@remix-run/css-bundle": "^2.0.1",
     "@remix-run/express": "^2.0.1",
     "@remix-run/node": "^2.0.1",
