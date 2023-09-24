@@ -48,7 +48,7 @@ export const BrandLogo: FunctionComponent<BrandLogoProps> = ({
     />
   );
 
-  return noLink ? imgMarkup : <Link to="/">{imgMarkup}</Link>;
+  return noLink ? imgMarkup : <Link to="/">{imgMarkup as any}</Link>;
 };
 
 BrandLogo.displayName = 'Brand.Logo';

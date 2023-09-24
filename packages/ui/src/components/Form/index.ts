@@ -9,11 +9,23 @@ import {
   FormField,
 } from './Form';
 
-export const Form = Object.assign(FormPrimitive, {
+const subcomponents = {
   Item: FormItem,
   Label: FormLabel,
   Control: FormControl,
   Description: FormDescription,
   Message: FormMessage,
   Field: FormField,
-});
+} as const;
+
+export const Form: typeof FormPrimitive & typeof subcomponents = Object.assign(
+  FormPrimitive,
+  {
+    Item: FormItem,
+    Label: FormLabel,
+    Control: FormControl,
+    Description: FormDescription,
+    Message: FormMessage,
+    Field: FormField,
+  },
+);

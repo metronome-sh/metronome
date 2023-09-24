@@ -76,9 +76,6 @@ function createDevRequestHandler() {
 
   function handleServerUpdate() {
     build = reimportServer();
-
-    // console.log({ buildVersion: build.assets.version });
-
     broadcastDevReady(build);
   }
 

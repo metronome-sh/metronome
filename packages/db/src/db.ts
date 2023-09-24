@@ -6,8 +6,10 @@ import { customAlphabet } from 'nanoid';
 import * as schema from './schema';
 
 export const db = remember('drizzle', () => {
-  const readablePg = postgres(env.db().readableUrl);
-  const writablePg = postgres(env.db().writableUrl);
+  const { readableUrl, writableUrl } = env.db();
+
+  const readablePg = postgres(readableUrl);
+  const writablePg = postgres(writableUrl);
 
   const readableDrizzle = drizzle(readablePg, { schema });
   const writableDrizzle = drizzle(writablePg, { schema });

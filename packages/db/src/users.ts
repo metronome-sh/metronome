@@ -1,12 +1,12 @@
 import type { NewUser, User } from './types';
 import { users } from './schema';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 import { db, id } from './db';
 import { sql } from 'drizzle-orm';
 
 export async function create(newUser: NewUser): Promise<User> {
   const hashedPassword = newUser.password
-    ? await bcrypt.hash(newUser.password, 10)
+    ? await bcryptjs.hash(newUser.password, 10)
     : null;
 
   const [user] = await db({ writable: true })

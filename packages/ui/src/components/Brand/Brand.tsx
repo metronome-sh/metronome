@@ -63,7 +63,7 @@ export const Brand: FunctionComponent<BrandProps> & {
 
   return (
     <div className={containerClassName}>
-      {noLink ? imgMarkup : <Link to="/">{imgMarkup}</Link>}
+      {noLink ? imgMarkup : <Link to="/">{imgMarkup as any}</Link>}
     </div>
   );
 };

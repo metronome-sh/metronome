@@ -5,45 +5,60 @@ import { invariant } from 'ts-invariant';
 const envPath = path.resolve(process.cwd(), '../../.env');
 dotenv.config({ path: envPath });
 
+function optional(envVarName: string): string | undefined {
+  const envVar = process.env[envVarName];
+  if (!envVar) {
+    console.warn(`Warning: environment ${envVarName} variable is not defined`);
+  }
+  return envVar;
+}
+
+function defined(envVarName: string): string {
+  var envVar = process.env[envVarName];
+  invariant(envVar, `Environment ${envVarName} variable is not defined`);
+  return envVar;
+}
+
 /**
  * Determines if the current environment is development.
  */
-export const dev = process.env.NODE_ENV === 'development';
+export const dev = defined('NODE_ENV') === 'development';
 
 /**
  * Determines if the current environment is production.
  */
-export const production = process.env.NODE_ENV === 'production';
+export const production = defined('NODE_ENV') === 'production';
 
+/**
+ * DB Connection URLs.
+ * @returns Object with readable and writable database URLs.
+ */
 export function db() {
-  invariant(process.env.DB_DATABASE, 'DB_DATABASE env is not defined');
-  invariant(process.env.DB_USER, 'DB_USER env is not defined');
-  invariant(process.env.DB_PASSWORD, 'DB_PASSWORD env is not defined');
-  invariant(process.env.DB_HOST, 'DB_HOST env is not defined');
+  const user = defined('DB_READ_USER');
+  const password = defined('DB_READ_PASSWORD');
+  const host = defined('DB_READ_HOST');
+  const database = defined('DB_READ_DATABASE');
+  const port = defined('DB_READ_PORT');
 
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD;
-  const host = process.env.DB_HOST;
-  const database = process.env.DB_DATABASE;
+  const readableUrl = `postgres://${user}:${password}@${host}:${port}/${database}`;
 
-  const readableUrl = `postgres://${user}:${password}@${host}/${database}`;
-
-  const writableUser = process.env.DB_WRITABLE_USER;
-  const writablePassword = process.env.DB_WRITABLE_PASSWORD;
-  const writableHost = process.env.DB_WRITABLE_HOST;
-  const writableDatabase = process.env.DB_WRITABLE_DATABASE;
+  const writeUser = optional('DB_WRITE_USER');
+  const writePassword = optional('DB_WRITE_PASSWORD');
+  const writeHost = optional('DB_WRITE_HOST');
+  const writeDatabase = optional('DB_WRITE_DATABASE');
+  const writePort = optional('DB_WRITE_PORT');
 
   // prettier-ignore
-  const writableUrlCanBeUsed = writableUser && writablePassword && writableHost && writableDatabase;
+  const writeUrlCanBeUsed = writeUser && writePassword && writeHost && writeDatabase && writePort;
 
-  if (production && !writableUrlCanBeUsed) {
+  if (production && !writeUrlCanBeUsed) {
     console.warn(
       'Writable database URL is not defined. Using read-only database URL.',
     );
   }
 
-  const writableUrl = writableUrlCanBeUsed
-    ? `postgres://${writableUser}:${writablePassword}@${writableHost}/${writableDatabase}`
+  const writableUrl = writeUrlCanBeUsed
+    ? `postgres://${writeUser}:${writePassword}@${writeHost}/${writeDatabase}`
     : readableUrl;
 
   return { readableUrl, writableUrl };

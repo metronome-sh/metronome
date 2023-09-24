@@ -1,11 +1,21 @@
 import { Brand, Button, Card, Container, Input, Label } from '@metronome/ui';
-import { LoaderFunctionArgs } from '@remix-run/node';
-import { users } from '@metronome/db';
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from '@remix-run/node';
+import { users } from '#app/server/db.server.ts';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
   if (await users.atLeastOneExists()) {
-    // throw
+    throw redirect('/authentication/grant');
   }
+
+  return null;
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  return null;
 }
 
 export default function Component() {
