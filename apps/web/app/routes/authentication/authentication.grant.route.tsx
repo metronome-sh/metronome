@@ -15,9 +15,10 @@ import { handle } from '@metronome/utils.server';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  json,
   redirect,
 } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -28,28 +29,37 @@ export const AuthenticationSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { form, auth } = await handle(request);
+  const { auth } = await handle(request);
 
-  const { email, password } = form.validate(AuthenticationSchema);
-
-  const session = await auth.attempt({ email, password });
-
-  console.log({ session });
-
-  // return response.redirect('/', { headers: { 'Set-Cookie': session.cookie } } });
-
-  return { error: true };
-}
-
-export async function loader() {
-  if (!(await users.atLeastOneExists())) {
-    throw redirect('/authentication/create');
-  }
+  await auth.attempt('form', {
+    success: '/projects',
+    failure: '/authentication/grant',
+  });
 
   return null;
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { auth } = await handle(request);
+
+  if (!(await users.atLeastOneExists())) {
+    throw redirect('/authentication/create');
+  }
+
+  const user = await auth.user({ required: false });
+
+  if (user) {
+    throw redirect('/projects');
+  }
+
+  const error = await auth.error();
+
+  return json({ error });
+}
+
 export default function Component() {
+  const { error } = useLoaderData<typeof loader>();
+
   const form = useForm<z.infer<typeof AuthenticationSchema>>({
     resolver: zodResolver(AuthenticationSchema),
     defaultValues: {
@@ -66,8 +76,6 @@ export default function Component() {
     },
     [fetcher],
   );
-
-  console.log({ test: fetcher.data?.error });
 
   return (
     <Form {...form}>
@@ -107,7 +115,7 @@ export default function Component() {
               </Button>
             </Card.Footer>
           </Card>
-          {fetcher.data?.error ? (
+          {error ? (
             <Alert className="max-w-90 text-red-500">
               <Icon.AlertSquareRoundedOutline className="stroke-red-500" />
               <Alert.Title>Invalid email or password</Alert.Title>

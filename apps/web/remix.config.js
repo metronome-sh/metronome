@@ -27,7 +27,9 @@ module.exports = {
 
     const files = await findFiles(['../../packages/**/dist/**/index.js']);
 
-    return files.flat();
+    return files
+      .flat()
+      .map((file) => `${path.dirname(path.resolve(__dirname, file))}/*`);
   },
   routes: async () => {
     const appDirectory = path.resolve(__dirname, 'app');

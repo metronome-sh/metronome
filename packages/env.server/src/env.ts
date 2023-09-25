@@ -63,3 +63,12 @@ export function db() {
 
   return { readableUrl, writableUrl };
 }
+
+export function session() {
+  const sessionSecret = defined('SESSION_SECRET');
+
+  return {
+    sessionName: process.env.SESSION_NAME ?? 'metronome',
+    sessionSecret,
+  };
+}

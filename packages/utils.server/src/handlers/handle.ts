@@ -1,9 +1,6 @@
-import { createAuthHandle } from './createAuthHandle';
-import { createFormHandle } from './createFormHandle';
+export { createHandler } from './createHandler';
+import { createHandler } from './createHandler';
 
-export async function handle(request: Request) {
-  const form = await createFormHandle(request);
-  const auth = await createAuthHandle(request);
-
-  return { form, auth };
-}
+export const handle = async (request: Request) => {
+  return createHandler()({ request });
+};

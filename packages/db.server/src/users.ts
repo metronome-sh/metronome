@@ -58,3 +58,18 @@ export async function authenticate(credentials: {
 
   return user;
 }
+
+export async function findFirst({ id }: { id: string }): Promise<User | null> {
+  const [user] = await db()
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    })
+    .from(users)
+    .where(eq(users.id, id));
+
+  return user ?? null;
+}

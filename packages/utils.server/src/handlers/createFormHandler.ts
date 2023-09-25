@@ -10,7 +10,7 @@ function formatZodError(error: ZodError): string {
     .join(', ');
 }
 
-export async function createFormHandle(request: Request) {
+export async function createFormHandler({ request }: { request: Request }) {
   let formData: FormData = new FormData();
   let formDataObject: Record<string, string> = {};
 
