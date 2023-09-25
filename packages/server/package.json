@@ -8,13 +8,16 @@
     "build": "concurrently --raw pnpm:build:*",
     "build:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.mjs",
     "build:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/",
-    "dev": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
+    "dev": "concurrently --raw pnpm:dev:*",
+    "dev:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/ --watch",
+    "dev:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
     "test": "vitest run"
   },
   "keywords": [],
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
+    "@types/formidable": "^3.4.3",
     "@types/node": "^20.6.2",
     "concurrently": "^8.2.1",
     "esbuild": "^0.19.3",
@@ -24,6 +27,7 @@
   "dependencies": {
     "@remix-run/express": "^2.0.1",
     "@remix-run/node": "^2.0.1",
+    "formidable": "^3.5.1",
     "zod": "^3.22.2"
   }
 }

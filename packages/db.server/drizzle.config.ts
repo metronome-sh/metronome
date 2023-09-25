@@ -1,5 +1,5 @@
 import type { Config } from 'drizzle-kit';
-import { env } from '@metronome/env';
+import { env } from '@metronome/env.server';
 
 export default {
   schema: './src/schema.ts',

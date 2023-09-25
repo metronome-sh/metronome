@@ -1,4 +1,4 @@
-import { Project, User } from '@metronome/db.server';
+import { Project, User } from '@metronome/db.server.server';
 import { faker } from '@faker-js/faker';
 import { Temporal } from '@js-temporal/polyfill';
 
@@ -7,7 +7,10 @@ function getRandomInt(min: number, max: number): number {
 }
 
 function replacePlaceholdersWithRandomIds(route: string) {
-  const updatedRoute = route.replace(/:(\w+)(?=\/|$)/g, `${getRandomInt(1000, 4000)}`);
+  const updatedRoute = route.replace(
+    /:(\w+)(?=\/|$)/g,
+    `${getRandomInt(1000, 4000)}`,
+  );
   return updatedRoute;
 }
 
@@ -77,7 +80,18 @@ function generateRegionData() {
     'New South Wales',
   ];
 
-  const countryCodes = ['CA', 'US', 'CA', 'US', 'US', 'DE', 'FR', 'RU', 'CN', 'AU'];
+  const countryCodes = [
+    'CA',
+    'US',
+    'CA',
+    'US',
+    'US',
+    'DE',
+    'FR',
+    'RU',
+    'CN',
+    'AU',
+  ];
 
   return regions
     .map((region, index) => ({
@@ -115,7 +129,9 @@ function generateCityData() {
 function generateSeries(cb: () => Record<string, any>) {
   return {
     series: Array.from({ length: 24 }, (_, i) => {
-      const timestamp = Temporal.Now.zonedDateTimeISO(timeZoneWithOffset.timeZone)
+      const timestamp = Temporal.Now.zonedDateTimeISO(
+        timeZoneWithOffset.timeZone,
+      )
         .withPlainTime('00:00:00')
         .add({ hours: i })
         .toInstant().epochMilliseconds;
@@ -175,7 +191,10 @@ export const usage = '999999999';
 
 export const visitorsRightNow = { visitorsRightNow: 20 };
 
-export const sessionsOverview = { totalSessions: 999_999, duration: { p50: 10000 } };
+export const sessionsOverview = {
+  totalSessions: 999_999,
+  duration: { p50: 10000 },
+};
 
 export const pageviewsCount = { pageviews: 999_999 };
 
@@ -218,7 +237,8 @@ export const requestsCountSeries = {
       .add({ hours: i })
       .toInstant().epochMilliseconds;
 
-    const documentCount = Math.random() < 0.5 ? 0 : Math.floor(Math.random() * 100);
+    const documentCount =
+      Math.random() < 0.5 ? 0 : Math.floor(Math.random() * 100);
     const dataCount = Math.floor(Math.random() * 200);
 
     return {
@@ -243,23 +263,31 @@ export const actionsOverview = {
 
 export const loadersSeries = generateSeries(() => {
   const count = Math.floor(Math.random() * 100);
-  const erroredCount = Math.random() < 0.75 ? 0 : Math.floor(Math.random() * 10);
+  const erroredCount =
+    Math.random() < 0.75 ? 0 : Math.floor(Math.random() * 10);
   const okCount = Math.abs(count - erroredCount);
   return { count, erroredCount, okCount };
 });
 
 export const actionsSeries = generateSeries(() => {
   const count = Math.floor(Math.random() * 100);
-  const erroredCount = Math.random() < 0.75 ? 0 : Math.floor(Math.random() * 10);
+  const erroredCount =
+    Math.random() < 0.75 ? 0 : Math.floor(Math.random() * 10);
   const okCount = Math.abs(count - erroredCount);
   return { count, erroredCount, okCount };
 });
 
-export const visitorsSeries = generateSeries(() => ({ count: Math.floor(Math.random() * 100) }));
+export const visitorsSeries = generateSeries(() => ({
+  count: Math.floor(Math.random() * 100),
+}));
 
-export const viewsSeries = generateSeries(() => ({ count: Math.floor(Math.random() * 100) }));
+export const viewsSeries = generateSeries(() => ({
+  count: Math.floor(Math.random() * 100),
+}));
 
-export const sessionsSeries = generateSeries(() => ({ count: Math.floor(Math.random() * 100) }));
+export const sessionsSeries = generateSeries(() => ({
+  count: Math.floor(Math.random() * 100),
+}));
 
 export const medianSessionTimeSeries = generateSeries(() => ({
   duration: Math.floor(Math.random() * 10000),
@@ -296,13 +324,18 @@ export const routesList = ((numRoutes: number) => {
   const randomRouteWithPlaceholders = () => {
     const hasId = Math.random() > 0.5;
     const baseSegment = randomSegment();
-    const route = hasId ? `/${baseSegment}/:${baseSegment.slice(0, -1)}Id` : `/${baseSegment}`;
+    const route = hasId
+      ? `/${baseSegment}/:${baseSegment.slice(0, -1)}Id`
+      : `/${baseSegment}`;
 
     const detailOrAttachments = Math.random() > 0.5 ? 'detail' : 'attachments';
     return hasId ? `${route}/${detailOrAttachments}` : route;
   };
 
-  const routes = Array.from({ length: numRoutes }, randomRouteWithPlaceholders).map((route) => ({
+  const routes = Array.from(
+    { length: numRoutes },
+    randomRouteWithPlaceholders,
+  ).map((route) => ({
     route,
     count: getRandomInt(10, 2000),
   }));

@@ -1,4 +1,4 @@
-import { env } from '@metronome/env';
+import { env } from '@metronome/env.server';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { drizzle as Drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';

@@ -1,5 +1,5 @@
 {
-  "name": "@metronome/utils",
+  "name": "@metronome/utils.server",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/cjs/index.js",
@@ -17,11 +17,16 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.4",
     "@types/node": "^20.6.2",
     "concurrently": "^8.2.1",
     "esbuild": "^0.19.3",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@metronome/db.server": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "zod": "^3.22.2"
+  }
 }

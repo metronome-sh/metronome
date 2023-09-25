@@ -2,7 +2,7 @@ import type { NewUser, User } from './types';
 import { users } from './schema';
 import bcryptjs from 'bcryptjs';
 import { db, id } from './db';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export async function create(newUser: NewUser): Promise<User> {
   const hashedPassword = newUser.password
@@ -27,12 +27,34 @@ export async function atLeastOneExists(): Promise<boolean> {
   return result.count > 0;
 }
 
-export async function authenticate({
-  username,
-  password,
-}: {
-  username: string;
+export async function authenticate(credentials: {
+  email: string;
   password: string;
-}): Promise<User> {
-  return null as any;
+}): Promise<User | null> {
+  const [userWithPassword] = await db()
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      password: users.password,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    })
+    .from(users)
+    .where(eq(users.email, credentials.email));
+
+  if (!userWithPassword) {
+    return null;
+  }
+
+  const { password, ...user } = userWithPassword;
+
+  const isPasswordValid = await bcryptjs.compare(
+    credentials.password,
+    password || '',
+  );
+
+  if (!isPasswordValid) return null;
+
+  return user;
 }

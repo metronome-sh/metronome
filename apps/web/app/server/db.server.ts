@@ -1,1 +1,1 @@
-export * from '@metronome/db';
+export * from '@metronome/db.server';
