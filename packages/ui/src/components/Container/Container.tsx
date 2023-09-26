@@ -1,5 +1,5 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
-import { cn } from '~/utils';
+import { cn } from '#/utils.ts';
 
 export type ContainerProps = PropsWithChildren<{
   className?: string;

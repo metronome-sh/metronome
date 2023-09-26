@@ -1,11 +1,11 @@
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
 import path from 'path';
 import { invariant } from 'ts-invariant';
 
 const envPath = path.resolve(process.cwd(), '../../.env');
-dotenv.config({ path: envPath });
+config({ path: envPath });
 
-function optional(envVarName: string): string | undefined {
+export function optional(envVarName: string): string | undefined {
   const envVar = process.env[envVarName];
   if (!envVar) {
     console.warn(`Warning: environment ${envVarName} variable is not defined`);
@@ -13,8 +13,8 @@ function optional(envVarName: string): string | undefined {
   return envVar;
 }
 
-function defined(envVarName: string): string {
-  var envVar = process.env[envVarName];
+export function defined(envVarName: string): string {
+  const envVar = process.env[envVarName];
   invariant(envVar, `Environment ${envVarName} variable is not defined`);
   return envVar;
 }
@@ -71,4 +71,9 @@ export function session() {
     sessionName: process.env.SESSION_NAME ?? 'metronome',
     sessionSecret,
   };
+}
+
+export function url(pathname: string) {
+  const appUrl = defined('APP_URL');
+  return `${appUrl}${pathname}`;
 }

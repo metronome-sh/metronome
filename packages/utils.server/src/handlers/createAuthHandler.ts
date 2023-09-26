@@ -1,11 +1,12 @@
+import { type User } from '@metronome/db.server';
 import { users } from '@metronome/db.server';
-import { createSessionHandler } from './createSessionHandler';
-import { Authenticator, Strategy } from 'remix-auth';
-import type { User } from '@metronome/db.server';
-import { FormStrategy } from 'remix-auth-form';
-import { createFormHandler } from './createFormHandler';
-import { z } from 'zod';
 import { redirect } from '@remix-run/node';
+import { Authenticator, Strategy } from 'remix-auth';
+import { FormStrategy } from 'remix-auth-form';
+import { z } from 'zod';
+
+import { createFormHandler } from './createFormHandler';
+import { createSessionHandler } from './createSessionHandler';
 
 export const AuthFormSchema = z.object({
   email: z.string().email(),
@@ -26,6 +27,7 @@ export function createAuthHandler({
   const authenticator = new Authenticator<User>(session.storage());
 
   Object.entries(strategies || {}).forEach(([name, strategy]) => {
+    console.log({ name, strategy });
     authenticator.use(strategy, name);
   });
 
@@ -55,36 +57,34 @@ export function createAuthHandler({
       return null;
     }
 
-    const user = await users.findFirst({ id });
+    const userObject = await users.findFirst({ id });
 
-    if (!user) {
+    if (!userObject) {
       throw redirect('/authentication/grant', {
         headers: { 'Set-Cookie': await session.destroy() },
       });
     }
 
-    return user;
+    return userObject;
   }
 
   async function attempt(
     strategy: string,
     options?: { success?: string; failure?: string },
   ) {
-    const user = await authenticator.authenticate(strategy, request, {
+    await authenticator.authenticate(strategy, request, {
       successRedirect: options?.success,
       failureRedirect: options?.failure,
       throwOnError: true,
     });
-
-    return user;
   }
 
   async function logout({ redirectTo }: { redirectTo: string }) {
-    return await authenticator.logout(request, { redirectTo });
+    return authenticator.logout(request, { redirectTo });
   }
 
   async function error() {
-    return await session.get<any>(authenticator.sessionErrorKey);
+    return session.get<Record<string, string>>(authenticator.sessionErrorKey);
   }
 
   return { user, attempt, logout, error };

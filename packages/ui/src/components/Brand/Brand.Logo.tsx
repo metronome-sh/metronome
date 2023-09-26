@@ -1,7 +1,7 @@
 import { Link } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 
-import { cn } from '~/utils';
+import { cn } from '#/utils.ts';
 
 export type BrandLogoProps = {
   className?: string;

@@ -5,7 +5,7 @@ import postgres from 'postgres';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const sql = postgres(env.db().url, { max: 1 });
+const sql = postgres(env.db().writableUrl, { max: 1 });
 
 export const drizzle = Drizzle(sql);
 

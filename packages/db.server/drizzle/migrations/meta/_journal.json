@@ -15,6 +15,27 @@
       "when": 1695344771455,
       "tag": "0001_volatile_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1695692269371,
+      "tag": "0002_cloudy_doomsday",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1695696889629,
+      "tag": "0003_great_darkstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1695742694701,
+      "tag": "0004_common_zombie",
+      "breakpoints": true
     }
   ]
 }

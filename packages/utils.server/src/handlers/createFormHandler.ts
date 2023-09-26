@@ -1,4 +1,4 @@
-import type { Schema, ZodError } from 'zod';
+import { type Schema, type ZodError } from 'zod';
 
 function formatZodError(error: ZodError): string {
   return error.errors
@@ -30,6 +30,7 @@ export async function createFormHandler({ request }: { request: Request }) {
     const result = schema.safeParse(formDataObject);
 
     if (!result.success) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw new Response(
         `Invalid form data: ${JSON.stringify(formatZodError(result.error))}`,
         {

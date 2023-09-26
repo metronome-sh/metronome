@@ -1,6 +1,6 @@
-import type { SessionStorage } from '@remix-run/node';
-import { createCookieSessionStorage } from '@remix-run/node';
 import { env } from '@metronome/env.server';
+import { type SessionStorage } from '@remix-run/node';
+import { createCookieSessionStorage } from '@remix-run/node';
 
 let sessionStorageInstance: SessionStorage;
 
@@ -21,7 +21,7 @@ function storage(): SessionStorage {
 }
 
 export function createSessionHandler({ request }: { request: Request }) {
-  let cookie = request.headers.get('Cookie') ?? '';
+  const cookie = request.headers.get('Cookie') ?? '';
 
   function instance() {
     return storage().getSession(cookie);
@@ -33,8 +33,8 @@ export function createSessionHandler({ request }: { request: Request }) {
     keys.forEach((key) => session.unset(key));
   }
 
-  async function set(
-    data: Record<string, any>,
+  async function set<T>(
+    data: Record<string, T>,
     options?: { replace?: boolean },
   ) {
     const session = await instance();
@@ -56,8 +56,8 @@ export function createSessionHandler({ request }: { request: Request }) {
     }
   }
 
-  async function flash(
-    data: Record<string, any>,
+  async function flash<T>(
+    data: Record<string, T>,
     options?: { replace?: boolean },
   ) {
     const session = await instance();
@@ -69,12 +69,12 @@ export function createSessionHandler({ request }: { request: Request }) {
     });
   }
 
-  async function get<T extends any>(key: string) {
+  async function get<T>(key: string) {
     const session = await instance();
     return session.get(key) as T | undefined;
   }
 
-  async function all(keys: string[]) {
+  async function all<T>(keys: string[]) {
     const session = await instance();
 
     return keys.reduce(
@@ -82,7 +82,7 @@ export function createSessionHandler({ request }: { request: Request }) {
         acc[key] = session.get(key);
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, T>,
     );
   }
 
@@ -96,8 +96,8 @@ export function createSessionHandler({ request }: { request: Request }) {
    * @param data
    * @returns string
    */
-  async function commit(
-    data?: Record<string, any>,
+  async function commit<T>(
+    data?: Record<string, T>,
     options?: { flash?: boolean; replace?: boolean },
   ) {
     if (data) {

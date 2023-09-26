@@ -1,12 +1,12 @@
-import { Brand, Button, Card, Container, Form, Input } from '@metronome/ui';
-import { ActionFunctionArgs, redirect } from '@remix-run/node';
-import { users } from '@metronome/db.server';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useRef } from 'react';
-import { useSubmit } from '@remix-run/react';
+import { users } from '@metronome/db.server';
+import { Brand, Button, Card, Container, Form, Input } from '@metronome/ui';
 import { handle } from '@metronome/utils.server';
+import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { useSubmit } from '@remix-run/react';
+import { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export const CreateUserSchema = z
   .object({
@@ -28,7 +28,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { email, password } = form.validate(CreateUserSchema);
 
-  const user = await users.create({ name: '', email, password });
+  const user = await users.create({
+    name: '',
+    email,
+    password,
+    strategy: 'form',
+  });
 
   console.log({ user });
 

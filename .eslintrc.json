@@ -29,7 +29,10 @@
     "monorepo/no-relative-import": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "import/consistent-type-specifier-style": ["warn", "prefer-inline"]
+    "import/consistent-type-specifier-style": ["warn", "prefer-inline"],
+    "no-throw-literal": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "import/extensions": "off"
   },
   "parserOptions": {
     "ecmaVersion": 2020,

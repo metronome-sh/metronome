@@ -1,7 +1,7 @@
 import { Link } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 
-import { cn } from '~/utils';
+import { cn } from '#/utils.ts';
 
 import { BrandLogo } from './Brand.Logo';
 
@@ -63,7 +63,7 @@ export const Brand: FunctionComponent<BrandProps> & {
 
   return (
     <div className={containerClassName}>
-      {noLink ? imgMarkup : <Link to="/">{imgMarkup as any}</Link>}
+      {noLink ? imgMarkup : <Link to="/">{imgMarkup}</Link>}
     </div>
   );
 };

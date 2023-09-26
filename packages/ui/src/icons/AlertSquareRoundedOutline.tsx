@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
-import { cn } from '~/utils';
+
+import { cn } from '#/utils.ts';
 
 export const AlertSquareRoundedOutline: FunctionComponent<{
   className?: string;

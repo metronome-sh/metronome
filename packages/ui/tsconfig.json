@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "outDir": "./dist",
     "declaration": true,
@@ -14,9 +14,10 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "~/storybook/*": ["./.storybook/*"]
+      "#/*": ["./src/*"]
     },
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "sourceMap": true,
     "jsx": "react-jsx",
     "inlineSources": false
