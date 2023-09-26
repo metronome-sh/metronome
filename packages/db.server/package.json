@@ -24,15 +24,15 @@
     "drizzle-kit": "^0.19.13",
     "esbuild": "^0.19.3",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.4"
+    "vitest": "^0.34.5"
   },
   "dependencies": {
     "@epic-web/remember": "^1.0.2",
     "@metronome/env.server": "workspace:*",
     "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.28.6",
-    "nanoid": "3",
+    "nanoid": "^3.3.6",
     "postgres": "^3.3.5",
-    "tsx": "^3.12.10"
+    "tsx": "^3.13.0"
   }
 }

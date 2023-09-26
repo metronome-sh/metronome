@@ -27,7 +27,6 @@ export function createAuthHandler({
   const authenticator = new Authenticator<User>(session.storage());
 
   Object.entries(strategies || {}).forEach(([name, strategy]) => {
-    console.log({ name, strategy });
     authenticator.use(strategy, name);
   });
 
