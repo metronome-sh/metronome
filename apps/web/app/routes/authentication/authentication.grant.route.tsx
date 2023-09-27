@@ -18,7 +18,7 @@ import {
   redirect,
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -61,10 +61,7 @@ export default function Component() {
 
   const form = useForm<z.infer<typeof AuthenticationSchema>>({
     resolver: zodResolver(AuthenticationSchema),
-    defaultValues: {
-      email: 'erick@metronome.sh',
-      password: '12345678',
-    },
+    defaultValues: {},
   });
 
   const fetcher = useFetcher<{ error: boolean }>();
@@ -77,9 +74,12 @@ export default function Component() {
   );
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <Container className="flex flex-col items-center justify-center gap-8">
+    <Container className="flex flex-col items-center justify-center gap-8">
+      <Form {...form}>
+        <form
+          className="w-full flex flex-col items-center gap-8"
+          onSubmit={form.handleSubmit(handleSubmit)}
+        >
           <Brand className="h-9" />
           <Card className="w-full max-w-90">
             <Card.Header className="space-y-1">
@@ -121,8 +121,8 @@ export default function Component() {
               <Alert.Description>Please try again.</Alert.Description>
             </Alert>
           ) : null}
-        </Container>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </Container>
   );
 }

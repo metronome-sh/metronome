@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { users } from '@metronome/db.server';
+import { teams, users } from '@metronome/db.server';
 import { Brand, Button, Card, Container, Form, Input } from '@metronome/ui';
 import { handle } from '@metronome/utils.server';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
@@ -35,7 +35,9 @@ export async function action({ request }: ActionFunctionArgs) {
     strategy: 'form',
   });
 
-  console.log({ user });
+  const team = await teams.create();
+
+  await users.addToTeam({ userId: user.id, teamId: team.id });
 
   return null;
 }
@@ -63,9 +65,9 @@ export default function Component() {
   );
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <Container className="flex flex-col items-center justify-center gap-8">
+    <Container className="flex flex-col items-center justify-center gap-8">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
           <Brand className="h-9" />
           <Card className="w-full max-w-90">
             <Card.Header className="space-y-1">
@@ -112,8 +114,8 @@ export default function Component() {
               </Button>
             </Card.Footer>
           </Card>
-        </Container>
-      </form>
-    </Form>
+        </form>
+      </Form>
+    </Container>
   );
 }

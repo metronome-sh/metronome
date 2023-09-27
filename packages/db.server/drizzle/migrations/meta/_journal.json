@@ -36,6 +36,27 @@
       "when": 1695742694701,
       "tag": "0004_common_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1695777412511,
+      "tag": "0005_zippy_shaman",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1695835855757,
+      "tag": "0006_sudden_kate_bishop",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1695836929430,
+      "tag": "0007_perpetual_spectrum",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { boolean, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -9,19 +10,33 @@ export const users = pgTable('users', {
   strategy: text('strategy'),
   strategyUserId: text('strategy_user_id'),
   settings: jsonb('settings')
-    .$type<{ emails: string[] }>()
-    .default({ emails: [] }),
+    .$type<{
+      emails: string[];
+      selectedEmail: string | null;
+      lastViewedProject: string | null;
+    }>()
+    .default({ emails: [], selectedEmail: null, lastViewedProject: null }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
+export const usersRelations = relations(users, ({ many }) => ({
+  usersToTeams: many(usersToTeams),
+}));
+
 export const teams = pgTable('teams', {
   id: text('id').primaryKey(),
+  slug: text('slug').unique(),
   name: text('name'),
   description: text('description'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+
+export const teamsRelations = relations(teams, ({ many }) => ({
+  usersToTeams: many(usersToTeams),
+  apps: many(apps),
+}));
 
 export const usersToTeams = pgTable('users_to_teams', {
   userId: text('user_id')
@@ -32,8 +47,21 @@ export const usersToTeams = pgTable('users_to_teams', {
     .references(() => teams.id),
 });
 
-export const projects = pgTable('projects', {
+export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
+  team: one(teams, {
+    fields: [usersToTeams.teamId],
+    references: [teams.id],
+  }),
+  user: one(users, {
+    fields: [usersToTeams.userId],
+    references: [users.id],
+  }),
+}));
+
+export const apps = pgTable('apps', {
   id: text('id').primaryKey(),
+  slug: text('slug').unique(),
+  shareSlug: text('share_slug').unique(),
   name: text('name'),
   apiKey: text('api_key'),
   url: text('url'),
@@ -49,3 +77,10 @@ export const projects = pgTable('projects', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+
+export const appsRelations = relations(apps, ({ one, many }) => ({
+  team: one(teams, {
+    fields: [apps.teamId],
+    references: [teams.id],
+  }),
+}));

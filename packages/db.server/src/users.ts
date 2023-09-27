@@ -1,8 +1,8 @@
 import { compare, hash } from 'bcryptjs';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { db, id } from './db';
-import { users } from './schema';
+import { users, usersToTeams } from './schema';
 import { type NewUser, type User } from './types';
 
 export async function create(newUser: NewUser): Promise<User> {
@@ -10,12 +10,12 @@ export async function create(newUser: NewUser): Promise<User> {
     ? await hash(newUser.password, 10)
     : null;
 
-  const [user] = await db({ writable: true })
+  const [createdUser] = await db({ writable: true })
     .insert(users)
-    .values({ ...newUser, id: id('user'), password: hashedPassword })
+    .values({ ...newUser, password: hashedPassword, id: id('user') })
     .returning();
 
-  return user;
+  return { ...createdUser, usersToTeams: [] };
 }
 
 export async function atLeastOneExists(): Promise<boolean> {
@@ -32,10 +32,10 @@ export async function authenticate(credentials: {
   email: string;
   password: string;
 }): Promise<User | null> {
-  const [userWithPassword] = await db()
-    .select()
-    .from(users)
-    .where(eq(users.email, credentials.email));
+  const userWithPassword = await db().query.users.findFirst({
+    where: (users, { eq }) => eq(users.email, credentials.email),
+    with: { usersToTeams: { with: { team: true } } },
+  });
 
   if (!userWithPassword) {
     return null;
@@ -52,20 +52,11 @@ export async function authenticate(credentials: {
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
 export async function findFirst({ id }: { id: string }): Promise<User | null> {
-  const [user] = await db()
-    .select({
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      avatar: users.avatar,
-      strategy: users.strategy,
-      strategyUserId: users.strategyUserId,
-      settings: users.settings,
-      createdAt: users.createdAt,
-      updatedAt: users.updatedAt,
-    })
-    .from(users)
-    .where(eq(users.id, id));
+  const user = await db().query.users.findFirst({
+    columns: { password: false },
+    where: (users, { eq }) => eq(users.id, id),
+    with: { usersToTeams: { with: { team: true } } },
+  });
 
   return user ?? null;
 }
@@ -79,43 +70,38 @@ export async function upsert({
   create: any;
   update: Partial<NewUser>;
 }): Promise<User> {
-  const columns = {
-    id: users.id,
-    email: users.email,
-    name: users.name,
-    avatar: users.avatar,
-    strategy: users.strategy,
-    strategyUserId: users.strategyUserId,
-    settings: users.settings,
-    createdAt: users.createdAt,
-    updatedAt: users.updatedAt,
-  };
-
-  let [user] = await db()
-    .select(columns)
-    .from(users)
-    .where(
+  let user = await db().query.users.findFirst({
+    columns: { password: false },
+    where: (users, { and, eq }) =>
       and(
         eq(users.strategyUserId, getter.strategyUserId),
         eq(users.strategy, getter.strategy),
       ),
-    )
-    .limit(1);
+    with: { usersToTeams: { with: { team: true } } },
+  });
 
   if (user) {
-    [user] = await db()
-      .update(users)
-      .set(update)
-      .where(eq(users.id, user.id))
-      .returning(columns);
-
-    return user;
+    await db().update(users).set(update).where(eq(users.id, user.id));
+    return { ...user, ...update };
   }
 
-  [user] = await db({ writable: true })
+  const [createdUser] = await db({ writable: true })
     .insert(users)
     .values({ ...create, id: id('user') })
-    .returning(columns);
+    .returning();
 
-  return user;
+  return { ...createdUser, usersToTeams: [] };
+}
+
+export async function addToTeam({
+  userId,
+  teamId,
+}: {
+  userId: string;
+  teamId: string;
+}) {
+  await db({ writable: true }).insert(usersToTeams).values({
+    userId,
+    teamId,
+  });
 }

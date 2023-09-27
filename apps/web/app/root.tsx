@@ -14,7 +14,7 @@ export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
 export default function App() {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -24,7 +24,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="antialiased">
+      <body className="antialiased dark:bg-zinc-950">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

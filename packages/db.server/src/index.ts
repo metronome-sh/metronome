@@ -1,5 +1,6 @@
 import * as users from './users';
+import * as teams from './teams';
 
-export { users };
+export { users, teams };
 
-export type { User } from './types';
+export type { User, Team } from './types';
