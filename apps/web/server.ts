@@ -1,13 +1,14 @@
-import path from 'path';
+/* eslint-disable import/no-named-as-default-member */
 import { createRequestHandler } from '@remix-run/express';
-import { installGlobals, broadcastDevReady } from '@remix-run/node';
+import { broadcastDevReady, installGlobals } from '@remix-run/node';
+import chokidar from 'chokidar';
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
-import chokidar from 'chokidar';
-import sourceMapSupport from 'source-map-support';
+import path from 'path';
+import { install as installSourceMapSupport } from 'source-map-support';
 
-sourceMapSupport.install();
+installSourceMapSupport();
 installGlobals();
 
 const BUILD_PATH = path.resolve('build/index.js');
@@ -89,7 +90,7 @@ function createDevRequestHandler() {
   // wrap request handler to make sure its recreated with the latest build for every request
   return async (req: any, res: any, next: any) => {
     try {
-      return createRequestHandler({
+      return await createRequestHandler({
         build,
         mode: 'development',
       })(req, res, next);

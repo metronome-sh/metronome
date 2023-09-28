@@ -1,10 +1,12 @@
-import { Container } from '@metronome/ui';
 import { Outlet } from '@remix-run/react';
+
+import { Container, Header } from '#app/components';
 
 export default function Component() {
   return (
     <Container>
-      <h1>route</h1>
+      <Header />
+      {/* <h1 className="text-foreground">route</h1> */}
       <Outlet />
     </Container>
   );

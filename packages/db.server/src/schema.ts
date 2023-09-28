@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { relations } from 'drizzle-orm';
 import { boolean, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
@@ -12,10 +13,16 @@ export const users = pgTable('users', {
   settings: jsonb('settings')
     .$type<{
       emails: string[];
-      selectedEmail: string | null;
-      lastViewedProject: string | null;
+      selectedEmail?: string | null;
+      lastSelectedProject?: string | null;
+      lastSelectedTeam?: string | null;
     }>()
-    .default({ emails: [], selectedEmail: null, lastViewedProject: null }),
+    .default({
+      emails: [],
+      selectedEmail: null,
+      lastSelectedProject: null,
+      lastSelectedTeam: null,
+    }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -78,7 +85,7 @@ export const apps = pgTable('apps', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const appsRelations = relations(apps, ({ one, many }) => ({
+export const appsRelations = relations(apps, ({ one }) => ({
   team: one(teams, {
     fields: [apps.teamId],
     references: [teams.id],

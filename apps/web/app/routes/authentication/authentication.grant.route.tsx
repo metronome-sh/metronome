@@ -1,5 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { users } from '@metronome/db.server';
+import { handle } from '@metronome/utils.server';
+import {
+  ActionFunctionArgs,
+  json,
+  LoaderFunctionArgs,
+  redirect,
+} from '@remix-run/node';
+import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 import {
   Alert,
   Brand,
@@ -9,18 +21,7 @@ import {
   Form,
   Icon,
   Input,
-} from '@metronome/ui';
-import { handle } from '@metronome/utils.server';
-import {
-  ActionFunctionArgs,
-  json,
-  LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
-import { useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+} from '#app/components';
 
 export const AuthenticationSchema = z.object({
   email: z.string().email(),
@@ -31,7 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { auth } = await handle(request);
 
   await auth.attempt('form', {
-    success: '/projects',
+    success: '/authentication/grant',
     failure: '/authentication/grant',
   });
 
@@ -48,7 +49,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await auth.user({ required: false });
 
   if (user) {
-    throw redirect('/projects');
+    const { usersToTeams } = user;
+    const teamSlug = usersToTeams[0].team.slug;
+
+    if (!teamSlug) throw new Error('Team slug not found');
+
+    throw redirect(`/${teamSlug}`);
   }
 
   const error = await auth.error();

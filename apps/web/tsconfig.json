@@ -1,5 +1,11 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "remix.env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "./.storybook/**/*.ts",
+    "./.storybook/**/*.tsx"
+  ],
   "compilerOptions": {
     "composite": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
@@ -16,7 +22,7 @@
     "baseUrl": ".",
     "paths": {
       "#*": ["./*"],
-      "~/storybook/*": ["./.storybook/*"]
+      "#/storybook/*": ["./.storybook/*"]
     },
     "allowImportingTsExtensions": true,
     // Remix takes care of building everything in `remix build`.

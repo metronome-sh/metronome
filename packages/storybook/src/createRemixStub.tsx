@@ -1,5 +1,6 @@
 import { unstable_createRemixStub as createRemixStubPrimitive } from '@remix-run/testing';
-import { MockProvider, type MockContextValue } from './MockContext.js';
+
+import { type MockContextValue, MockProvider } from './MockContext.js';
 
 type Routes = Parameters<typeof createRemixStubPrimitive>[0];
 type Context = Parameters<typeof createRemixStubPrimitive>[1];

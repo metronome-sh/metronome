@@ -4,7 +4,7 @@ import '../tailwind.css';
 const preview: Preview = {
   globalTypes: {
     darkMode: {
-      defaultValue: false,
+      defaultValue: 'dark',
     },
     className: {
       defaultValue: 'dark',

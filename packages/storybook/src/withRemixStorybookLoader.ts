@@ -1,6 +1,6 @@
-import { type Configuration } from 'webpack';
 import { type StorybookConfig } from '@storybook/react-webpack5';
 import path from 'path';
+import { type Configuration } from 'webpack';
 
 export function withRemix(config: StorybookConfig): StorybookConfig {
   return { ...config, webpackFinal: withRemixStorybookLoader };

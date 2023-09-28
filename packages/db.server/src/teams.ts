@@ -1,7 +1,7 @@
 import { db, id } from './db';
+import { generateSlug } from './helpers/slugs';
 import { teams } from './schema';
 import { NewTeam, Team } from './types';
-import { generateSlug } from './helpers/slugs';
 
 export async function create(newTeam: NewTeam = {}): Promise<Team> {
   const slug = await generateSlug({

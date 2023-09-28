@@ -1,6 +1,6 @@
 export { getMetronomeAppLoadContext } from './getMetronomeAppLoadContext';
 export type {
-  MetronomeContext,
   MetronomeActionFunctionArgs,
+  MetronomeContext,
   MetronomeLoaderFunctionArgs,
 } from './server.types';

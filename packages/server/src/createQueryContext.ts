@@ -1,5 +1,6 @@
-import type { Schema } from 'zod';
-import type { ExpressRequest } from './server.types';
+import { type Schema } from 'zod';
+
+import { type ExpressRequest } from './server.types';
 
 export async function createQueryContext({
   request, //  session,

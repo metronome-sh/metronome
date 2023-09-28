@@ -1,4 +1,4 @@
-import { Container } from '@metronome/ui';
+import { Container } from '#app/components';
 
 export default function Component() {
   return (

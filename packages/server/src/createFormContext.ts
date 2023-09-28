@@ -1,7 +1,8 @@
-import type { Schema, ZodError } from 'zod';
-import type { ExpressRequest, ExpressResponse } from './server.types';
 import { createRemixRequest } from '@remix-run/express/dist/server';
 import formidable from 'formidable';
+import { type Schema, type ZodError } from 'zod';
+
+import { type ExpressRequest, type ExpressResponse } from './server.types';
 
 function formatZodError(error: ZodError): string {
   return error.errors

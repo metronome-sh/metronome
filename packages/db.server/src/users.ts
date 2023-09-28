@@ -70,7 +70,7 @@ export async function upsert({
   create: any;
   update: Partial<NewUser>;
 }): Promise<User> {
-  let user = await db().query.users.findFirst({
+  const user = await db().query.users.findFirst({
     columns: { password: false },
     where: (users, { and, eq }) =>
       and(

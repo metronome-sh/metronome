@@ -1,9 +1,9 @@
+import { type Location } from '@remix-run/router';
 import {
+  createContext,
   type FunctionComponent,
   type PropsWithChildren,
-  createContext,
 } from 'react';
-import type { Location } from '@remix-run/router';
 
 type NavigationOverride = Partial<{
   state: 'loading' | 'idle' | 'submitting';
