@@ -8,16 +8,19 @@ import { Heartbeat } from './Heartbeat';
 import { HeartFilled } from './HeartFilled';
 import { Home } from './Home';
 import { RouteSquareTwo } from './RouteSquareTwo';
+import { Settings } from './Settings';
 import { SettingsTwo } from './SettingsTwo';
 import { SquaresFilled } from './SquaresFilled';
 import { Sun } from './Sun';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
 import { World } from './World';
+
 export const Icon = {
   Bug,
   Sun,
   Home,
   World,
+  Settings,
   FileText,
   Heartbeat,
   HeartFilled,

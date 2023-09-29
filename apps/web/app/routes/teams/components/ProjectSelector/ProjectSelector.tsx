@@ -22,7 +22,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
 
   const { project } = useTeamProjectLoaderData();
 
-  console.log({ projects, project });
+  // console.log({ projects, project });
 
   return (
     <Popover open={open} onOpenChange={setOpen} {...props}>

@@ -72,16 +72,18 @@ export const Navigation: FunctionComponent = () => {
             );
 
             return item.commingSoon ? (
-              <Tooltip key={item.name}>
-                <Tooltip.Trigger tabIndex={-1}>
-                  <Button
-                    tabIndex={-1}
-                    aria-disabled="true"
-                    variant="ghost"
-                    className="opacity-60"
+              <Tooltip key={item.name} delayDuration={0}>
+                <Tooltip.Trigger asChild>
+                  <div
+                    className={cn(
+                      buttonVariants({
+                        variant: 'ghost',
+                      }),
+                      'group relative px-2 opacity-50 cursor-default',
+                    )}
                   >
                     {markup}
-                  </Button>
+                  </div>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
                   <p>Coming Soon! 🚀</p>
@@ -89,6 +91,7 @@ export const Navigation: FunctionComponent = () => {
               </Tooltip>
             ) : (
               <NavLink
+                key={item.name}
                 to={item.to}
                 className={({ isActive, isPending }) => {
                   return cn(
@@ -115,10 +118,7 @@ export const Navigation: FunctionComponent = () => {
               );
             }}
           >
-            <Icon.SettingsTwo
-              strokeWidth={1.5}
-              className="w-5 h-5 opacity-50"
-            />
+            <Icon.Settings strokeWidth={1.5} className="w-5 h-5 opacity-50" />
             <div className="text-sm">Settings</div>
           </NavLink>
         </Button>
