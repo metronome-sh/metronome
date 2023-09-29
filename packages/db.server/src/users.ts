@@ -67,7 +67,7 @@ export async function upsert({
   update,
 }: {
   getter: { strategyUserId: string; strategy: string };
-  create: any;
+  create: NewUser;
   update: Partial<NewUser>;
 }): Promise<User> {
   const user = await db().query.users.findFirst({

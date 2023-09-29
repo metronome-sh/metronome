@@ -1,69 +1,34 @@
 import { Link } from '@remix-run/react';
-import { type FunctionComponent } from 'react';
+import { Fragment, type FunctionComponent, ReactNode } from 'react';
 
 import { Brand } from '../Brand';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
-// import { Switcher } from '~/components/Switcher';
-// import { UserMenu } from '~/components/UserMenu';
-// import { Brand } from '~/components/ui/Brand';
-// import { useUser } from '~/hooks/useUser';
 
-export const Header: FunctionComponent = () => {
-  // const user = useUser();
+export type HeaderProps = {
+  breadcrumb?: ReactNode[];
+};
 
+export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
   return (
-    <div className="flex w-full py-2">
+    <div className="flex w-full py-3">
       <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-1">
           <div className="hidden md:block">
             <Brand.Logo />
           </div>
-          {/* <Icon.ChevronRight
-            strokeWidth={2}
-            className="stroke-muted-foreground"
-          />
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-sm transition-colors hover:text-primary hover:bg-muted px-2 py-1 rounded-md space-x-2"
-          >
-            <div className="h-4 w-4 bg-zinc-500 rounded-full" />
-            <span>Metronome</span>
-            <span>
-              <Icon.CaretDownFilled className="opacity-40" />
-            </span>
-          </Button> */}
-          <Icon.ChevronRight
-            strokeWidth={2}
-            className="stroke-muted-foreground"
-          />
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-sm transition-colors hover:text-primary hover:bg-muted px-2 py-1 rounded-md space-x-2"
-          >
-            <div className="h-4 w-4 bg-zinc-500 rounded-full" />
-            <span>Awesome Project</span>
-            <Icon.CaretDownFilled className="opacity-40" />
-          </Button>
-          <Icon.ChevronRight
-            strokeWidth={2}
-            className="stroke-muted-foreground"
-          />
-          <div className="text-sm">Overview</div>
-          {/* <Switcher.Team
-            groups={[
-              {
-                label: 'Personal Account',
-                teams: [{ value: 'personal', label: user.name, avatar: user.picture || '' }],
-              },
-            ]}
-          /> */}
-          <div className="hidden md:block">
-            {/* <FontAwesomeIcon className="text-base text-zinc-600" icon={faSlashForward} /> */}
-          </div>
-          {/* <Switcher.Project /> */}
+
+          {breadcrumb?.map((section, index) => {
+            return (
+              <Fragment key={index}>
+                <Icon.ChevronRight
+                  strokeWidth={2}
+                  className="stroke-muted-foreground"
+                />
+                {section}
+              </Fragment>
+            );
+          })}
         </div>
         <div className="flex justify-between gap-4 border-b md:border-none pb-2 md:pb-0">
           <div className="md:hidden">
@@ -73,7 +38,6 @@ export const Header: FunctionComponent = () => {
             <Button
               size="sm"
               variant="ghost"
-              // to="/docs"
               className="text-sm transition-colors hover:text-primary hover:bg-muted px-2 py-1 rounded-md space-x-1 group"
               asChild
             >

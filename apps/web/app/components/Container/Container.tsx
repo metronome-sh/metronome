@@ -1,5 +1,6 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 
+import { Button, Icon } from '../index.ts';
 import { cn } from '../utils.ts';
 
 export type ContainerProps = PropsWithChildren<{
@@ -13,11 +14,26 @@ export const Container: FunctionComponent<ContainerProps> = ({
   return (
     <div
       className={cn(
-        'mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh)] max-w-screen-2xl',
+        'mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh)] max-w-screen-2xl flex flex-col',
         className,
       )}
     >
       {children}
+      <div className="py-2 text-center flex-shrink-0">
+        {/* <span className="pl-65 text-muted-foreground text-sm"> */}
+        <span className="text-muted-foreground text-sm">
+          Made with <Icon.HeartFilled className="text-red-500/80" /> by{' '}
+          <Button variant="link" className="px-0" asChild>
+            <a
+              href="https://github.com/ericktamayo"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Erick Tamayo
+            </a>
+          </Button>
+        </span>
+      </div>
     </div>
   );
 };

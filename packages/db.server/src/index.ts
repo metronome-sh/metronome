@@ -1,6 +1,7 @@
+import * as projects from './projects';
 import * as teams from './teams';
 import * as users from './users';
 
-export { teams, users };
+export { projects, teams, users };
 
-export type { Team, User } from './types';
+export type { Project, Team, User } from './types';

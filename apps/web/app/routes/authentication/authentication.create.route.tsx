@@ -36,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
     strategy: 'form',
   });
 
-  const team = await teams.create();
+  const team = await teams.create({ createdBy: user.id });
 
   await users.addToTeam({ userId: user.id, teamId: team.id });
 
@@ -66,18 +66,21 @@ export default function Component() {
   );
 
   return (
-    <Container className="flex flex-col items-center justify-center gap-8">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <Brand className="h-9" />
-          <Card className="w-full max-w-90">
+    <Container className="flex items-center justify-center gap-8">
+      <Brand className="h-9" />
+      <Card className="w-full max-w-md">
+        <Form.Provider {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="flex flex-col gap-8"
+          >
             <Card.Header className="space-y-1">
               <Card.Title className="text-lg">Welcome to Metronome</Card.Title>
               <Card.Description>
                 Create your instance user to get started.
               </Card.Description>
             </Card.Header>
-            <Card.Content className="grid gap-4">
+            <Card.Content className="flex flex-col gap-4 w-full">
               <Form.Field
                 name="email"
                 render={({ field }) => (
@@ -114,9 +117,9 @@ export default function Component() {
                 Create User
               </Button>
             </Card.Footer>
-          </Card>
-        </form>
-      </Form>
+          </form>
+        </Form.Provider>
+      </Card>
     </Container>
   );
 }

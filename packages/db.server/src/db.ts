@@ -24,7 +24,12 @@ export const db = remember('drizzle', () => {
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const nanoid = customAlphabet(alphabet, 10);
 
-const prefixes = { user: 'usr', team: 'tm', project: 'prj' } as const;
+const prefixes = {
+  user: 'usr',
+  team: 'tm',
+  project: 'prj',
+  apiKey: 'ak',
+} as const;
 
 type Key = keyof typeof prefixes;
 type Prefix = (typeof prefixes)[Key];

@@ -3,14 +3,14 @@ import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import { slugify } from '../modules/slugify';
-import { apps, teams } from '../schema';
+import { projects, teams } from '../schema';
 
 export async function generateSlug({
   text,
   table,
 }: {
   text: string;
-  table: typeof teams | typeof apps;
+  table: typeof teams | typeof projects;
 }) {
   let slug = '';
   let tries = 0;

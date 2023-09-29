@@ -36,13 +36,14 @@ export const teams = pgTable('teams', {
   slug: text('slug').unique(),
   name: text('name'),
   description: text('description'),
+  createdBy: text('created_by').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export const teamsRelations = relations(teams, ({ many }) => ({
   usersToTeams: many(usersToTeams),
-  apps: many(apps),
+  projects: many(projects),
 }));
 
 export const usersToTeams = pgTable('users_to_teams', {
@@ -65,7 +66,7 @@ export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
   }),
 }));
 
-export const apps = pgTable('apps', {
+export const projects = pgTable('projects', {
   id: text('id').primaryKey(),
   slug: text('slug').unique(),
   shareSlug: text('share_slug').unique(),
@@ -73,21 +74,24 @@ export const apps = pgTable('apps', {
   apiKey: text('api_key'),
   url: text('url'),
   description: text('description'),
-  teamId: text('team_id').references(() => teams.id),
+  teamId: text('team_id')
+    .references(() => teams.id)
+    .notNull(),
   createdBy: text('created_by'),
   visibility: text('visibility'),
   deleted: boolean('deleted'),
   clientVersion: text('client_version'),
   isNew: boolean('is_new'),
   salt: text('salt'),
+  runtime: text('runtime'),
   previousSalt: text('previous_salt'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const appsRelations = relations(apps, ({ one }) => ({
+export const projectsRelations = relations(projects, ({ one }) => ({
   team: one(teams, {
-    fields: [apps.teamId],
+    fields: [projects.teamId],
     references: [teams.id],
   }),
 }));

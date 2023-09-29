@@ -3,6 +3,7 @@ import { type Strategy } from 'remix-auth';
 
 import { createAuthHandler } from './createAuthHandler';
 import { createFormHandler } from './createFormHandler';
+import { createQueryHandler } from './createQueryHandler';
 import { createSessionHandler } from './createSessionHandler';
 
 export function createHandler(options?: {
@@ -18,6 +19,8 @@ export function createHandler(options?: {
       strategies: options?.auth?.strategies,
     });
 
-    return { form, auth, session };
+    const query = await createQueryHandler({ request });
+
+    return { form, auth, session, query };
   };
 }

@@ -81,7 +81,7 @@ export default function Component() {
 
   return (
     <Container className="flex flex-col items-center justify-center gap-8">
-      <Form {...form}>
+      <Form.Provider {...form}>
         <form
           className="w-full flex flex-col items-center gap-8"
           onSubmit={form.handleSubmit(handleSubmit)}
@@ -128,7 +128,7 @@ export default function Component() {
             </Alert>
           ) : null}
         </form>
-      </Form>
+      </Form.Provider>
     </Container>
   );
 }
