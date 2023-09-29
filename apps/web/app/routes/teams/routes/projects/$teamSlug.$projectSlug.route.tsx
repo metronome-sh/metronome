@@ -45,10 +45,10 @@ export default function Component() {
   // />
 
   return (
-    <div className="flex flex-grow">
+    <div className="flex flex-col flex-grow">
       <Navigation />
-      <div className="w-full flex-grow pl-4">
-        <div className="w-full h-full bg-zinc-50 dark:bg-zinc-950 rounded-lg">
+      <div className="w-full flex-grow h-full">
+        <div className="mx-auto w-full max-w-screen-lg rounded-lg">
           <Heading
             title="Overview"
             description={`General summary of your app`}

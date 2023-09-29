@@ -14,7 +14,7 @@ export const Container: FunctionComponent<ContainerProps> = ({
   return (
     <div
       className={cn(
-        'mx-auto px-4 sm:px-6 lg:px-8 min-h-[calc(100dvh)] max-w-screen-2xl flex flex-col',
+        'min-h-[calc(100dvh)] flex flex-col w-full dark:bg-zinc-900/50',
         className,
       )}
     >

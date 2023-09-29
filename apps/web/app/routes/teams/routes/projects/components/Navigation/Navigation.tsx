@@ -1,7 +1,8 @@
 import { NavLink } from '@remix-run/react';
 import { FunctionComponent, useMemo } from 'react';
 
-import { Button, Icon, Separator, Tooltip } from '#app/components';
+import { Button, Icon, Tooltip } from '#app/components';
+import { buttonVariants } from '#app/components/Button';
 import { cn } from '#app/components/utils';
 import { useTeamLoaderData } from '#app/routes/teams/hooks';
 
@@ -53,66 +54,75 @@ export const Navigation: FunctionComponent = () => {
   }, [team, project]);
 
   return (
-    <div className="w-50 pt-5">
-      <div className="space-y-2">
+    <div className="w-full pt-5 pb-1 px-4 border-b dark:bg-black">
+      <div className="flex gap-2">
         <Tooltip.Provider>
           {navigation.map((item) => {
-            const button = (
-              <Button
-                key={item.name}
-                variant="ghost"
-                className="w-full flex justify-start p-0"
-                disabled={item.commingSoon}
-              >
-                <NavLink
-                  to={item.to}
-                  className={({ isActive, isPending }) => {
-                    return cn(
-                      'flex gap-2 items-center justify-start w-full h-full rounded-md px-2 py-1',
-                      {
-                        'text-foreground bg-muted/50': isActive || isPending,
-                      },
-                    );
-                  }}
-                >
-                  <item.Icon strokeWidth={1.5} className="w-5 h-5" />
-                  <div className="text-sm">{item.name}</div>
-                </NavLink>
-              </Button>
+            const markup = (
+              <>
+                <item.Icon
+                  strokeWidth={1.5}
+                  className="w-5 h-5 opacity-50 group-[.active]:opacity-70 mr-2"
+                />
+                <div className="text-sm whitespace-nowrap group-[.active]:text-foreground">
+                  {item.name}
+                </div>
+                <div className="h-[2px] group-[.active]:bg-teal-500 absolute inset-x-0 -bottom-1"></div>
+              </>
             );
 
             return item.commingSoon ? (
               <Tooltip key={item.name}>
-                <Tooltip.Trigger className="block w-full">
-                  {button}
+                <Tooltip.Trigger tabIndex={-1}>
+                  <Button
+                    tabIndex={-1}
+                    aria-disabled="true"
+                    variant="ghost"
+                    className="opacity-60"
+                  >
+                    {markup}
+                  </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  <p>Coming Soon ✨</p>
+                  <p>Coming Soon! 🚀</p>
                 </Tooltip.Content>
               </Tooltip>
             ) : (
-              button
+              <NavLink
+                to={item.to}
+                className={({ isActive, isPending }) => {
+                  return cn(
+                    buttonVariants({ variant: 'ghost' }),
+                    'group relative px-2',
+                    { 'group active': isActive || isPending },
+                  );
+                }}
+              >
+                {markup}
+              </NavLink>
             );
           })}
         </Tooltip.Provider>
+        <Button variant="ghost" asChild>
+          <NavLink
+            to={`/${team.slug}/${project.slug}/settings`}
+            className={({ isActive, isPending }) => {
+              return cn(
+                'flex gap-2 items-center justify-start rounded-md px-2 py-1',
+                {
+                  'text-foreground bg-muted/50': isActive || isPending,
+                },
+              );
+            }}
+          >
+            <Icon.SettingsTwo
+              strokeWidth={1.5}
+              className="w-5 h-5 opacity-50"
+            />
+            <div className="text-sm">Settings</div>
+          </NavLink>
+        </Button>
       </div>
-      <Separator className="my-4" />
-      <Button variant="ghost" className="w-full flex justify-start p-0">
-        <NavLink
-          to={'/settings'}
-          className={({ isActive, isPending }) => {
-            return cn(
-              'flex gap-2 items-center justify-start w-full h-full rounded-md px-2 py-1',
-              {
-                'text-foreground bg-muted/50': isActive || isPending,
-              },
-            );
-          }}
-        >
-          <Icon.SettingsTwo strokeWidth={1.5} className="w-5 h-5" />
-          <div className="text-sm">Settings</div>
-        </NavLink>
-      </Button>
     </div>
   );
 };

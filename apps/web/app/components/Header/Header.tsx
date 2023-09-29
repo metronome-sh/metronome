@@ -11,7 +11,7 @@ export type HeaderProps = {
 
 export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
   return (
-    <div className="flex w-full py-3">
+    <div className="flex w-full py-3 px-4 dark:bg-black">
       <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-1">
           <div className="hidden md:block">
