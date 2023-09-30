@@ -76,9 +76,7 @@ export const Navigation: FunctionComponent = () => {
                 <Tooltip.Trigger asChild>
                   <div
                     className={cn(
-                      buttonVariants({
-                        variant: 'ghost',
-                      }),
+                      buttonVariants({ variant: 'ghost' }),
                       'group relative px-2 opacity-50 cursor-default',
                     )}
                   >
@@ -106,22 +104,39 @@ export const Navigation: FunctionComponent = () => {
             );
           })}
         </Tooltip.Provider>
-        <Button variant="ghost" asChild>
+        <NavLink
+          to={`/${team.slug}/${project.slug}/settings`}
+          className={({ isActive, isPending }) => {
+            return cn(
+              buttonVariants({ variant: 'ghost' }),
+              'group relative px-2',
+              { 'group active': isActive || isPending },
+            );
+          }}
+        >
+          <Icon.Settings
+            strokeWidth={1.5}
+            className="w-5 h-5 opacity-50 group-[.active]:opacity-70 mr-2"
+          />
+          <div className="text-sm whitespace-nowrap group-[.active]:text-foreground">
+            Settings
+          </div>
+          <div className="h-[2px] group-[.active]:bg-teal-500 absolute inset-x-0 -bottom-1"></div>
+        </NavLink>
+        {/* <Button variant="ghost" asChild>
           <NavLink
             to={`/${team.slug}/${project.slug}/settings`}
             className={({ isActive, isPending }) => {
               return cn(
                 'flex gap-2 items-center justify-start rounded-md px-2 py-1',
-                {
-                  'text-foreground bg-muted/50': isActive || isPending,
-                },
+                (isActive || isPending) && 'text-foreground bg-muted/50',
               );
             }}
           >
             <Icon.Settings strokeWidth={1.5} className="w-5 h-5 opacity-50" />
             <div className="text-sm">Settings</div>
           </NavLink>
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

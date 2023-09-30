@@ -1,6 +1,7 @@
 import { Link } from '@remix-run/react';
 import { Fragment, type FunctionComponent, ReactNode } from 'react';
 
+import { Separator } from '..';
 import { Brand } from '../Brand';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
@@ -76,14 +77,6 @@ export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
                 <span>Documentation</span>
               </Link>
             </Button>
-            {/* <a
-              className="text-sm transition-colors hover:text-primary hover:bg-muted px-2 py-1 rounded-md"
-              href="https://github.com/metronome-sh/metronome-sh/issues/new?assignees=ErickTamayo&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D"
-              target="_blank"
-              rel="noopener noreferrer"
-            > */}
-            {/* <FontAwesomeIcon icon={faBug} className="pr-1" /> Report a bug */}
-            {/* </a> */}
             {/* <UserMenu /> */}
             <div>
               <div className="h-6 w-6 bg-zinc-500 rounded-full" />

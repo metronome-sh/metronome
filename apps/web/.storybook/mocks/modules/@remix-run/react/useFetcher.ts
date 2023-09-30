@@ -1,4 +1,4 @@
-import { useFetcher as useFetcherPrimitive } from '../../../../../../../node_modules/@remix-run/react';
+import { useFetcher as useFetcherPrimitive } from '../../../../../node_modules/@remix-run/react';
 import { useContext } from 'react';
 import { MockContext } from '../../../MockContext';
 import { action } from '@storybook/addon-actions';
