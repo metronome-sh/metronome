@@ -11,6 +11,7 @@ import { Brand, Button, Card, Container, Form, Input } from '#app/components';
 
 export const CreateUserSchema = z
   .object({
+    name: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
     confirmPassword: z.string().min(8),
@@ -27,10 +28,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { form } = await handle(request);
 
-  const { email, password } = form.validate(CreateUserSchema);
+  const { name, email, password } = form.validate(CreateUserSchema);
 
   const user = await users.create({
-    name: '',
+    name,
     email,
     password,
     strategy: 'form',
@@ -81,6 +82,16 @@ export default function Component() {
               </Card.Description>
             </Card.Header>
             <Card.Content className="flex flex-col gap-4 w-full">
+              <Form.Field
+                name="name"
+                render={({ field }) => (
+                  <Form.Item className="grid gap-1">
+                    <Form.Label>Name</Form.Label>
+                    <Input {...field} />
+                    <Form.Message />
+                  </Form.Item>
+                )}
+              />
               <Form.Field
                 name="email"
                 render={({ field }) => (

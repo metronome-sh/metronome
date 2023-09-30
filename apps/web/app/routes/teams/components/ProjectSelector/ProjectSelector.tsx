@@ -9,7 +9,7 @@ import { Avatar, Button, Command, Popover } from '#app/components';
 import { cn } from '#app/components/utils';
 
 import { useTeamLoaderData } from '../../hooks';
-import { useTeamProjectLoaderData } from '../../routes/projects/hook';
+import { useTeamProjectLoaderData } from '../../routes/projects/hooks';
 
 export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
 
   const handleSelectProject = useCallback(
     (projectSlug: string) => {
-      navigate(`/${team.slug}/${projectSlug}`);
+      navigate(`/${team.slug}/${projectSlug}/overview`);
       setOpen(false);
     },
     [navigate, team.slug],

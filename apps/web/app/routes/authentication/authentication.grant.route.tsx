@@ -32,7 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { auth } = await handle(request);
 
   await auth.attempt('form', {
-    success: '/authentication/grant',
+    success: '/authentication/success',
     failure: '/authentication/grant',
   });
 

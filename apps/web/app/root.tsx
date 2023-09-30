@@ -1,4 +1,5 @@
-import { type LinksFunction } from '@remix-run/node';
+import { handle } from '@metronome/utils.server';
+import { type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -11,6 +12,14 @@ import {
 import styles from './tailwind.css';
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { auth } = await handle(request);
+
+  const user = await auth.user({ required: false });
+
+  return { user };
+}
 
 export default function App() {
   return (

@@ -14,14 +14,14 @@ export const users = pgTable('users', {
     .$type<{
       emails: string[];
       selectedEmail?: string | null;
-      lastSelectedProject?: string | null;
-      lastSelectedTeam?: string | null;
+      lastSelectedProjectSlug?: string | null;
+      lastSelectedTeamSlug?: string | null;
     }>()
     .default({
       emails: [],
       selectedEmail: null,
-      lastSelectedProject: null,
-      lastSelectedTeam: null,
+      lastSelectedProjectSlug: null,
+      lastSelectedTeamSlug: null,
     }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

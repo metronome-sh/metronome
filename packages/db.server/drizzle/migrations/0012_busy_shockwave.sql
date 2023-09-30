@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "settings" SET DEFAULT '{"emails":[],"selectedEmail":null,"lastSelectedProjectSlug":null,"lastSelectedTeamSlug":null}'::jsonb;

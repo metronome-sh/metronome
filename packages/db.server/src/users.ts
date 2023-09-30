@@ -105,3 +105,18 @@ export async function addToTeam({
     teamId,
   });
 }
+
+export async function lastSelectedProjectSlug({
+  userId,
+  projectSlug,
+}: {
+  userId: string;
+  projectSlug: string;
+}) {
+  await db({ writable: true })
+    .update(users)
+    .set({
+      settings: sql`jsonb_set(settings, array['lastSelectedProjectSlug'], to_jsonb(${projectSlug}::text))`,
+    })
+    .where(eq(users.id, userId));
+}

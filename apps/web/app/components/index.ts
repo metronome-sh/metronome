@@ -16,3 +16,4 @@ export { Label } from './Label';
 export { Popover } from './Popover';
 export { Separator } from './Separator';
 export { Tooltip } from './Tooltip';
+export { UserMenu } from './UserMenu';

@@ -1,18 +1,24 @@
-import { projects } from '@metronome/db.server';
+import { projects, users } from '@metronome/db.server';
 import { handle } from '@metronome/utils.server';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { Outlet } from '@remix-run/react';
 
-import { Button, Container, Header, Heading, Icon } from '#app/components';
 import { notFound } from '#app/responses';
 
 import { Navigation } from './components';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { teamSlug = '', projectSlug = '' } = params;
+
+  const pathname = new URL(request.url).pathname;
+
+  if (typeof projectSlug === 'string' && pathname.endsWith(projectSlug)) {
+    throw redirect(`/${teamSlug}/${projectSlug}/overview`);
+  }
+
   const { auth } = await handle(request);
 
   const user = await auth.user();
-
-  const { teamSlug = '', projectSlug = '' } = params;
 
   const project = await projects.get({
     teamSlug,
@@ -22,48 +28,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!project) throw notFound();
 
+  if (user.settings?.lastSelectedProjectSlug !== project.slug) {
+    await users.lastSelectedProjectSlug({ projectSlug, userId: user.id });
+  }
+
   return json({ project });
 }
 
 export default function Component() {
-  //   <Header
-  //   breadcrumbs={[
-  //     <Button
-  //       key="project"
-  //       size="sm"
-  //       variant="ghost"
-  //       className="text-sm transition-colors hover:text-primary hover:bg-muted px-2 py-1 rounded-md space-x-2"
-  //     >
-  //       <div className="h-4 w-4 bg-zinc-500 rounded-full" />
-  //       <span>Awesome Project</span>
-  //       <Icon.CaretDownFilled className="opacity-40" />
-  //     </Button>,
-  //     <div key="overview" className="text-sm">
-  //       Overview
-  //     </div>,
-  //   ]}
-  // />
-
   return (
     <div className="flex flex-col flex-grow">
       <Navigation />
       <div className="w-full flex-grow h-full">
         <div className="mx-auto w-full max-w-screen-lg rounded-lg">
-          <Heading
-            title="Overview"
-            description={`General summary of your app`}
-          />
-          <div className="space-y-4 pb-4">
-            <div className="w-full h-80 px-4">
-              <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-            </div>
-            <div className="w-full h-80 px-4">
-              <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-            </div>
-            <div className="w-full h-80 px-4">
-              <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-            </div>
-          </div>
+          <Outlet />
         </div>
       </div>
     </div>

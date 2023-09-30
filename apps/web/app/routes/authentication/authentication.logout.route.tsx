@@ -1,7 +1,7 @@
 import { handle } from '@metronome/utils.server';
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs } from '@remix-run/node';
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const { auth } = await handle(request);
 
   await auth.logout({

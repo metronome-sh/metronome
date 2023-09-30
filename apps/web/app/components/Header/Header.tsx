@@ -1,7 +1,7 @@
 import { Link } from '@remix-run/react';
 import { Fragment, type FunctionComponent, ReactNode } from 'react';
 
-import { Separator } from '..';
+import { UserMenu } from '..';
 import { Brand } from '../Brand';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
@@ -19,17 +19,19 @@ export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
             <Brand.Logo />
           </div>
 
-          {breadcrumb?.map((section, index) => {
-            return (
-              <Fragment key={index}>
-                <Icon.ChevronRight
-                  strokeWidth={2}
-                  className="stroke-muted-foreground"
-                />
-                {section}
-              </Fragment>
-            );
-          })}
+          <div className="flex gap-2 items-center text-sm">
+            {breadcrumb?.map((section, index) => {
+              return (
+                <Fragment key={index}>
+                  <Icon.ChevronRight
+                    strokeWidth={2}
+                    className="stroke-muted-foreground"
+                  />
+                  {section}
+                </Fragment>
+              );
+            })}
+          </div>
         </div>
         <div className="flex justify-between gap-4 border-b md:border-none pb-2 md:pb-0">
           <div className="md:hidden">
@@ -79,7 +81,7 @@ export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
             </Button>
             {/* <UserMenu /> */}
             <div>
-              <div className="h-6 w-6 bg-zinc-500 rounded-full" />
+              <UserMenu />
             </div>
           </div>
         </div>

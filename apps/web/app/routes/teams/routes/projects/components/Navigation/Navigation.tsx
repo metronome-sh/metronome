@@ -1,12 +1,12 @@
 import { NavLink } from '@remix-run/react';
 import { FunctionComponent, useMemo } from 'react';
 
-import { Button, Icon, Tooltip } from '#app/components';
+import { Icon, Tooltip } from '#app/components';
 import { buttonVariants } from '#app/components/Button';
 import { cn } from '#app/components/utils';
 import { useTeamLoaderData } from '#app/routes/teams/hooks';
 
-import { useTeamProjectLoaderData } from '../../hook';
+import { useTeamProjectLoaderData } from '../../hooks';
 
 export const Navigation: FunctionComponent = () => {
   const { team } = useTeamLoaderData();
@@ -17,7 +17,7 @@ export const Navigation: FunctionComponent = () => {
       {
         name: 'Overview',
         Icon: Icon.Home,
-        to: `/${team.slug}/${project.slug}`,
+        to: `/${team.slug}/${project.slug}/overview`,
         commingSoon: false,
       },
       {
