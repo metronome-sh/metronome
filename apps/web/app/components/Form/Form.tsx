@@ -193,7 +193,7 @@ const FormSection: FunctionComponent<FormSectionProps> = ({
   description,
 }) => {
   return (
-    <div>
+    <div className="pb-1">
       <div>
         <h3 className="text-lg font-medium">{title}</h3>
         {description ? (

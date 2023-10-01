@@ -10,7 +10,7 @@ export type SvgProps = {
 export const Svg: FunctionComponent<PropsWithChildren<SvgProps>> = ({
   children,
   className,
-  strokeWidth,
+  strokeWidth = 1.75,
 }) => {
   return (
     <svg

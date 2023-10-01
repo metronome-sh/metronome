@@ -6,7 +6,7 @@ import { DeleteProject } from './components/DeleteProject';
 
 export const DangerZoneForm: FunctionComponent = () => {
   return (
-    <div>
+    <div className="pb-8">
       <Form.Section
         title="Danger Zone"
         description="These actions are not reversible."

@@ -42,7 +42,7 @@ export const InformationForm: FunctionComponent = () => {
         title="Information"
         description="Project API key and usage"
       />
-      <div className="flex items-center gap-2 pt-3">
+      <div className="flex items-center gap-2">
         <div className="flex flex-col w-full space-y-2">
           <Label>Metronome SDK API Key</Label>
           <div className="flex items-center space-x-2">

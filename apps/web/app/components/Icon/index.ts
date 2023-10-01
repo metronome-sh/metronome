@@ -16,6 +16,7 @@ import { Refresh } from './Refresh';
 import { RouteSquareTwo } from './RouteSquareTwo';
 import { Settings } from './Settings';
 import { SettingsTwo } from './SettingsTwo';
+import { SquareRoundedPlus } from './SquareRoundedPlus';
 import { SquaresFilled } from './SquaresFilled';
 import { Sun } from './Sun';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
@@ -40,6 +41,7 @@ export const Icon = {
   RouteSquareTwo,
   CaretDownFilled,
   InfoSquareRounded,
+  SquareRoundedPlus,
   BuildingLighthouse,
   AlertTriangleFilled,
   TimelineEventExclamation,

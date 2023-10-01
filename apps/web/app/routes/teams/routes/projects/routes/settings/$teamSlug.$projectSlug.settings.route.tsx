@@ -130,36 +130,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!project) throw notFound();
 
-  // const projects = await db().project.findMany({
-  //   where: { AND: [{ organizationId: teamId }, { deleted: false }] },
-  // });
-
-  // TODO get the billing cycle instead of the month
-  // const range = {
-  //   from: Temporal.Now.instant()
-  //     .toZonedDateTimeISO('UTC')
-  //     .withPlainTime('00:00:00')
-  //     .add({
-  //       days: -(Temporal.Now.instant().toZonedDateTimeISO('UTC').day - 1),
-  //     }),
-  //   to: Temporal.Now.instant()
-  //     .toZonedDateTimeISO('UTC')
-  //     .withPlainTime('23:59:59'),
-  // };
-
-  // const usage = usages.project({ project, range });
-
   return defer({ usage: 0 });
 }
 
 export default function Route() {
   return (
-    <div className="pb-6">
+    <div>
       <Heading
         title="Settings"
         description="Manage your project configuration."
       />
-      <div className="max-w-screen-sm mx-auto space-y-12 pt-8">
+      <div className="max-w-screen-sm mx-auto space-y-12">
         <GeneralSettingsForm />
         {/* <VisibilityForm /> */}
         <InformationForm />

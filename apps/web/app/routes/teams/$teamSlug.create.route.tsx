@@ -14,7 +14,9 @@ import { z } from 'zod';
 import { Button, Card, Form, Input } from '#app/components';
 import { notFound } from '#app/responses';
 
-const CreateProjectSchema = z.object({
+export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;
+
+export const CreateProjectSchema = z.object({
   name: z
     .string()
     .min(3)
