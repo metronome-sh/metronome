@@ -1,5 +1,5 @@
 {
-  "name": "@metronome/server",
+  "name": "@metronome/kafka.server",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/cjs/index.js",
@@ -17,17 +17,15 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@types/formidable": "^3.4.3",
-    "@types/node": "^20.7.0",
+    "@types/node": "^20.6.2",
     "concurrently": "^8.2.1",
     "esbuild": "^0.19.3",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.5"
+    "vitest": "^0.34.4"
   },
   "dependencies": {
-    "@remix-run/express": "^2.0.1",
-    "@remix-run/node": "^2.0.1",
-    "formidable": "^3.5.1",
-    "zod": "^3.22.2"
+    "@metronome/env.server": "workspace:*",
+    "@epic-web/remember": "^1.0.2",
+    "kafkajs": "^2.2.4"
   }
 }

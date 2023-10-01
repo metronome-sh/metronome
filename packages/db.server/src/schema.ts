@@ -1,6 +1,26 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { relations } from 'drizzle-orm';
-import { boolean, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  bigint,
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
+
+export const Method = pgEnum('http_method', [
+  'GET',
+  'POST',
+  'PUT',
+  'DELETE',
+  'PATCH',
+]);
+
+export const RequestType = pgEnum('request_type', ['document', 'data']);
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
@@ -95,3 +115,33 @@ export const projectsRelations = relations(projects, ({ one }) => ({
     references: [teams.id],
   }),
 }));
+
+export const requests = pgTable(
+  'requests',
+  {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    duration: bigint('duration', { mode: 'bigint' }).notNull(),
+    method: Method('method').notNull(),
+    statusCode: integer('status_code').notNull(),
+    pathname: text('pathname').notNull(),
+    requestType: RequestType('request_type').notNull(),
+    countryCode: text('country_code').notNull().default('unknown'),
+    country: text('country').notNull().default('unknown'),
+    region: text('region').notNull().default('unknown'),
+    city: text('city').notNull().default('unknown'),
+  },
+  (table) => {
+    return {
+      teamTimestampIdx: index('team_timestamp_idx').on(
+        table.teamId,
+        table.timestamp,
+      ),
+      projectTimestampIdx: index('project_timestamp_idx').on(
+        table.projectId,
+        table.timestamp,
+      ),
+    };
+  },
+);

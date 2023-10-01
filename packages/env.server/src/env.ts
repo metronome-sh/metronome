@@ -77,3 +77,11 @@ export function url(pathname: string) {
   const appUrl = defined('APP_URL');
   return `${appUrl}${pathname}`;
 }
+
+export function kafka() {
+  const brokers = defined('KAFKA_BROKERS');
+
+  return {
+    brokers: brokers.split(','),
+  };
+}

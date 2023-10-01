@@ -1,4 +1,5 @@
 version: "3"
+name: "metronome-dev"
 services:
   db:
     platform: linux/amd64
@@ -6,14 +7,14 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-      POSTGRES_DB: "${DB_DATABASE}"
+      POSTGRES_USER: "${DB_READ_USER}"
+      POSTGRES_PASSWORD: "${DB_READ_PASSWORD}"
+      POSTGRES_DB: "${DB_READ_DATABASE}"
 
     volumes:
       - "db:/home/postgres/pgdata/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_READ_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,6 +35,18 @@ services:
       timeout: 5s
       retries: 5
 
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
   
 volumes:
   db:
