@@ -12,7 +12,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const user = await auth.user();
 
-  const project = await projects.get({
+  const project = await projects.findBySlugs({
     teamSlug,
     projectSlug,
     userId: user.id,

@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "name" SET NOT NULL;

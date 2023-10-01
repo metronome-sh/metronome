@@ -33,7 +33,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { teamSlug = '' } = params;
 
-  const team = await teams.get({ teamSlug, userId: user.id });
+  const team = await teams.findBySlug({ teamSlug, userId: user.id });
 
   if (!team) throw notFound();
 

@@ -1,0 +1,95 @@
+---
+title: "Using Metronome with Cloudflare Pages"
+description: "How to integrate Metronome with your Remix app using the Cloudflare Pages adapter."
+---
+
+# Setting up Metronome with Remix + Cloudflare Pages
+
+{% partial file="metronome-installation.partial.mdoc" variables={adapter: "cloudflare-pages"} /%}
+
+{% partial file="metronome-init.partial.mdoc" /%}
+
+{% partial file="metronome-root-config.partial.mdoc" /%}
+
+## Configuring Metronome in your in you server.js file
+
+### TL;DR
+
+If you haven't modified your `server.js`, you can just copy and paste the code following code. Otherwise, you can follow the step by step down below.
+
+```js {% title="server.js" %}
+import {
+  combineGetLoadContexts,
+  createMetronomeGetLoadContext,
+  registerMetronome,
+} from "@metronome-sh/cloudflare-pages";
+import { createPagesFunctionHandler } from "@remix-run/cloudflare-pages";
+import * as build from "@remix-run/dev/server-build";
+
+const buildWithMetronome = registerMetronome(build);
+
+const metronomeGetLoadContext = createMetronomeGetLoadContext(
+  buildWithMetronome,
+  { config: require("./metronome.config.js") }
+);
+
+const handleRequest = createPagesFunctionHandler({
+  build: buildWithMetronome,
+  mode: process.env.NODE_ENV,
+  getLoadContext: combineGetLoadContexts(
+    (context) => context.env,
+    metronomeGetLoadContext
+  ),
+});
+
+export function onRequest(context) {
+  return handleRequest(context);
+}
+```
+
+### Step by step
+
+Import `combineGetLoadContexts`, `createMetronomeGetLoadContext` and `registerMetronome` from the `@metronome-sh/cloudflare-pages` package in your `server.js` file.
+
+```js {% title="server.js" %}
+import {
+  combineGetLoadContexts,
+  createMetronomeGetLoadContext,
+  registerMetronome,
+} from "@metronome-sh/cloudflare-pages";
+```
+
+Register Metronome in your app build by using the `registerMetronome` function in your `server.js` file.
+
+```js {% title="server.js" %}
+const buildWithMetronome = registerMetronome(build);
+```
+
+Create the `getLoadContext` function using `createMetronomeGetLoadContext` with `buildWithMetronome` and the Metronome config file.
+
+```js {% title="server.js" %}
+const metronomeGetLoadContext = createMetronomeGetLoadContext(
+  buildWithMetronome,
+  { config: require("./metronome.config.js") }
+);
+```
+
+In the `createPagesFunctionHandler` function, replace the build prop with `buildWithMetronome` and combine the existing `getLoadContext` with the `metronomeGetLoadContext` by using `combineGetLoadContexts`.
+
+```js {% title="server.js" %}
+const handleRequest = createPagesFunctionHandler({
+  build: buildWithMetronome,
+  mode: process.env.NODE_ENV,
+  getLoadContext: combineGetLoadContexts(
+    (context) => context.env,
+    metronomeGetLoadContext
+  ),
+});
+```
+
+## Set your API key in your production environment
+
+If you don't have an existing project you can create one [here](/projects/new).
+
+You need to add the `METRONOME_API_KEY` environment variable in cloudflare. For more information visit the [Cloudflare Pages documentation](https://developers.cloudflare.com/pages/platform/build-configuration/#environment-variables)
+

@@ -1,7 +1,8 @@
 import { and, eq, sql } from 'drizzle-orm';
 
-import { db, id } from './db';
+import { db } from './db';
 import { generateSlug } from './helpers/slugs';
+import { nanoid } from './modules/nanoid';
 import { projects, teams, usersToTeams } from './schema';
 import { NewTeam, Team } from './types';
 
@@ -13,7 +14,7 @@ export async function create(newTeam: NewTeam): Promise<Team> {
 
   const [team] = await db({ writable: true })
     .insert(teams)
-    .values({ ...newTeam, slug, id: id('team') })
+    .values({ ...newTeam, slug, id: nanoid.id('team') })
     .returning();
 
   return team;
@@ -30,7 +31,7 @@ export async function hasAtLeastOneProject({ teamId }: { teamId: string }) {
   return count > 0;
 }
 
-export async function get({
+export async function findBySlug({
   teamSlug,
   userId,
 }: {
@@ -49,11 +50,12 @@ export async function get({
   return team?.teams;
 }
 
-export async function getProjects({ teamSlug }: { teamSlug: string }) {
+export async function getProjects({ teamId }: { teamId: string }) {
   const foundProjects = await db()
     .select()
     .from(projects)
-    .leftJoin(teams, eq(teams.slug, teamSlug));
+    .leftJoin(teams, eq(teams.id, teamId))
+    .where(eq(projects.deleted, false));
 
   return foundProjects.map((project) => project.projects);
 }

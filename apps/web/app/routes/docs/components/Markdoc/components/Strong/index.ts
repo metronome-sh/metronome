@@ -1,0 +1,1 @@
+export { Strong } from './Strong';

@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "deleted" SET DEFAULT false;

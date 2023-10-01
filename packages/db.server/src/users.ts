@@ -1,7 +1,8 @@
 import { compare, hash } from 'bcryptjs';
 import { eq, sql } from 'drizzle-orm';
 
-import { db, id } from './db';
+import { db } from './db';
+import { nanoid } from './modules/nanoid';
 import { users, usersToTeams } from './schema';
 import { type NewUser, type User } from './types';
 
@@ -12,7 +13,7 @@ export async function create(newUser: NewUser): Promise<User> {
 
   const [createdUser] = await db({ writable: true })
     .insert(users)
-    .values({ ...newUser, password: hashedPassword, id: id('user') })
+    .values({ ...newUser, password: hashedPassword, id: nanoid.id('user') })
     .returning();
 
   return { ...createdUser, usersToTeams: [] };
@@ -87,7 +88,7 @@ export async function upsert({
 
   const [createdUser] = await db({ writable: true })
     .insert(users)
-    .values({ ...create, id: id('user') })
+    .values({ ...create, id: nanoid.id('user') })
     .returning();
 
   return { ...createdUser, usersToTeams: [] };

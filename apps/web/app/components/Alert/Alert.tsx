@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cn } from '../utils.ts';
 
 const alertVariants = cva(
-  'relative w-full rounded-lg border border-zinc-200 px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-zinc-950 [&>svg~*]:pl-7 dark:border-zinc-800 dark:[&>svg]:text-zinc-50',
+  'relative w-full rounded-lg border border-zinc-200 px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:w-6 [&>svg]:h-6 [&>svg]:stroke-[1.5] [&>svg]:top-3 [&>svg]:text-zinc-950 [&>svg~*]:pl-8 dark:border-zinc-800 dark:[&>svg]:text-zinc-50',
   {
     variants: {
       variant: {
@@ -19,7 +19,7 @@ const alertVariants = cva(
   },
 );
 
-const AlertPrimitive = React.forwardRef<
+export const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
 >(({ className, variant, ...props }, ref) => (
@@ -30,21 +30,25 @@ const AlertPrimitive = React.forwardRef<
     {...props}
   />
 ));
-AlertPrimitive.displayName = 'Alert';
 
-const AlertTitle = React.forwardRef<
+Alert.displayName = 'Alert';
+
+export const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <h5
     ref={ref}
     className={cn('mb-1 font-medium leading-none tracking-tight', className)}
     {...props}
-  />
+  >
+    {children}
+  </h5>
 ));
+
 AlertTitle.displayName = 'AlertTitle';
 
-const AlertDescription = React.forwardRef<
+export const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
@@ -55,8 +59,3 @@ const AlertDescription = React.forwardRef<
   />
 ));
 AlertDescription.displayName = 'AlertDescription';
-
-export const Alert = Object.assign(AlertPrimitive, {
-  Title: AlertTitle,
-  Description: AlertDescription,
-});

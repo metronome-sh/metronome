@@ -15,5 +15,6 @@ export { Input } from './Input';
 export { Label } from './Label';
 export { Popover } from './Popover';
 export { Separator } from './Separator';
+export { Switch } from './Switch';
 export { Tooltip } from './Tooltip';
 export { UserMenu } from './UserMenu';

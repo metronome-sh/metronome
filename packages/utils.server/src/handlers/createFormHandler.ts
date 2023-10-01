@@ -1,4 +1,4 @@
-import { type Schema, type ZodError } from 'zod';
+import { type Schema, z, type ZodError } from 'zod';
 
 function formatZodError(error: ZodError): string {
   return error.errors
@@ -26,7 +26,7 @@ export async function createFormHandler({ request }: { request: Request }) {
     return formData.get(key) as string | undefined;
   }
 
-  function validate<T>(schema: Schema<T>): T {
+  function validate<T, S extends Schema<T>>(schema: S): z.infer<S> {
     const result = schema.safeParse(formDataObject);
 
     if (!result.success) {

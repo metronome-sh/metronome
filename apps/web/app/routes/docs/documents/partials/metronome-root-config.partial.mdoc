@@ -1,0 +1,33 @@
+## Configure Metronome in your root.tsx file
+
+To be able to track your app's Web Vitals and Web Analytics, you need to set up the client side with `@metronome-sh/react`.
+
+Import `withMetronome` from `@metronome-sh/react` and add wrap your App component with it.
+
+```tsx {% title="root.tsx" %}
+// ...
+import { withMetronome } from "@metronome-sh/react";
+
+// Remove the default export of App
+function App() {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
+
+// Set withMetronome as the default export
+export default withMetronome(App);
+```

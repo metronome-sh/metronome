@@ -2,12 +2,12 @@ import { FunctionComponent, PropsWithChildren } from 'react';
 
 import { cn } from '../utils';
 
-export type SvgProps = PropsWithChildren<{
+export type SvgProps = {
   className?: string;
   strokeWidth?: number;
-}>;
+};
 
-export const Svg: FunctionComponent<SvgProps> = ({
+export const Svg: FunctionComponent<PropsWithChildren<SvgProps>> = ({
   children,
   className,
   strokeWidth,

@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "api_key" SET NOT NULL;

@@ -1,0 +1,182 @@
+import {
+  type Config as MarkdocConfig,
+  parse,
+  type RenderableTreeNode,
+  type Tag,
+  Tokenizer,
+  transform,
+} from '@markdoc/markdoc';
+import fs from 'fs/promises';
+import path from 'path';
+
+import { DOCUMENTS_PATH } from '../constants';
+import { DocumentHeadings } from '../types';
+
+export async function getDocumentMarkdocContent(
+  filename: string,
+): Promise<{ content: RenderableTreeNode; headings: DocumentHeadings }> {
+  const fullPath = path.resolve(DOCUMENTS_PATH, filename);
+
+  const source = await fs.readFile(fullPath, 'utf-8');
+
+  const tokenizer = new Tokenizer({ allowComments: true });
+
+  const tokens = tokenizer.tokenize(source);
+
+  const ast = parse(tokens);
+
+  // prettier-ignore
+  const partials = {
+    'metronome-installation.partial.mdoc': parse(await fs.readFile(path.resolve(DOCUMENTS_PATH, 'partials/metronome-installation.partial.mdoc'), 'utf-8')),
+    'metronome-init.partial.mdoc': parse(await fs.readFile(path.resolve(DOCUMENTS_PATH, 'partials/metronome-init.partial.mdoc'), 'utf-8')),
+    'metronome-root-config.partial.mdoc': parse(await fs.readFile(path.resolve(DOCUMENTS_PATH, 'partials/metronome-root-config.partial.mdoc'), 'utf-8')),
+  };
+
+  const config: MarkdocConfig = {
+    tags: {
+      'installation-targets': {
+        render: 'InstallationTargets',
+        children: ['installation-target'],
+        attributes: { className: { type: String } },
+      },
+      'installation-target': {
+        render: 'InstallationTarget',
+        selfClosing: true,
+        attributes: {
+          to: { type: String },
+          title: { type: String },
+          description: { type: String },
+          className: { type: String },
+          iconClassName: { type: String },
+        },
+      },
+      button: {
+        render: 'Button',
+        selfClosing: true,
+        attributes: {
+          to: { type: String },
+          rightIcon: { type: String },
+          label: { type: String },
+          className: { type: String },
+        },
+      },
+      image: {
+        render: 'Image',
+        selfClosing: true,
+        attributes: {
+          src: { type: String },
+          alt: { type: String },
+          className: { type: String },
+          byUrl: { type: String },
+          byLabel: { type: String },
+          fromUrl: { type: String },
+          fromLabel: { type: String },
+        },
+      },
+    },
+    nodes: {
+      heading: {
+        render: 'Heading',
+        attributes: { level: { type: String }, className: { type: String } },
+      },
+      paragraph: {
+        render: 'Paragraph',
+        attributes: { className: { type: String } },
+      },
+      fence: {
+        render: 'Fence',
+        attributes: {
+          className: { type: String },
+          content: { type: String },
+          language: { type: String },
+          process: { type: Boolean },
+          title: { type: String },
+        },
+        children: ['text'],
+      },
+      code: {
+        render: 'Code',
+        attributes: { content: { type: String }, className: { type: String } },
+      },
+      link: {
+        render: 'Link',
+        attributes: {
+          href: { type: String },
+          title: { type: String },
+          className: { type: String },
+        },
+        children: ['text'],
+      },
+      table: {
+        render: 'Table',
+        children: ['table'],
+      },
+      thead: {
+        render: 'THead',
+        children: ['tr'],
+      },
+      tbody: {
+        render: 'TBody',
+        children: ['tr', 'tag'],
+      },
+      tr: {
+        render: 'Tr',
+        children: ['th', 'td'],
+      },
+      th: {
+        render: 'Th',
+        children: ['text'],
+        attributes: {
+          width: { type: Number },
+          align: { type: String },
+        },
+      },
+      td: {
+        render: 'Td',
+        children: [
+          'inline',
+          'heading',
+          'paragraph',
+          'image',
+          'table',
+          'tag',
+          'fence',
+          'blockquote',
+          'list',
+          'hr',
+        ],
+        attributes: {
+          className: { type: String },
+          colspan: { type: Number },
+          rowspan: { type: Number },
+          align: { type: String },
+        },
+      },
+      strong: {
+        render: 'Strong',
+        children: ['text'],
+      },
+      list: {
+        render: 'List',
+        attributes: { ordered: { type: Boolean } },
+        children: ['list-item'],
+      },
+      item: {
+        render: 'ListItem',
+        children: ['text', 'paragraph', 'list'],
+      },
+    },
+    partials,
+  };
+
+  const content = transform(ast, config);
+
+  const headings = (content as Tag).children
+    .filter((child) => (child as Tag).name === 'Heading')
+    .map((child) => ({
+      title: ((child as Tag).children.at(0) as string) || '',
+      level: (child as Tag).attributes.level,
+    }));
+
+  return { content, headings };
+}

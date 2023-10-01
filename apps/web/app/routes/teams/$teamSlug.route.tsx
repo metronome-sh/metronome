@@ -15,13 +15,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const { teamSlug = '' } = params;
 
-  const team = await teams.get({ teamSlug, userId: user.id });
+  const team = await teams.findBySlug({ teamSlug, userId: user.id });
 
   if (!team) throw notFound();
 
   const pathname = new URL(request.url).pathname;
 
-  const projects = await teams.getProjects({ teamSlug });
+  const projects = await teams.getProjects({ teamId: team.id });
 
   if (typeof teamSlug === 'string' && pathname.endsWith(teamSlug)) {
     const lastSelectedProjectSlug = user.settings?.lastSelectedProjectSlug;

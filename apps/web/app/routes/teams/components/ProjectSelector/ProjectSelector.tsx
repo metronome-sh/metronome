@@ -48,7 +48,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
           className="flex-1 justify-between md:max-w-[200px] lg:max-w-[300px] px-2"
         >
           <span className="pr-2">
-            <Avatar className="w-5 h-5">
+            <Avatar className="w-4 h-4 rounded-none">
               <Avatar.Image
                 src={
                   project.url ? `/resources/favicon?url=${project.url}` : '#'
@@ -83,7 +83,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
                   onSelect={() => handleSelectProject(p.slug!)}
                 >
                   <span className="pr-2">
-                    <Avatar className="w-5 h-5">
+                    <Avatar className="w-4 h-4 rounded-none">
                       {p.url ? (
                         <Avatar.Image
                           src={`/resources/favicon?url=${p.url}`}

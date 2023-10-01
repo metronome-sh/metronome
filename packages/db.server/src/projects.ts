@@ -1,9 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 
-import { db, id } from './db';
+import { db } from './db';
 import { generateSlug } from './helpers/slugs';
+import { nanoid } from './modules/nanoid';
 import { projects, teams, usersToTeams } from './schema';
-import { NewProject, Project } from './types';
+import { NewProject, Project, UpdateProjectAttributes } from './types';
 
 export async function create(newProject: NewProject) {
   const slug = await generateSlug({
@@ -14,8 +15,8 @@ export async function create(newProject: NewProject) {
   const [project] = await db({ writable: true })
     .insert(projects)
     .values({
-      id: id('project'),
-      apiKey: id('apiKey', 30),
+      id: nanoid.id('project'),
+      apiKey: nanoid.id('apiKey', 30),
       slug,
       ...newProject,
     })
@@ -24,9 +25,29 @@ export async function create(newProject: NewProject) {
   return project;
 }
 
-export async function get({
-  projectSlug,
+export async function update({
+  id,
+  attributes,
+}: {
+  id: string;
+  attributes: UpdateProjectAttributes;
+}) {
+  await db({ writable: true })
+    .update(projects)
+    .set({ ...attributes, updatedAt: new Date() })
+    .where(and(eq(projects.id, id), eq(projects.deleted, false)));
+}
+
+export async function destroy({ id }: { id: string }) {
+  await db({ writable: true })
+    .update(projects)
+    .set({ deleted: true, updatedAt: new Date() })
+    .where(eq(projects.id, id));
+}
+
+export async function findBySlugs({
   teamSlug,
+  projectSlug,
   userId,
 }: {
   projectSlug: string;
@@ -45,7 +66,14 @@ export async function get({
         eq(teams.slug, teamSlug),
       ),
     )
-    .where(eq(projects.slug, projectSlug));
+    .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
 
   return project?.projects;
+}
+
+export async function rotateApiKey({ id }: { id: string }) {
+  await db({ writable: true })
+    .update(projects)
+    .set({ apiKey: nanoid.id('apiKey', 30), updatedAt: new Date() })
+    .where(and(eq(projects.id, id), eq(projects.deleted, false)));
 }

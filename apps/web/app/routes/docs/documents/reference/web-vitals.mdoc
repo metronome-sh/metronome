@@ -1,0 +1,61 @@
+---
+title: "Web Vitals"
+description: "Web Vitals reference"
+---
+
+# Web Vitals
+
+Web Vitals are a collection of performance metrics that can be used to measure the performance of a web application. These metrics are collected for each page load and are used to determine the application's overall performance.
+
+Metronome lets you measure the performance of your web application using these metrics.
+
+{% image src="/images/reference-web-vitals-dark-1.png" className="w-full mt-4 mx-auto rounded-lg hidden dark:block" /%}
+{% image src="/images/reference-web-vitals-light-1.png" className="w-full mt-4 mx-auto rounded-lg block dark:hidden" /%}
+
+## Percentiles
+
+Metronome lets you filter how your app is performing for a certain percentage of users. For web vitals, you can select the following percentiles:
+
+| Percentile | Description                                                   |
+| :--------- | :------------------------------------------------------------ |
+| P50        | How your app is performing for the 50% of your users (median) |
+| P75        | App performance   for the worst of 25% of your users |
+| P90        | App performance   for the worst of 10% of your users |
+| P95        | App performance   for the worst of 5% of your users  |
+| P99        | App performance   for the worst of 1% of your users  |
+
+## Web Vitals Collected
+
+These are the metrics that are collected to be able to calculate your app. (Source: [web.dev](https://web.dev))
+
+| Web Vital                                                  | Description                                                                                                                                 |
+| :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Largest Contentful Paint (LCP)** {% .whitespace-nowrap %}| Measures loading performance. To provide a good user experience, LCP should occur within 2.5 seconds of when the page first starts loading. |
+| **First Input Delay (FID)**                                | Measures interactivity. To provide a good user experience, pages should have a FID of 100 milliseconds or less.                             |
+| **Cumulative Layout Shift (CLS)**                          | Measures visual stability. To provide a good user experience, pages should maintain a CLS of 0.1. or less.                                  |
+| **First Contentful Paint (FCP)**                           | Measures the time from when the page starts loading to when any part of the page's content is rendered on the screen.                       |
+| **Time to First Byte (TTFB)**                              | Measures the time it takes for the browser to receive the first byte of the response from the server.                                       |
+
+## Score Calculation
+
+We use a similar approach as Lighthouse and Vercel Analytics to get your app score. The score is calculated by a weighted average of the metrics depending on the device.
+
+### Score for desktop devices
+
+| Metric     | Weight | Score at 50 | Score at 90 |
+| :--------- | -----: | ----------: | ----------: |
+| **FCP**    |    10% |          3s |        1.8s |
+| **LCP**    |    35% |          4s |        2.5s |
+| **CLS**    |    15% |        0.25 |        0.10 |
+| **FID**    |    30% |       300ms |       100ms |
+| **TTFB**   |    10% |       1.8s |       800ms |
+
+### Score for mobile devices
+
+| Metric     | Weight | Score at 50 | Score at 90 |
+| :--------- | -----: | ----------: | ----------: |
+| **FCP**    |    10% |        1.6s |       934ms |
+| **LCP**    |    35% |        2.4s |        1.2s |
+| **CLS**    |    15% |        0.25 |        0.10 |
+| **FID**    |    30% |       200ms |       100ms |
+| **TTFB**   |    10% |        1.8s |       800ms |

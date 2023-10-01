@@ -19,10 +19,10 @@ export const Container: FunctionComponent<ContainerProps> = ({
       )}
     >
       {children}
-      <div className="py-2 text-center flex-shrink-0">
+      <div className="mt-10 pb-2 text-center flex-shrink-0 opacity-50">
         {/* <span className="pl-65 text-muted-foreground text-sm"> */}
         <span className="text-muted-foreground text-sm">
-          Made with <Icon.HeartFilled className="text-red-500/80" /> by{' '}
+          Made with <Icon.HeartFilled className="text-red-500" /> by{' '}
           <Button variant="link" className="px-0" asChild>
             <a
               href="https://github.com/ericktamayo"

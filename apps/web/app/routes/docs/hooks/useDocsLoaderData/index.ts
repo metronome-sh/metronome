@@ -1,0 +1,1 @@
+export { useDocsLoaderData } from './useDocsLoaderData';

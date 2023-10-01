@@ -1,0 +1,43 @@
+---
+title: "Using Metronome with the Remix App Server"
+description: "How to integrate Metronome with your Remix App using the built-in Remix App Server."
+---
+
+# Setting up Metronome with Remix + Remix App Server
+
+## Add patch @remix-run/serve to your postinstall script in package.json
+
+```json {% title="package.json" %}
+{
+  "scripts": {
+    "postinstall": "metronome patch @remix-run/serve"
+  }
+}
+```
+
+{% partial file="metronome-installation.partial.mdoc" variables={adapter: "express"} /%}
+
+The `postinstall` script should have patched the app server.
+
+```bash {% title="Terminal" %}
+> postinstall
+> metronome patch @remix-run/serve
+
+@remix-run/serve is patched
+```
+
+If not, you can run the patch command manually:
+
+```bash {% title="Terminal" %}
+metronome patch @remix-run/serve
+```
+
+{% partial file="metronome-init.partial.mdoc" /%}
+
+{% partial file="metronome-root-config.partial.mdoc" /%}
+
+## Set your API key in your production environment
+
+If you don't have an existing project you can create one [here](/projects/new).
+
+You need to add the `METRONOME_API_KEY` environment variable in your production server.
