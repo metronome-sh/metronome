@@ -1,4 +1,17 @@
-import { projects, teams, users, usersToTeams } from './schema';
+import { z } from 'zod';
+
+import { projects, teams, usages, users, usersToTeams } from './schema';
+import {
+  ActionEventSchema,
+  EventSchema,
+  EventsSchema,
+  IdentifierSchema,
+  LoaderEventSchema,
+  NavigateAwayEventSchema,
+  PageviewEventSchema,
+  RequestEventSchema,
+  WebVitalEventSchema,
+} from './schemaValidation';
 
 export type User = Omit<typeof users.$inferSelect, 'password'> & {
   usersToTeams: (UsersToTeams & { team: Team })[];
@@ -20,5 +33,27 @@ export type NewProject = Pick<
 >;
 
 export type UpdateProjectAttributes = Partial<
-  Pick<Project, 'name' | 'url' | 'description' | 'isPublic'>
+  Pick<Project, 'name' | 'url' | 'description' | 'isPublic' | 'isNew'>
 >;
+
+export type Usage = typeof usages.$inferInsert;
+
+export type NewUsage = Omit<typeof usages.$inferInsert, 'timestamp'>;
+
+export type PageviewEvent = z.infer<typeof PageviewEventSchema>;
+
+export type NavigateAwayEvent = z.infer<typeof NavigateAwayEventSchema>;
+
+export type RequestEvent = z.infer<typeof RequestEventSchema>;
+
+export type ActionEvent = z.infer<typeof ActionEventSchema>;
+
+export type LoaderEvent = z.infer<typeof LoaderEventSchema>;
+
+export type WebVitalEvent = z.infer<typeof WebVitalEventSchema>;
+
+export type Identifier = z.infer<typeof IdentifierSchema>;
+
+export type Event = z.infer<typeof EventSchema>;
+
+export type Events = z.infer<typeof EventsSchema>;

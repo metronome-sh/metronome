@@ -9,6 +9,8 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 
+import { EventProvider, getObservableRoutes } from '#app/events';
+
 import styles from './tailwind.css';
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
@@ -18,10 +20,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const user = await auth.user({ required: false });
 
-  return { user };
+  const observableRoutes = getObservableRoutes();
+
+  return { user, observableRoutes };
 }
 
-export default function App() {
+function App() {
   return (
     <html lang="en" className="dark">
       <head>
@@ -40,5 +44,13 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export default function AppWithProviders() {
+  return (
+    <EventProvider>
+      <App />
+    </EventProvider>
   );
 }

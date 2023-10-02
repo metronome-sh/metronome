@@ -1,2 +1,20 @@
+/* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference types="@remix-run/dev" />
 /// <reference types="@remix-run/node" />
+
+import { type TypedDeferredData } from '@remix-run/node';
+
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+type UnwrapPromiseObject<T> = {
+  [K in keyof T]: UnwrapPromise<T[K]>;
+};
+
+declare global {
+  type UnwrapDeferred<LoaderFunction> = LoaderFunction extends (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...args: any[]
+  ) => Promise<TypedDeferredData<infer U>>
+    ? UnwrapPromiseObject<U>
+    : never;
+}

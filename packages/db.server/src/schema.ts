@@ -145,3 +145,49 @@ export const requests = pgTable(
     };
   },
 );
+
+export const usages = pgTable(
+  'usage',
+  {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    events: bigint('events', { mode: 'bigint' }).notNull(),
+  },
+  (table) => {
+    return {
+      teamTimestampIdx: index('usage_team_timestamp_idx').on(
+        table.teamId,
+        table.timestamp,
+      ),
+      projectTimestampIdx: index('usage_project_timestamp_idx').on(
+        table.projectId,
+        table.timestamp,
+      ),
+    };
+  },
+);
+
+export function getUsagesAggregatedView({
+  interval,
+}: {
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchema = {
+    organizationId: text('organization_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    events: bigint('events', { mode: 'bigint' }).notNull(),
+  };
+
+  const usagesAggregatedTables = {
+    hour: pgTable('usage_hourly', aggregatedSchema),
+    day: pgTable('usage_daily', aggregatedSchema),
+    week: pgTable('usage_weekly', aggregatedSchema),
+    month: pgTable('usage_monthly', aggregatedSchema),
+  };
+
+  return usagesAggregatedTables[interval];
+}

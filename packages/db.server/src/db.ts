@@ -14,7 +14,7 @@ export const db = remember('drizzle', () => {
   const readableDrizzle = drizzle(readablePg, { schema });
   const writableDrizzle = drizzle(writablePg, { schema });
 
-  return (options?: { writable?: boolean }) => {
-    return options?.writable ? writableDrizzle : readableDrizzle;
+  return (options?: { write?: boolean }) => {
+    return options?.write ? writableDrizzle : readableDrizzle;
   };
 });

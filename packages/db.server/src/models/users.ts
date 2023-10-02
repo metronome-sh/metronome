@@ -1,17 +1,17 @@
 import { compare, hash } from 'bcryptjs';
 import { eq, sql } from 'drizzle-orm';
 
-import { db } from './db';
-import { nanoid } from './modules/nanoid';
-import { users, usersToTeams } from './schema';
-import { type NewUser, type User } from './types';
+import { db } from '../db';
+import { nanoid } from '../modules/nanoid';
+import { users, usersToTeams } from '../schema';
+import { type NewUser, type User } from '../types';
 
 export async function create(newUser: NewUser): Promise<User> {
   const hashedPassword = newUser.password
     ? await hash(newUser.password, 10)
     : null;
 
-  const [createdUser] = await db({ writable: true })
+  const [createdUser] = await db({ write: true })
     .insert(users)
     .values({ ...newUser, password: hashedPassword, id: nanoid.id('user') })
     .returning();
@@ -86,7 +86,7 @@ export async function upsert({
     return { ...user, ...update };
   }
 
-  const [createdUser] = await db({ writable: true })
+  const [createdUser] = await db({ write: true })
     .insert(users)
     .values({ ...create, id: nanoid.id('user') })
     .returning();
@@ -101,7 +101,7 @@ export async function addToTeam({
   userId: string;
   teamId: string;
 }) {
-  await db({ writable: true }).insert(usersToTeams).values({
+  await db({ write: true }).insert(usersToTeams).values({
     userId,
     teamId,
   });
@@ -114,7 +114,7 @@ export async function lastSelectedProjectSlug({
   userId: string;
   projectSlug: string;
 }) {
-  await db({ writable: true })
+  await db({ write: true })
     .update(users)
     .set({
       settings: sql`jsonb_set(settings, array['lastSelectedProjectSlug'], to_jsonb(${projectSlug}::text))`,

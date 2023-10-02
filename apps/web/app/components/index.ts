@@ -13,6 +13,7 @@ export { Heading } from './Heading';
 export { Icon } from './Icon';
 export { Input } from './Input';
 export { Label } from './Label';
+export { Ping } from './Ping';
 export { Popover } from './Popover';
 export { Separator } from './Separator';
 export { Switch } from './Switch';

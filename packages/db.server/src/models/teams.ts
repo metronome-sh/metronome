@@ -1,10 +1,10 @@
 import { and, eq, sql } from 'drizzle-orm';
 
-import { db } from './db';
-import { generateSlug } from './helpers/slugs';
-import { nanoid } from './modules/nanoid';
-import { projects, teams, usersToTeams } from './schema';
-import { NewTeam, Team } from './types';
+import { db } from '../db';
+import { generateSlug } from '../helpers/slugs';
+import { nanoid } from '../modules/nanoid';
+import { projects, teams, usersToTeams } from '../schema';
+import { NewTeam, Team } from '../types';
 
 export async function create(newTeam: NewTeam): Promise<Team> {
   const slug = await generateSlug({
@@ -12,7 +12,7 @@ export async function create(newTeam: NewTeam): Promise<Team> {
     table: teams,
   });
 
-  const [team] = await db({ writable: true })
+  const [team] = await db({ write: true })
     .insert(teams)
     .values({ ...newTeam, slug, id: nanoid.id('team') })
     .returning();

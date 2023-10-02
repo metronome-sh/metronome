@@ -5,12 +5,15 @@ import { invariant } from 'ts-invariant';
 const envPath = path.resolve(process.cwd(), '../../.env');
 config({ path: envPath });
 
-export function optional(envVarName: string): string | undefined {
+export function optional(
+  envVarName: string,
+  defaultValue?: string,
+): string | undefined {
   const envVar = process.env[envVarName];
   if (!envVar) {
     console.warn(`Warning: environment ${envVarName} variable is not defined`);
   }
-  return envVar;
+  return envVar ?? defaultValue;
 }
 
 export function defined(envVarName: string): string {
@@ -28,6 +31,11 @@ export const dev = defined('NODE_ENV') === 'development';
  * Determines if the current environment is production.
  */
 export const production = defined('NODE_ENV') === 'production';
+
+/**
+ * Determines if the current environment is test.
+ */
+export const test = defined('NODE_ENV') === 'test';
 
 /**
  * DB Connection URLs.
@@ -84,4 +92,68 @@ export function kafka() {
   return {
     brokers: brokers.split(','),
   };
+}
+
+export function producer() {
+  return {
+    apiKey: optional('PRODUCER_PROJECT_API_KEY'),
+  };
+}
+
+/**
+ * Redis queue configuration
+ * @returns {Object}
+ */
+export function queues() {
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const url = defined('REDIS_QUEUE_URL');
+
+  const password = production
+    ? defined('REDIS_QUEUE_PASSWORD')
+    : optional('REDIS_QUEUE_PASSWORD');
+
+  const family = Number(optional('REDIS_QUEUE_FAMILY', '4'));
+
+  return { url, password, family };
+}
+
+/**
+ * Returns the value of the environment variable based on the current environment.
+ * @param environment
+ * @returns
+ */
+export function when<T>(environment: {
+  production: T | (() => T);
+  development?: T | (() => T);
+  test?: T | (() => T);
+}): T {
+  function castProduction() {
+    return typeof environment.production === 'function'
+      ? (environment.production as () => T)()
+      : environment.production;
+  }
+
+  function castDevelopment() {
+    return typeof environment.development === 'function'
+      ? (environment.development as () => T)()
+      : environment.development;
+  }
+
+  function castTest() {
+    return typeof environment.test === 'function'
+      ? (environment.test as () => T)()
+      : environment.test;
+  }
+
+  if (production) {
+    return castProduction();
+  }
+
+  if (test) {
+    return castTest() || castProduction();
+  }
+
+  return typeof environment.development !== undefined
+    ? castDevelopment()!
+    : castProduction();
 }

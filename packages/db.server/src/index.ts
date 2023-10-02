@@ -1,7 +1,11 @@
-import * as projects from './projects';
-import * as teams from './teams';
-import * as users from './users';
+import * as projects from './models/projects';
+import * as requests from './models/requests';
+import * as teams from './models/teams';
+import * as usages from './models/usages';
+import * as users from './models/users';
 
-export { projects, teams, users };
+export { insertMetrics } from './insertMetrics';
+
+export { projects, requests, teams, usages, users };
 
 export type { Project, Team, User } from './types';

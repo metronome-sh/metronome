@@ -1,0 +1,24 @@
+{
+  "name": "@metronome/worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/cjs/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@types/node": "^20.6.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@metronome/env.server": "workspace:*",
+    "@metronome/queues.server": "workspace:*",
+    "@metronome/db.server": "workspace:*",
+    "tsx": "^3.13.0"
+  }
+}

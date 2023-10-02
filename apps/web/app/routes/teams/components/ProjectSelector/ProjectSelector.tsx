@@ -130,7 +130,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
                     }}
                   >
                     <Icon.SquareRoundedPlus className="w-5 h-5 stroke-teal-600" />
-                    <span>Create Team</span>
+                    <span>Create Project</span>
                   </Command.Item>
                 </Dialog.Trigger>
               </Command.Group>

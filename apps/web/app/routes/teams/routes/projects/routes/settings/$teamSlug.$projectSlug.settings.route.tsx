@@ -1,4 +1,5 @@
-import { type Project, projects, teams } from '@metronome/db.server';
+import { Temporal } from '@js-temporal/polyfill';
+import { type Project, projects, teams, usages } from '@metronome/db.server';
 import { handle } from '@metronome/utils.server';
 // import { usages } from '@metronome/telemetry.server';
 import {
@@ -130,7 +131,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!project) throw notFound();
 
-  return defer({ usage: 0 });
+  const range = {
+    from: Temporal.Now.instant()
+      .toZonedDateTimeISO('UTC')
+      .withPlainTime('00:00:00')
+      .add({
+        days: -(Temporal.Now.instant().toZonedDateTimeISO('UTC').day - 1),
+      }),
+    to: Temporal.Now.instant()
+      .toZonedDateTimeISO('UTC')
+      .withPlainTime('23:59:59'),
+  };
+
+  const usage = usages.project({ projectId: project.id, range });
+
+  return defer({ usage });
 }
 
 export default function Route() {

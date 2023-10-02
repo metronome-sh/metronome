@@ -1,10 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 
-import { db } from './db';
-import { generateSlug } from './helpers/slugs';
-import { nanoid } from './modules/nanoid';
-import { projects, teams, usersToTeams } from './schema';
-import { NewProject, Project, UpdateProjectAttributes } from './types';
+import { db } from '../db';
+import { generateSlug } from '../helpers/slugs';
+import { nanoid } from '../modules/nanoid';
+import { projects, teams, usersToTeams } from '../schema';
+import { NewProject, Project, UpdateProjectAttributes } from '../types';
 
 export async function create(newProject: NewProject) {
   const slug = await generateSlug({
@@ -12,7 +12,7 @@ export async function create(newProject: NewProject) {
     table: projects,
   });
 
-  const [project] = await db({ writable: true })
+  const [project] = await db({ write: true })
     .insert(projects)
     .values({
       id: nanoid.id('project'),
@@ -31,18 +31,35 @@ export async function update({
 }: {
   id: string;
   attributes: UpdateProjectAttributes;
-}) {
-  await db({ writable: true })
+}): Promise<Project> {
+  const [project] = await db({ write: true })
     .update(projects)
     .set({ ...attributes, updatedAt: new Date() })
-    .where(and(eq(projects.id, id), eq(projects.deleted, false)));
+    .where(and(eq(projects.id, id), eq(projects.deleted, false)))
+    .returning();
+
+  return project;
 }
 
 export async function destroy({ id }: { id: string }) {
-  await db({ writable: true })
+  await db({ write: true })
     .update(projects)
     .set({ deleted: true, updatedAt: new Date() })
     .where(eq(projects.id, id));
+}
+
+export async function findByApiKey({
+  apiKey,
+}: {
+  apiKey: string;
+}): Promise<Project | undefined> {
+  const [project] = await db()
+    .select()
+    .from(projects)
+    .where(and(eq(projects.apiKey, apiKey), eq(projects.deleted, false)))
+    .limit(1);
+
+  return project;
 }
 
 export async function findBySlugs({
@@ -72,7 +89,7 @@ export async function findBySlugs({
 }
 
 export async function rotateApiKey({ id }: { id: string }) {
-  await db({ writable: true })
+  await db({ write: true })
     .update(projects)
     .set({ apiKey: nanoid.id('apiKey', 30), updatedAt: new Date() })
     .where(and(eq(projects.id, id), eq(projects.deleted, false)));

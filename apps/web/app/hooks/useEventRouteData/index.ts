@@ -1,0 +1,1 @@
+export { useEventRouteData } from './useEventRouteData';

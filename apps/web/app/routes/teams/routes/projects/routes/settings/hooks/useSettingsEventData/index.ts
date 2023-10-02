@@ -1,0 +1,1 @@
+export { useSettingsEventData } from './useSettingsEventData';
