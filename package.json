@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
     "dev": "pnpm -r --parallel dev",
+    "dev:web": "pnpm -r --parallel --filter web... dev",
     "build": "pnpm -r --parallel build",
     "docker:up": "docker-compose --env-file .env -f docker/docker-compose.dev.yml up -d",
     "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",
@@ -18,8 +19,8 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "eslint": "^8.50.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^9.0.0",

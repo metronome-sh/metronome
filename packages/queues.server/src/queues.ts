@@ -13,11 +13,18 @@ export const metrics = createQueue<{ apiKey: string; data: unknown }>(
   },
 );
 
-export const events = createQueue<{
-  projectId: string;
-  eventsNames: string[];
-  ts: number;
-}>('events', {
+export const events = createQueue<
+  {
+    projectId: string;
+    eventsNames: string[];
+    ts: number;
+  },
+  {
+    projectId: string;
+    eventsNames: string[];
+    ts: number;
+  }
+>('events', {
   removeOnComplete: true,
   removeOnFail: true,
   priority: 1,

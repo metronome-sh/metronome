@@ -7,7 +7,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from '@remix-run/react';
+import { useEffect } from 'react';
 
 import { EventProvider, getObservableRoutes } from '#app/events';
 
@@ -26,6 +28,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    /**
+     * If the timezone offset cookie doesn't match the current timezone offset, reload.
+     */
+    const regexp = new RegExp('(^| )tzOffset=([^;]+)');
+    const cookieTzOffset = (document.cookie.match(regexp) || [])[2];
+
+    const tzOffset = new Date().getTimezoneOffset();
+
+    if (cookieTzOffset !== `${tzOffset}`) {
+      document.cookie = `tzOffset=${tzOffset}; path=/; max-age=31536000`;
+      window.location.reload();
+    }
+  }, [location.key]);
+
   return (
     <html lang="en" className="dark">
       <head>

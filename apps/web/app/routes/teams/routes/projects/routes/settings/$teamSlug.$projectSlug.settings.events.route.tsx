@@ -39,22 +39,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     '$teamSlug.$projectSlug.settings',
     request,
     async (send) => {
-      // const cleanupProjectUsage = await usages.watch(
-      //   { project },
-      //   async ({ ts }) => {
-      //     const usage = await usages.project({ project, range });
-      //     send({ usage }, ts);
-      //   },
-      // );
-
-      const interval = setInterval(async () => {
-        const usage = await usages.project({ projectId: project.id, range });
-        send({ usage }, Temporal.Now.instant().epochSeconds);
-      }, 5000);
+      const cleanupProjectUsage = await usages.watch(
+        { project },
+        async ({ ts }) => {
+          const usage = await usages.projectUsage({ project, range });
+          send({ usage }, ts);
+        },
+      );
 
       return async function cleanup() {
-        clearInterval(interval);
-        // await Promise.allSettled([cleanupProjectUsage()]);
+        await cleanupProjectUsage();
       };
     },
   );

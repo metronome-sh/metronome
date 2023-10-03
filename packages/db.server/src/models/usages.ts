@@ -2,8 +2,9 @@ import { Temporal } from '@js-temporal/polyfill';
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
+import { observable, operators, throttleTime } from '../helpers/events';
 import { getUsagesAggregatedView, usages } from '../schema';
-import { NewUsage, Usage } from '../types';
+import { NewUsage, Project, Usage } from '../types';
 
 export async function create(newUsage: NewUsage): Promise<Usage> {
   const [usage] = await db({ write: true })
@@ -14,11 +15,11 @@ export async function create(newUsage: NewUsage): Promise<Usage> {
   return usage;
 }
 
-export async function project({
-  projectId,
+export async function projectUsage({
+  project,
   range: { from, to },
 }: {
-  projectId: string;
+  project: Project;
   range: {
     from: Temporal.ZonedDateTime;
     to: Temporal.ZonedDateTime;
@@ -37,10 +38,29 @@ export async function project({
     .where(
       and(
         between(usages.timestamp, fromDate, toDate),
-        eq(usages.projectId, projectId),
+        eq(usages.projectId, project.id),
       ),
     )
     .groupBy(usages.projectId);
 
   return result.usage.toString();
+}
+
+export function watch(
+  { project }: { project: Project },
+  callback: (event: { ts: number }) => Promise<void>,
+): () => void {
+  callback({ ts: Date.now() });
+
+  const subscription = observable
+    .pipe(
+      operators.project(project),
+      operators.events(['usage']),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    )
+    .subscribe(([e]) => {
+      callback({ ts: e.returnvalue.ts });
+    });
+
+  return () => subscription.unsubscribe();
 }

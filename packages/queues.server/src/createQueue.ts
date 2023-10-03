@@ -10,11 +10,11 @@ import {
 
 import { connection } from './ioredis';
 
-export function createQueue<T extends object>(
+export function createQueue<T extends object, R = unknown>(
   name: string,
   defaultJobOptions?: BaseJobOptions,
 ) {
-  const worker = (processor: Processor, concurrency: number = 10) => {
+  const worker = (processor: Processor<T, R>, concurrency: number = 10) => {
     const workerInstance = new Worker<T>(name, processor, {
       connection,
       concurrency,
@@ -37,7 +37,7 @@ export function createQueue<T extends object>(
     return workerInstance;
   };
 
-  const queue = new Queue<T>(name, { connection, defaultJobOptions });
+  const queue = new Queue<T, R>(name, { connection, defaultJobOptions });
 
   const events = new QueueEvents(name, { connection });
 
@@ -62,5 +62,25 @@ export function createQueue<T extends object>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const $inferJob: Job<T> = {} as any;
 
-  return { worker, add, touch, get, events, $inferJob };
+  const $inferReturn: R = {} as R;
+
+  const $inferCompletedEventArgs = [] as unknown as [
+    args: {
+      jobId: string;
+      returnvalue: R;
+      prev?: string;
+    },
+    id: string,
+  ];
+
+  return {
+    worker,
+    add,
+    touch,
+    get,
+    events,
+    $inferJob,
+    $inferReturn,
+    $inferCompletedEventArgs,
+  };
 }

@@ -94,6 +94,37 @@ function handleBrowserRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
+  /**
+   * Get the timezone offset from the browser and set it as a cookie if it
+   * doesn't exist.
+   */
+  if (!request.headers.get('cookie')?.includes('tzOffset')) {
+    const script = `
+      <script>
+        const tzOffset = new Date().getTimezoneOffset();
+        document.cookie = 'tzOffset=' + tzOffset + '; path=/';
+        window.location.reload();
+      </script>
+    `;
+
+    return new Response(
+      `
+      <!doctype html>
+      <html>
+        <head></head>
+        <body>${script}</body>
+      </html>
+    `,
+      {
+        headers: {
+          'Content-Type': 'text/html',
+          'Set-Cookie': 'tzOffset=0; path=/',
+          Refresh: `0; url=${request.url}`,
+        },
+      },
+    );
+  }
+
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(

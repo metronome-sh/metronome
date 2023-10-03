@@ -143,7 +143,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       .withPlainTime('23:59:59'),
   };
 
-  const usage = usages.project({ projectId: project.id, range });
+  const usage = usages.projectUsage({ project, range });
 
   return defer({ usage });
 }
