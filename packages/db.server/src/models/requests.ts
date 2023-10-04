@@ -3,10 +3,13 @@
 // import { throttleTime } from 'rxjs';
 // import { toPostgresTzName } from '../../utils/aggregations';
 // import { resolveIp } from '../../utils/ip';
+import { and, between, eq, sql } from 'drizzle-orm';
+
 import { db } from '../db';
-import { requests } from '../schema';
+import { observable, operators, throttleTime } from '../helpers/events';
+import { getRequestsTimeZonedAggregatedView, requests } from '../schema';
 import { RequestEventSchema } from '../schemaValidation';
-import { Project, RequestEvent } from '../types';
+import { Interval, Project, Range, RequestEvent } from '../types';
 // import { observable, operators } from '../utils/events';
 // import { getTimeZonedAggregatedView, requests } from './requests.schema';
 // import { RequestFunctionArgs, RequestOverview } from './requests.types';
@@ -44,53 +47,57 @@ export async function create(project: Project, requestEvent: RequestEvent) {
     });
 }
 
-// export async function overview({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: RequestFunctionArgs): Promise<RequestOverview> {
-//   const requests = await getTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function overview({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}) {
+  const requests = await getRequestsTimeZonedAggregatedView(
+    from.timeZoneId,
+    interval,
+  );
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await drizzle()
-//     .select({
-//       count: sql<number>`sum(${requests.count})::integer`,
-//       dataCount: sql<number>`sum(${requests.dataCount})::integer`,
-//       documentCount: sql<number>`sum(${requests.documentCount})::integer`,
-//       durationP50: sql<number>`approx_percentile(0.5, rollup(${requests.durationPctAgg}))`,
-//     })
-//     .from(requests)
-//     .where(
-//       and(
-//         between(requests.timestamp, fromDate, toDate),
-//         eq(requests.organizationId, project.organizationId),
-//         eq(requests.projectId, project.id),
-//       ),
-//     );
+  const result = await db()
+    .select({
+      count: sql<number>`sum(${requests.count})::integer`,
+      dataCount: sql<number>`sum(${requests.dataCount})::integer`,
+      documentCount: sql<number>`sum(${requests.documentCount})::integer`,
+      durationP50: sql<number>`approx_percentile(0.5, rollup(${requests.durationPctAgg}))`,
+    })
+    .from(requests)
+    .where(
+      and(
+        between(requests.timestamp, fromDate, toDate),
+        eq(requests.teamId, project.teamId),
+        eq(requests.projectId, project.id),
+      ),
+    );
 
-//   if (result.length === 0) {
-//     return {
-//       count: null,
-//       duration: { p50: null },
-//       dataCount: null,
-//       documentCount: null,
-//     };
-//   }
+  if (result.length === 0) {
+    return {
+      count: null,
+      duration: { p50: null },
+      dataCount: null,
+      documentCount: null,
+    };
+  }
 
-//   const [{ count, durationP50, dataCount, documentCount }] = result;
+  const [{ count, durationP50, dataCount, documentCount }] = result;
 
-//   return {
-//     count: count,
-//     duration: { p50: durationP50 },
-//     dataCount: dataCount,
-//     documentCount: documentCount,
-//   };
-// }
+  return {
+    count: count,
+    duration: { p50: durationP50 },
+    dataCount: dataCount,
+    documentCount: documentCount,
+  };
+}
 
 // export async function countSeries({
 //   project,
@@ -107,7 +114,7 @@ export async function create(project: Project, requestEvent: RequestEvent) {
 
 //   const pgTz = await toPostgresTzName({ timeZone: from.timeZoneId });
 
-//   const result = await drizzle()
+//   const result = await db()
 //     .select({
 //       // prettier-ignore
 //       timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(by)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
@@ -135,27 +142,21 @@ export async function create(project: Project, requestEvent: RequestEvent) {
 //   return { series };
 // }
 
-// export function watch(
-//   { project, events = ['request'] }: { project: Project; events?: 'request'[] },
-//   callback: (event: {
-//     name: (typeof events)[number];
-//     ts: number;
-//   }) => Promise<void>,
-// ): () => void {
-//   callback({ name: events[0], ts: Date.now() });
+export function watch(
+  project: Project,
+  callback: (event: { ts: number }) => Promise<void>,
+): () => void {
+  callback({ ts: Date.now() });
 
-//   const subscription = observable()
-//     .pipe(
-//       operators.project(project),
-//       operators.event(events),
-//       throttleTime(1000, undefined, { leading: true, trailing: true }),
-//     )
-//     .subscribe(([e]) => {
-//       callback({
-//         name: e.returnvalue.event.name as (typeof events)[number],
-//         ts: e.returnvalue.event.ts,
-//       });
-//     });
+  const subscription = observable
+    .pipe(
+      operators.project(project),
+      operators.events(['request']),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    )
+    .subscribe(([e]) => {
+      callback({ ts: e.returnvalue.ts });
+    });
 
-//   return () => subscription.unsubscribe();
-// }
+  return () => subscription.unsubscribe();
+}

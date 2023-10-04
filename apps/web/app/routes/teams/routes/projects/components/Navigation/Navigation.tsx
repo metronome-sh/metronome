@@ -105,6 +105,7 @@ export const Navigation: FunctionComponent = () => {
           })}
         </Tooltip.Provider>
         <NavLink
+          prefetch="intent"
           to={`/${team.slug}/${project.slug}/settings`}
           className={({ isActive, isPending }) => {
             return cn(

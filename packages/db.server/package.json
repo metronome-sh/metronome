@@ -27,14 +27,16 @@
     "vitest": "^0.34.5"
   },
   "dependencies": {
-    "@metronome/env.server": "workspace:*",
-    "@metronome/queues.server": "workspace:*",
     "@epic-web/remember": "^1.0.2",
     "@js-temporal/polyfill": "^0.4.4",
+    "@metronome/env.server": "workspace:*",
+    "@metronome/queues.server": "workspace:*",
     "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.28.6",
+    "ioredis": "^5.2.2",
     "nanoid": "^3.3.6",
     "postgres": "^3.3.5",
+    "redlock": "5.0.0-beta.2",
     "rxjs": "^7.8.1",
     "slugify": "^1.6.6",
     "tsx": "^3.13.0",

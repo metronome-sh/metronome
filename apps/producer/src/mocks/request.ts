@@ -10,7 +10,7 @@ export function generateRequest() {
       name: 'request',
       adapter: 'express',
       duration: faker.number
-        .bigInt({ min: 1_000_000, max: 1_000_000_000_000 })
+        .bigInt({ min: 1_000_000, max: 1_000_000_000 })
         .toString(),
       errored,
       method: faker.internet.httpMethod(),

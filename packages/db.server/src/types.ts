@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import { z } from 'zod';
 
 import { projects, teams, usages, users, usersToTeams } from './schema';
@@ -57,3 +58,10 @@ export type Identifier = z.infer<typeof IdentifierSchema>;
 export type Event = z.infer<typeof EventSchema>;
 
 export type Events = z.infer<typeof EventsSchema>;
+
+export type Interval = 'hour' | 'day' | 'week' | 'month';
+
+export type Range = {
+  from: Temporal.ZonedDateTime;
+  to: Temporal.ZonedDateTime;
+};

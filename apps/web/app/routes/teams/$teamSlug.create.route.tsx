@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { projects, teams } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -12,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button, Card, Form, Input } from '#app/components';
+import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;

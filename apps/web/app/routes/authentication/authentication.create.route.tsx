@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { teams, users } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useSubmit } from '@remix-run/react';
 import { useCallback } from 'react';
@@ -8,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Brand, Button, Card, Container, Form, Input } from '#app/components';
+import { handle } from '#app/handlers';
 
 export const CreateUserSchema = z
   .object({

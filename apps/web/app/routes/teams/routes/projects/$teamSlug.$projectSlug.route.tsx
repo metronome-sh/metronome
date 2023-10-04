@@ -1,8 +1,8 @@
 import { projects, users } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
+import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 import { Navigation } from './components';

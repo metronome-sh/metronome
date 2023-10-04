@@ -1,14 +1,17 @@
-import { projects } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { projects, requests } from '@metronome/db.server';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 
 import { Heading } from '#app/components';
+import { Filters, filters } from '#app/filters';
+import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
+
+import { RequestsSection } from './components';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
 
-  const { auth } = await handle(request);
+  const { auth, query } = await handle(request);
 
   const user = await auth.user();
 
@@ -20,14 +23,33 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!project) throw notFound();
 
-  return json(null);
+  const { interval, range } = await query.filters({
+    interval: filters.interval,
+    range: filters.dateRange,
+  });
+
+  const requestsOverview = requests.overview({
+    project,
+    interval,
+    range,
+  });
+
+  return defer({ requestsOverview });
 }
 
 export default function Component() {
   return (
     <div className="w-full flex-grow h-full">
       <div className="mx-auto w-full max-w-screen-lg rounded-lg">
-        <Heading title="Overview" description={`General summary of your app`} />
+        <Heading
+          title="Overview"
+          description={`General summary of your app`}
+          separatorClassName="md:mb-4"
+        />
+        <div className="pb-6">
+          <Filters filters={[filters.dateRange, filters.interval]} />
+        </div>
+        <RequestsSection />
         <div className="space-y-4 pb-4">
           <div className="w-full h-80 px-4">
             <div className="w-full h-full bg-muted/40 rounded-lg"></div>

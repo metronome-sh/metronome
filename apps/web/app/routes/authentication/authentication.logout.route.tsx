@@ -1,5 +1,6 @@
-import { handle } from '@metronome/utils.server';
 import { ActionFunctionArgs } from '@remix-run/node';
+
+import { handle } from '#app/handlers';
 
 export async function action({ request }: ActionFunctionArgs) {
   const { auth } = await handle(request);

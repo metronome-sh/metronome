@@ -1,5 +1,6 @@
-import { handle } from '@metronome/utils.server';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+
+import { handle } from '#app/handlers';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { auth } = await handle(request);

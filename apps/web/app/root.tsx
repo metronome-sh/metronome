@@ -1,4 +1,3 @@
-import { handle } from '@metronome/utils.server';
 import { type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import {
   Links,
@@ -9,9 +8,11 @@ import {
   ScrollRestoration,
   useLocation,
 } from '@remix-run/react';
+import isbot from 'isbot';
 import { useEffect } from 'react';
 
 import { EventProvider, getObservableRoutes } from '#app/events';
+import { handle } from '#app/handlers';
 
 import styles from './tailwind.css';
 
@@ -30,13 +31,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 function App() {
   const location = useLocation();
 
+  /**
+   * Handling daylight savings or timezone changes
+   */
   useEffect(() => {
-    /**
-     * If the timezone offset cookie doesn't match the current timezone offset, reload.
-     */
+    if (isbot(navigator.userAgent)) return;
+
     const regexp = new RegExp('(^| )tzOffset=([^;]+)');
     const cookieTzOffset = (document.cookie.match(regexp) || [])[2];
-
     const tzOffset = new Date().getTimezoneOffset();
 
     if (cookieTzOffset !== `${tzOffset}`) {

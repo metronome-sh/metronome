@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { users } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import {
   ActionFunctionArgs,
   json,
@@ -22,6 +21,7 @@ import {
   Icon,
   Input,
 } from '#app/components';
+import { handle } from '#app/handlers';
 
 export const AuthenticationSchema = z.object({
   email: z.string().email(),

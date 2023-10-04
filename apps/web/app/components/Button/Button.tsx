@@ -20,6 +20,8 @@ const buttonVariants = cva(
         ghost:
           'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:text-zinc-400',
         link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50',
+        'outline-dashed':
+          'border border-input shadow-sm hover:bg-accent hover:text-accent-foreground border-dashed',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -1,0 +1,1 @@
+ALTER TABLE "usage" RENAME TO "usages";

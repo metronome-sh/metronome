@@ -1,8 +1,8 @@
-import { handle } from '@metronome/utils.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { getFavicons } from 'favicon-thief';
 import * as mime from 'mime-types';
 
+import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 const cache = new Map<string, string>();

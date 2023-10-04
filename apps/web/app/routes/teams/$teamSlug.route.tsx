@@ -1,9 +1,9 @@
 import { teams } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
 import { Container } from '#app/components';
+import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 import { TeamsHeader } from './components';

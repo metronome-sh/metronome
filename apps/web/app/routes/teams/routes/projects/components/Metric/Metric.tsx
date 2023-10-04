@@ -1,0 +1,129 @@
+import {
+  forwardRef,
+  type FunctionComponent,
+  type PropsWithChildren,
+  type ReactNode,
+} from 'react';
+
+import { cn, Icon } from '#app/components';
+
+type MetricProps = PropsWithChildren<{
+  title: ReactNode;
+  value: string | number;
+  compact?: boolean;
+  containerClassName?: string;
+  valueClassName?: string;
+  titleClassName?: string;
+}>;
+
+const Root = forwardRef<HTMLDivElement, MetricProps>(
+  (
+    {
+      title,
+      value,
+      compact,
+      children,
+      containerClassName,
+      valueClassName,
+      titleClassName,
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <div
+        ref={ref}
+        {...props}
+        className={cn(
+          'bg-opacity-50 flex flex-col',
+          compact
+            ? 'py-3 px-6 bg-muted/30 transition-all hover:bg-muted/60 rounded-lg'
+            : 'py-3 lg:py-5 px-4 lg:px-8 space-y-1 bg-background rounded-xl',
+          containerClassName,
+        )}
+      >
+        <div
+          className={cn(
+            'text-foreground',
+            compact ? 'text-xl md:text-xl' : 'text-2xl md:text-2xl',
+            valueClassName,
+          )}
+        >
+          {value}
+        </div>
+        <div
+          className={cn(
+            'text-muted-foreground flex-grow flex md:items-center text-sm md:text-base',
+            compact && 'text-sm',
+            titleClassName,
+          )}
+        >
+          {title}
+        </div>
+        {children}
+      </div>
+    );
+  },
+);
+
+Root.displayName = 'Metric';
+
+type MetricSkeletonProps = {
+  title: ReactNode;
+  compact?: boolean;
+};
+
+const MetricSkeleton: FunctionComponent<MetricSkeletonProps> = ({
+  title,
+  compact,
+}) => {
+  return (
+    <Root
+      title={title}
+      value="0000"
+      compact={compact}
+      valueClassName={cn(
+        'text-transparent pointer-events-none animate-pulse bg-muted-foreground/10 rounded-lg my-0.5',
+        compact ? 'md:text-base' : 'md:text-lg',
+      )}
+    />
+  );
+};
+
+type MetricErrorProps = {
+  title: ReactNode;
+  compact?: boolean;
+};
+
+const MetricError: FunctionComponent<MetricErrorProps> = ({
+  title,
+  compact,
+}) => {
+  return (
+    <Root
+      title={title}
+      value="0000"
+      compact={compact}
+      valueClassName="text-transparent pointer-events-none"
+      titleClassName="text-transparent pointer-events-none"
+      containerClassName="relative"
+    >
+      <div
+        className={cn(
+          'absolute inset-0 flex gap-2 items-center',
+          compact ? 'py-3 px-6' : 'px-4 lg:px-8',
+        )}
+      >
+        <div className="text-destructive">
+          <Icon.MoodSadDizzy />
+        </div>
+        <div className="text-muted-foreground text-sm">Oops!</div>
+      </div>
+    </Root>
+  );
+};
+
+export const Metric = Object.assign(Root, {
+  Skeleton: MetricSkeleton,
+  Error: MetricError,
+});

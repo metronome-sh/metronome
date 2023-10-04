@@ -2,5 +2,10 @@
   "prettier.configPath": "./.prettierrc",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "typescript.inlayHints.parameterNames.enabled": "all",
+
+  // "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
+  "typescript.inlayHints.parameterTypes.enabled": true
+  // "typescript.inlayHints.variableTypes.enabled": true
 }

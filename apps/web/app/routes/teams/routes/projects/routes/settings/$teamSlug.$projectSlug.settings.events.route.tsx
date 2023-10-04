@@ -1,8 +1,8 @@
 import { Temporal } from '@js-temporal/polyfill';
 import { projects, usages } from '@metronome/db.server';
-import { handle } from '@metronome/utils.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 
+import { handle } from '#app/handlers';
 import { notFound, stream } from '#app/responses';
 
 import { type loader as settingsLoader } from './$teamSlug.$projectSlug.settings.route';

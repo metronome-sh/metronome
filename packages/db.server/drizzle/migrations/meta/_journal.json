@@ -155,6 +155,34 @@
       "when": 1696197894653,
       "tag": "0021_fair_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "5",
+      "when": 1696348453887,
+      "tag": "0022_bent_living_mummy",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1696349004839,
+      "tag": "0023_third_firelord",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1696349036443,
+      "tag": "0024_dapper_siren",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1696395317967,
+      "tag": "0025_spicy_sentinel",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { handle } from '@metronome/utils.server';
+import { handle } from '#app/handlers';
 
 import { empty } from './empty';
 
@@ -25,7 +25,7 @@ export async function stream<LoaderFunction>(
 
   const streamController = new AbortController();
 
-  let cleanup: StreamCleanupCallback | null = null;
+  let cleanup: StreamCleanupCallback | void;
 
   const readableStream = new ReadableStream({
     async start(controller) {

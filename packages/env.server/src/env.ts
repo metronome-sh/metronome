@@ -118,6 +118,39 @@ export function queues() {
 }
 
 /**
+ * Redis cache configuration
+ * @returns {Object}
+ */
+export const cache = Object.assign(
+  function cache() {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const url = defined('REDIS_CACHE_URL');
+
+    const password = production
+      ? defined('REDIS_CACHE_PASSWORD')
+      : optional('REDIS_CACHE_PASSWORD');
+
+    const family = Number(optional('REDIS_CACHE_FAMILY', '4'));
+
+    return { url, password, family };
+  },
+  {
+    unique() {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      const url = defined('REDIS_UNIQUE_URL');
+
+      const password = production
+        ? defined('REDIS_UNIQUE_PASSWORD')
+        : optional('REDIS_UNIQUE_PASSWORD');
+
+      const family = Number(optional('REDIS_UNIQUE_FAMILY', '4'));
+
+      return { url, password, family };
+    },
+  },
+);
+
+/**
  * Returns the value of the environment variable based on the current environment.
  * @param environment
  * @returns
