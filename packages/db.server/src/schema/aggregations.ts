@@ -2,13 +2,13 @@
 import { sql } from 'drizzle-orm';
 import { bigint, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
+import { Interval } from '../types';
 import {
   createTimeOffsetAggregatedView,
   tableName,
   timeOffsetAggregatedTableExists,
-} from '../helpers/aggregations';
-import { getTimeZoneOffset } from '../helpers/timeZones';
-import { Interval } from '../types';
+} from '../utils/aggregations';
+import { getTimeZoneOffset } from '../utils/timeZones';
 
 export function getUsagesAggregatedView({
   interval,
@@ -16,7 +16,7 @@ export function getUsagesAggregatedView({
   interval: 'hour' | 'day' | 'week' | 'month';
 }) {
   const aggregatedSchema = {
-    organizationId: text('team_id').notNull(),
+    teamId: text('team_id').notNull(),
     projectId: text('project_id').notNull(),
     timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
     events: bigint('events', { mode: 'bigint' }).notNull(),
@@ -32,11 +32,11 @@ export function getUsagesAggregatedView({
   return usagesAggregatedTables[interval];
 }
 
-export async function getRequestsTimeZonedAggregatedView(
+export async function getRequestsOverviewAggregatedView(
   timeZoneId: string,
   interval: Interval,
 ) {
-  const aggregatedRequestsSchemaColumns = {
+  const aggregatedSchemaColumns = {
     teamId: text('team_id').notNull(),
     projectId: text('project_id').notNull(),
     timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
@@ -56,7 +56,7 @@ export async function getRequestsTimeZonedAggregatedView(
   });
 
   if (exists) {
-    return pgTable(name, aggregatedRequestsSchemaColumns);
+    return pgTable(name, aggregatedSchemaColumns);
   }
 
   await createTimeOffsetAggregatedView({
@@ -117,5 +117,93 @@ export async function getRequestsTimeZonedAggregatedView(
     },
   });
 
-  return pgTable(name, aggregatedRequestsSchemaColumns);
+  return pgTable(name, aggregatedSchemaColumns);
+}
+
+export async function getRemixFunctionOverviewAggregatedView({
+  base,
+  timeZone: timeZoneId,
+  interval,
+}: {
+  base: string;
+  timeZone: string;
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchemaColumns = {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    count: integer('count').notNull(),
+    erroredCount: integer('errored_count').notNull(),
+    durationPctAgg: bigint('duration_pct_agg', { mode: 'bigint' }).notNull(), // TODO make correct type
+  };
+
+  const offset = getTimeZoneOffset(timeZoneId);
+  const name = tableName({ base, offset, interval });
+  const exists = await timeOffsetAggregatedTableExists({
+    base,
+    offset,
+    interval,
+  });
+
+  if (exists) {
+    return pgTable(name, aggregatedSchemaColumns);
+  }
+
+  await createTimeOffsetAggregatedView({
+    from: base,
+    base,
+    offset,
+    interval,
+    definitions: {
+      hour: ({ baseTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          count(*) FILTER (WHERE errored = TRUE) AS errored_count,
+          percentile_agg(duration) as duration_pct_agg
+        FROM ${sql.raw(baseTable)}
+        GROUP BY 1, 2, 3
+      `,
+      day: ({ hourTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          sum(count) AS count,
+          sum(errored_count) AS errored_count,
+          rollup(duration_pct_agg) as duration_pct_agg
+        FROM ${sql.raw(hourTable)}
+        GROUP BY 1, 2, 3
+      `,
+      week: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          sum(count) AS count,
+          sum(errored_count) AS errored_count,
+          rollup(duration_pct_agg) as duration_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3
+      `,
+      month: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          time_bucket('1 month', "timestamp", ${sql.raw(
+            timeZone,
+          )}) AS timestamp,
+          sum(count) AS count,
+          sum(errored_count) AS errored_count,
+          rollup(duration_pct_agg) as duration_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3
+      `,
+    },
+  });
+
+  return pgTable(name, aggregatedSchemaColumns);
 }

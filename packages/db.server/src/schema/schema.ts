@@ -116,6 +116,13 @@ export const projectsRelations = relations(projects, ({ one }) => ({
   }),
 }));
 
+const geo = {
+  countryCode: text('country_code').notNull().default('unknown'),
+  country: text('country').notNull().default('unknown'),
+  region: text('region').notNull().default('unknown'),
+  city: text('city').notNull().default('unknown'),
+};
+
 export const requests = pgTable(
   'requests',
   {
@@ -127,10 +134,7 @@ export const requests = pgTable(
     statusCode: integer('status_code').notNull(),
     pathname: text('pathname').notNull(),
     requestType: RequestType('request_type').notNull(),
-    countryCode: text('country_code').notNull().default('unknown'),
-    country: text('country').notNull().default('unknown'),
-    region: text('region').notNull().default('unknown'),
-    city: text('city').notNull().default('unknown'),
+    ...geo,
   },
   (table) => {
     return {
@@ -169,3 +173,45 @@ export const usages = pgTable(
     };
   },
 );
+
+const remixFunctionSchema = {
+  teamId: text('team_id').notNull(),
+  projectId: text('project_id').notNull(),
+  timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+  duration: bigint('duration', { mode: 'bigint' }).notNull(),
+  errored: boolean('errored').default(false),
+  routeId: text('remix_route_id').notNull(),
+  hash: text('remix_hash').notNull(),
+  version: text('metronome_version').notNull(),
+  adapter: text('metronome_adapter').notNull(),
+  httpMethod: text('http_method').notNull(),
+  httpStatusCode: integer('http_status_code').notNull(),
+  httpStatusText: text('http_status_text').notNull(),
+  ...geo,
+};
+
+export const loaders = pgTable('loaders', remixFunctionSchema, (table) => {
+  return {
+    organizationTimestampIdx: index('loaders_organization_timestamp_idx').on(
+      table.teamId,
+      table.timestamp,
+    ),
+    projectTimestampIdx: index('loaders_project_timestamp_idx').on(
+      table.projectId,
+      table.timestamp,
+    ),
+  };
+});
+
+export const actions = pgTable('actions', remixFunctionSchema, (table) => {
+  return {
+    organizationTimestampIdx: index('actions_organization_timestamp_idx').on(
+      table.teamId,
+      table.timestamp,
+    ),
+    projectTimestampIdx: index('actions_project_timestamp_idx').on(
+      table.projectId,
+      table.timestamp,
+    ),
+  };
+});

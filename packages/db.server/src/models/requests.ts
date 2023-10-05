@@ -1,19 +1,11 @@
-// import { and, between, eq, sql } from 'drizzle-orm';
-
-// import { throttleTime } from 'rxjs';
-// import { toPostgresTzName } from '../../utils/aggregations';
-// import { resolveIp } from '../../utils/ip';
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { toPostgresTzName } from '../helpers/aggregations';
-import { observable, operators, throttleTime } from '../helpers/events';
-import { getRequestsTimeZonedAggregatedView, requests } from '../schema';
+import { getRequestsOverviewAggregatedView, requests } from '../schema';
 import { RequestEventSchema } from '../schemaValidation';
 import { Interval, Project, Range, RequestEvent } from '../types';
-// import { observable, operators } from '../utils/events';
-// import { getTimeZonedAggregatedView, requests } from './requests.schema';
-// import { RequestFunctionArgs, RequestOverview } from './requests.types';
+import { toPostgresTzName } from '../utils/aggregations';
+import { observable, operators, throttleTime } from '../utils/events';
 
 export function isRequestEvent(event: unknown): event is RequestEvent {
   const result = RequestEventSchema.safeParse(event);
@@ -57,7 +49,7 @@ export async function overview({
   range: Range;
   interval: Interval;
 }) {
-  const requests = await getRequestsTimeZonedAggregatedView(
+  const requests = await getRequestsOverviewAggregatedView(
     from.timeZoneId,
     interval,
   );
@@ -109,7 +101,7 @@ export async function countSeries({
   range: Range;
   interval: Interval;
 }) {
-  const requests = await getRequestsTimeZonedAggregatedView(
+  const requests = await getRequestsOverviewAggregatedView(
     from.timeZoneId,
     interval,
   );

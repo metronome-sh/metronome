@@ -1,10 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 
 import { db } from '../db';
-import { generateSlug } from '../helpers/slugs';
 import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
+import { generateSlug } from '../utils/slugs';
 
 export async function create(newProject: NewProject) {
   const slug = await generateSlug({

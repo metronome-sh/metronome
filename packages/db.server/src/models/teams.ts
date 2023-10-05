@@ -1,7 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { generateSlug } from '../helpers/slugs';
+import { generateSlug } from '../utils/slugs';
 import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewTeam, Team } from '../types';

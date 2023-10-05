@@ -2,7 +2,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { observable, operators, throttleTime } from '../helpers/events';
+import { observable, operators, throttleTime } from '../utils/events';
 import { getUsagesAggregatedView, usages } from '../schema';
 import { NewUsage, Project, Usage } from '../types';
 

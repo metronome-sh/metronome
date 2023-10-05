@@ -183,6 +183,20 @@
       "when": 1696395317967,
       "tag": "0025_spicy_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1696525409106,
+      "tag": "0026_bored_betty_brant",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1696525635166,
+      "tag": "0027_freezing_jean_grey",
+      "breakpoints": true
     }
   ]
 }
