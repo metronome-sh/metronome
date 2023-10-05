@@ -27,8 +27,20 @@ export const DocumentRequests: FunctionComponent = () => {
       >
         {(resolvedRequestsOverview) => {
           // prettier-ignore
-          const value = formatNumber(requestsOverviewEvent?.documentCount ?? resolvedRequestsOverview.documentCount, '0');
-          return <Metric title={title} value={value} compact />;
+
+          const value =requestsOverviewEvent?.documentCount ?? resolvedRequestsOverview.documentCount;
+          return (
+            <Metric
+              title={title}
+              value={formatNumber(value, '0')}
+              rawValue={
+                value && value >= 1000
+                  ? `${value?.toLocaleString()} document requests`
+                  : undefined
+              }
+              compact
+            />
+          );
         }}
       </Await>
     </Suspense>

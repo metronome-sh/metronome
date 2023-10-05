@@ -1,26 +1,18 @@
 import { Temporal } from '@js-temporal/polyfill';
-import { invariant } from 'ts-invariant';
 
 import { type ServerFilterProps } from '#app/filters/filters.types';
-import { offsetToTemporalTimeZone } from '#app/utils';
+import { getTimeZoneFromRequest } from '#app/utils/timeZone';
 
 import { type DateRangeParsed } from './date-range.types';
 
 export const server = {
   parse: async (activeOption, request) => {
-    const cookie = request.headers.get('cookie');
-
-    invariant(cookie, 'Cookie header is missing');
-
-    const regexp = new RegExp('(^| )tzOffset=([^;]+)');
-    const cookieTzOffset = (cookie.match(regexp) ?? ['', '0'])[2];
-
-    const temporalTimezone = offsetToTemporalTimeZone(cookieTzOffset);
+    const timeZone = getTimeZoneFromRequest(request);
 
     if (!activeOption.isCustom) {
       const [value] = activeOption.value;
 
-      const now = Temporal.Now.instant().toZonedDateTimeISO(temporalTimezone);
+      const now = Temporal.Now.instant().toZonedDateTimeISO(timeZone);
 
       if (value === 'today') {
         return {
@@ -119,11 +111,11 @@ export const server = {
 
     const from = Temporal.Instant.fromEpochMilliseconds(
       new Date(fromString).valueOf(),
-    ).toZonedDateTimeISO(temporalTimezone);
+    ).toZonedDateTimeISO(timeZone);
 
     const to = Temporal.Instant.fromEpochMilliseconds(
       new Date(toString).valueOf(),
-    ).toZonedDateTimeISO(temporalTimezone);
+    ).toZonedDateTimeISO(timeZone);
 
     const comparison = Temporal.ZonedDateTime.compare(from, to);
 

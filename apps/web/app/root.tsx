@@ -1,4 +1,8 @@
-import { type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
+import {
+  json,
+  type LinksFunction,
+  type LoaderFunctionArgs,
+} from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -6,15 +10,15 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLocation,
 } from '@remix-run/react';
-import isbot from 'isbot';
-import { useEffect } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { EventProvider, getObservableRoutes } from '#app/events';
 import { handle } from '#app/handlers';
 
+import { useTimeZoneSync } from './hooks';
 import styles from './tailwind.css';
+import { getTimeZoneFromRequest } from './utils/timeZone';
 
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
 
@@ -25,27 +29,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const observableRoutes = getObservableRoutes();
 
-  return { user, observableRoutes };
+  const regexp = new RegExp('(^| )tzOffset=([^;]+)');
+  const cookie = request.headers.get('cookie');
+
+  invariant(cookie, 'cookie is required');
+
+  const cookieTzOffset = cookie.match(regexp)?.[2];
+
+  invariant(cookieTzOffset, 'cookie tzOffset is required');
+
+  const timeZone = getTimeZoneFromRequest(request);
+
+  console.log({ timeZone });
+
+  return json({ user, observableRoutes, timeZoneId: timeZone.id });
 }
 
 function App() {
-  const location = useLocation();
-
-  /**
-   * Handling daylight savings or timezone changes
-   */
-  useEffect(() => {
-    if (isbot(navigator.userAgent)) return;
-
-    const regexp = new RegExp('(^| )tzOffset=([^;]+)');
-    const cookieTzOffset = (document.cookie.match(regexp) || [])[2];
-    const tzOffset = new Date().getTimezoneOffset();
-
-    if (cookieTzOffset !== `${tzOffset}`) {
-      document.cookie = `tzOffset=${tzOffset}; path=/; max-age=31536000`;
-      window.location.reload();
-    }
-  }, [location.key]);
+  useTimeZoneSync();
 
   return (
     <html lang="en" className="dark">

@@ -1,10 +1,11 @@
+import { SerializeFrom } from '@remix-run/node';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useEventContext } from '#app/events';
 
 export function useEventRouteData<TData>(
   routeId: string,
-): Partial<UnwrapDeferred<TData>> {
+): Partial<Awaited<SerializeFrom<UnwrapDeferred<TData>>>> {
   const { eventTarget } = useEventContext();
 
   const [data, setData] = useState<Partial<UnwrapDeferred<TData>>>({});
@@ -51,5 +52,5 @@ export function useEventRouteData<TData>(
     };
   }, [eventCallback, eventTarget, routeId]);
 
-  return data;
+  return data as Partial<Awaited<SerializeFrom<UnwrapDeferred<TData>>>>;
 }

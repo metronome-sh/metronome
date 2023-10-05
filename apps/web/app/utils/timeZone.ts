@@ -1,25 +1,18 @@
 import { Temporal } from '@js-temporal/polyfill';
 
-export function offsetToTemporalTimeZone(offsetMinutesString: string) {
-  // Convert the string to a number
-  const offsetMinutes = parseInt(offsetMinutesString, 10);
+export function getTimeZoneFromRequest(request: Request): Temporal.TimeZone {
+  const cookie = request.headers.get('cookie');
 
-  // Correct the offset sign
-  const correctedOffsetMinutes = -offsetMinutes;
+  if (!cookie) {
+    return Temporal.TimeZone.from('UTC') as Temporal.TimeZone;
+  }
 
-  // Convert the offset to hours and minutes
-  const offsetHours = Math.floor(correctedOffsetMinutes / 60);
-  const offsetRemainderMinutes = correctedOffsetMinutes % 60;
+  const regexp = new RegExp('(^| )timeZone=([^;]+)');
+  const timeZone = (cookie.match(regexp) || [])[2];
 
-  const offsetHoursString = Math.abs(offsetHours).toString().padStart(2, '0');
-  const offsetRemainderMinutesString = offsetRemainderMinutes
-    .toString()
-    .padStart(2, '0');
+  if (!timeZone) {
+    return Temporal.TimeZone.from('UTC') as Temporal.TimeZone;
+  }
 
-  // Create a Temporal-compatible offset string
-  // prettier-ignore
-  const offsetString = `${offsetHours >= 0 ? '+' : '-'}${offsetHoursString}:${offsetRemainderMinutesString}`;
-
-  // Create and return a Temporal.TimeZone object
-  return Temporal.TimeZone.from(offsetString);
+  return Temporal.TimeZone.from(timeZone) as Temporal.TimeZone;
 }

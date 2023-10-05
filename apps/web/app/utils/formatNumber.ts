@@ -1,41 +1,18 @@
 export function formatNumber(
-  number: number | undefined | null,
+  value: number | undefined | null,
   defaultValue?: string,
 ): string {
-  if (number === undefined || number === null) {
-    return defaultValue ?? '—';
+  if (value === undefined || value === null) {
+    return defaultValue ?? '-';
   }
 
-  const digits = Math.floor(Math.log10(number) + 1);
-
-  if (digits <= 3) {
-    return number.toString();
-  } else if (digits <= 6) {
-    const formattedNumber = (number / 1000).toFixed(2);
-    const decimalPart = formattedNumber.split('.')[1];
-
-    if (decimalPart === '00') {
-      return Math.floor(number / 1000) + 'k';
-    }
-
-    return formattedNumber + 'k';
-  } else if (digits <= 9) {
-    const formattedNumber = (number / 1000000).toFixed(2);
-    const decimalPart = formattedNumber.split('.')[1];
-
-    if (decimalPart === '00') {
-      return Math.floor(number / 1000000) + 'M';
-    }
-
-    return formattedNumber + 'M';
+  if (value < 1000) {
+    return value.toString();
+  } else if (value >= 1000 && value < 1_000_000) {
+    return (Math.floor(value / 10) / 100).toFixed(2) + 'k';
+  } else if (value >= 1_000_000 && value < 1_000_000_000) {
+    return (Math.floor(value / 10_000) / 100).toFixed(2) + 'M';
   } else {
-    const formattedNumber = (number / 1000000000).toFixed(2);
-    const decimalPart = formattedNumber.split('.')[1];
-
-    if (decimalPart === '00') {
-      return Math.floor(number / 1000000000) + 'B';
-    }
-
-    return formattedNumber + 'B';
+    return (Math.floor(value / 10_000_000) / 100).toFixed(2) + 'B';
   }
 }

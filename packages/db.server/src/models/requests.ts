@@ -6,6 +6,7 @@
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
+import { toPostgresTzName } from '../helpers/aggregations';
 import { observable, operators, throttleTime } from '../helpers/events';
 import { getRequestsTimeZonedAggregatedView, requests } from '../schema';
 import { RequestEventSchema } from '../schemaValidation';
@@ -99,48 +100,52 @@ export async function overview({
   };
 }
 
-// export async function countSeries({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: RequestFunctionArgs) {
-//   const requests = await getTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function countSeries({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}) {
+  const requests = await getRequestsTimeZonedAggregatedView(
+    from.timeZoneId,
+    interval,
+  );
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const pgTz = await toPostgresTzName({ timeZone: from.timeZoneId });
+  const pgTz = await toPostgresTzName({ timeZoneId: from.timeZoneId });
 
-//   const result = await db()
-//     .select({
-//       // prettier-ignore
-//       timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(by)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
-//       documentCount: sql<
-//         number | null
-//       >`sum(${requests.documentCount})::integer`,
-//       dataCount: sql<number | null>`sum(${requests.dataCount})::integer`,
-//     })
-//     .from(requests)
-//     .where(
-//       and(
-//         between(requests.timestamp, fromDate, toDate),
-//         eq(requests.organizationId, project.organizationId),
-//         eq(requests.projectId, project.id),
-//       ),
-//     )
-//     .groupBy(sql.raw('1'));
+  const result = await db()
+    .select({
+      // prettier-ignore
+      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
+      documentCount: sql<
+        number | null
+      >`sum(${requests.documentCount})::integer`,
+      dataCount: sql<number | null>`sum(${requests.dataCount})::integer`,
+    })
+    .from(requests)
+    .where(
+      and(
+        between(requests.timestamp, fromDate, toDate),
+        eq(requests.teamId, project.teamId),
+        eq(requests.projectId, project.id),
+      ),
+    )
+    .groupBy(sql.raw('1'));
 
-//   const series = result.map(({ timestamp, dataCount, documentCount }) => ({
-//     timestamp: timestamp.valueOf(),
-//     dataCount,
-//     documentCount,
-//   }));
+  const series = result.map(({ timestamp, dataCount, documentCount }) => ({
+    timestamp: timestamp.valueOf(),
+    dataCount,
+    documentCount,
+  }));
 
-//   return { series };
-// }
+  return { series };
+}
 
 export function watch(
   project: Project,

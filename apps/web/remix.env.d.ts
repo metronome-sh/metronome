@@ -3,6 +3,7 @@
 /// <reference types="@remix-run/node" />
 
 import { type TypedDeferredData } from '@remix-run/node';
+import { JsonifyObject } from 'type-fest/source/jsonify';
 
 type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 
@@ -16,5 +17,9 @@ declare global {
     ...args: any[]
   ) => Promise<TypedDeferredData<infer U>>
     ? UnwrapPromiseObject<U>
+    : never;
+
+  type UnwrapJsonifyObject<T> = T extends JsonifyObject<infer U>[]
+    ? U[]
     : never;
 }

@@ -24,8 +24,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!project) throw notFound();
 
   const { interval, range } = await query.filters({
-    interval: filters.interval,
-    range: filters.dateRange,
+    interval: filters.interval(),
+    range: filters.dateRange(),
   });
 
   return stream<typeof overviewLoader>(
@@ -40,12 +40,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       const cleanupRequestsWatch = await requests.watch(
         project,
         async ({ ts }) => {
-          const requestsOverview = await requests.overview({
-            project,
-            range,
-            interval,
-          });
-          send({ requestsOverview }, ts);
+          const [requestsOverview, requestsCountSeries] = await Promise.all([
+            requests.overview({ project, range, interval }),
+            requests.countSeries({ project, range, interval }),
+          ]);
+
+          send({ requestsOverview, requestsCountSeries }, ts);
         },
       );
 

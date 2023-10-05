@@ -29,6 +29,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {
   args: {
-    filters: [filters.dateRange, filters.interval],
+    filters: [filters.dateRange(), filters.interval()],
   },
 };

@@ -1,6 +1,7 @@
 export { Alert } from './Alert';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge';
+export { BarStackChart } from './BarStackChart';
 export { Brand } from './Brand';
 export { Button } from './Button';
 export { Calendar } from './Calendar';
@@ -19,6 +20,7 @@ export { Label } from './Label';
 export { Ping } from './Ping';
 export { Popover } from './Popover';
 export { Separator } from './Separator';
+export { Spinner } from './Spinner';
 export { Switch } from './Switch';
 export { Tooltip } from './Tooltip';
 export { UserMenu } from './UserMenu';

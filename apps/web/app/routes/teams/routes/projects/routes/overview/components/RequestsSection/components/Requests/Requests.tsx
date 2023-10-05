@@ -29,13 +29,18 @@ export const Requests: FunctionComponent = () => {
         errorElement={<Metric.Error title={title} compact />}
       >
         {(resolvedRequestsOverview) => {
+          const value =
+            requestsOverviewEvent?.count ?? resolvedRequestsOverview.count;
+
           return (
             <Metric
               title={title}
-              value={formatNumber(
-                requestsOverviewEvent?.count ?? resolvedRequestsOverview.count,
-                '0',
-              )}
+              value={formatNumber(value, '0')}
+              rawValue={
+                value && value > 1000
+                  ? `${value?.toLocaleString()} total requests`
+                  : undefined
+              }
               compact
             />
           );

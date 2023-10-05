@@ -24,8 +24,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!project) throw notFound();
 
   const { interval, range } = await query.filters({
-    interval: filters.interval,
-    range: filters.dateRange,
+    interval: filters.interval(),
+    range: filters.dateRange(),
   });
 
   const requestsOverview = requests.overview({
@@ -34,7 +34,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     range,
   });
 
-  return defer({ requestsOverview });
+  const requestsCountSeries = requests.countSeries({
+    project,
+    interval,
+    range,
+  });
+
+  return defer({ requestsOverview, requestsCountSeries });
 }
 
 export default function Component() {
@@ -46,10 +52,12 @@ export default function Component() {
           description={`General summary of your app`}
           separatorClassName="md:mb-4"
         />
-        <div className="pb-6">
-          <Filters filters={[filters.dateRange, filters.interval]} />
+        <div className="pb-2">
+          <Filters filters={[filters.dateRange(), filters.interval()]} />
         </div>
-        <RequestsSection />
+        <div className="px-2">
+          <RequestsSection />
+        </div>
         <div className="space-y-4 pb-4">
           <div className="w-full h-80 px-4">
             <div className="w-full h-full bg-muted/40 rounded-lg"></div>

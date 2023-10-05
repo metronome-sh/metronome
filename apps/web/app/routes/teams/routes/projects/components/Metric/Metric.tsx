@@ -5,11 +5,12 @@ import {
   type ReactNode,
 } from 'react';
 
-import { cn, Icon } from '#app/components';
+import { cn, Icon, Tooltip } from '#app/components';
 
 type MetricProps = PropsWithChildren<{
   title: ReactNode;
   value: string | number;
+  rawValue?: string | number;
   compact?: boolean;
   containerClassName?: string;
   valueClassName?: string;
@@ -21,6 +22,7 @@ const Root = forwardRef<HTMLDivElement, MetricProps>(
     {
       title,
       value,
+      rawValue,
       compact,
       children,
       containerClassName,
@@ -42,18 +44,27 @@ const Root = forwardRef<HTMLDivElement, MetricProps>(
           containerClassName,
         )}
       >
+        <Tooltip.Provider>
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <div
+                className={cn(
+                  'text-foreground cursor-default font-semibold',
+                  compact ? 'text-xl md:text-xl' : 'text-2xl md:text-2xl',
+                  valueClassName,
+                )}
+              >
+                {value}
+              </div>
+            </Tooltip.Trigger>
+            <Tooltip.Content className={cn({ invisible: !rawValue })}>
+              <p>{rawValue}</p>
+            </Tooltip.Content>
+          </Tooltip>
+        </Tooltip.Provider>
         <div
           className={cn(
-            'text-foreground',
-            compact ? 'text-xl md:text-xl' : 'text-2xl md:text-2xl',
-            valueClassName,
-          )}
-        >
-          {value}
-        </div>
-        <div
-          className={cn(
-            'text-muted-foreground flex-grow flex md:items-center text-sm md:text-base',
+            'text-muted-foreground flex-grow flex md:items-center text-sm',
             compact && 'text-sm',
             titleClassName,
           )}
@@ -83,7 +94,7 @@ const MetricSkeleton: FunctionComponent<MetricSkeletonProps> = ({
       value="0000"
       compact={compact}
       valueClassName={cn(
-        'text-transparent pointer-events-none animate-pulse bg-muted-foreground/10 rounded-lg my-0.5',
+        'text-transparent pointer-events-none animate-pulse bg-muted-foreground/10 rounded-md my-0.5',
         compact ? 'md:text-base' : 'md:text-lg',
       )}
     />

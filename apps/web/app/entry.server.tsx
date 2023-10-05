@@ -98,11 +98,11 @@ function handleBrowserRequest(
    * Get the timezone offset from the browser and set it as a cookie if it
    * doesn't exist.
    */
-  if (!request.headers.get('cookie')?.includes('tzOffset')) {
+  if (!request.headers.get('cookie')?.includes('timeZone')) {
     const script = `
       <script>
-        const tzOffset = new Date().getTimezoneOffset();
-        document.cookie = 'tzOffset=' + tzOffset + '; path=/';
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        document.cookie = 'timeZone=' + timeZone + '; path=/';
         window.location.reload();
       </script>
     `;

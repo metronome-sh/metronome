@@ -1,9 +1,11 @@
 import { users } from '@metronome/db.server';
-import { json, type MetaFunction } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import {
+  LoaderFunctionArgs,
+  type MetaFunction,
+  redirect,
+} from '@remix-run/node';
 
-import AuthenticationCreateComponent from './authentication/authentication.create.route';
-import AuthenticationGrantComponent from './authentication/authentication.grant.route';
+import { handle } from '#app/handlers';
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,20 +14,22 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader() {
-  const atLeastOneUserExists = await users.atLeastOneExists();
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { auth } = await handle(request);
 
-  console.log({ atLeastOneUserExists });
+  const user = await auth.user({ required: false });
 
-  return json({ atLeastOneUserExists });
+  if (user) {
+    throw redirect('/authentication/success');
+  }
+
+  if (!(await users.atLeastOneExists())) {
+    throw redirect('/authentication/create');
+  }
+
+  throw redirect('/authentication/grant');
 }
 
 export default function Component() {
-  const { atLeastOneUserExists } = useLoaderData<typeof loader>();
-
-  return atLeastOneUserExists ? (
-    <AuthenticationGrantComponent />
-  ) : (
-    <AuthenticationCreateComponent />
-  );
+  return null;
 }

@@ -16,6 +16,7 @@ import { Heartbeat } from './Heartbeat';
 import { HeartFilled } from './HeartFilled';
 import { Home } from './Home';
 import { InfoSquareRounded } from './InfoSquareRounded';
+import { LoaderTwo } from './LoaderTwo';
 import { MoodSadDizzy } from './MoodSadDizzy';
 import { Refresh } from './Refresh';
 import { RotateTwo } from './RotateTwo';
@@ -42,6 +43,7 @@ export const Icon = {
   FileText,
   EyeClosed,
   Heartbeat,
+  LoaderTwo,
   RotateTwo,
   HeartFilled,
   SettingsTwo,

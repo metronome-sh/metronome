@@ -11,7 +11,7 @@ export type SectionProps = PropsWithChildren<{
 export const Section: FunctionComponent<SectionProps> & {
   Title: typeof SectionTitle;
 } = ({ className, children }) => {
-  return <div className={cn('pt-6', className)}>{children}</div>;
+  return <div className={cn(className)}>{children}</div>;
 };
 
 Section.Title = SectionTitle;
