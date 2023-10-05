@@ -1,4 +1,4 @@
-import { usages } from './';
+import { actions, loaders, usages } from './';
 import { create as createRequest, isRequestEvent } from './models/requests';
 import { type Project } from './types';
 
@@ -28,15 +28,15 @@ export async function insertMetrics({
         return createRequest(project, event);
       }
 
-      // if (loaders.isLoaderEvent(event)) {
-      //   names.add(event.name);
-      //   return loaders.insert(project, event);
-      // }
+      if (loaders.isLoaderEvent(event)) {
+        eventNames.add(event.name);
+        return loaders.insert(project, event);
+      }
 
-      // if (actions.isActionEvent(event)) {
-      //   names.add(event.name);
-      //   return actions.insert(project, event);
-      // }
+      if (actions.isActionEvent(event)) {
+        eventNames.add(event.name);
+        return actions.insert(project, event);
+      }
 
       // if (webVitals.isWebVitalEvent(event)) {
       //   names.add(event.name);

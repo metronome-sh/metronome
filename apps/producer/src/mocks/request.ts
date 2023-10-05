@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-export function generateRequest() {
+export function generateRequest(type: 'action' | 'loader') {
   const statusCode = faker.internet.httpStatusCode();
   const errored = statusCode >= 400;
 
@@ -13,7 +13,7 @@ export function generateRequest() {
         .bigInt({ min: 1_000_000, max: 1_000_000_000 })
         .toString(),
       errored,
-      method: faker.internet.httpMethod(),
+      method: type === 'action' ? 'POST' : 'GET',
       pathname: '/',
       statusCode,
       version: '7.1.0-next.18',

@@ -10,7 +10,7 @@ export const RequestsSection: FunctionComponent = () => {
     <Section>
       <Section.Title title="Requests" />
       <div>
-        <div className="relative w-full bg-background--- rounded-lg overflow-hidden border border-muted/50">
+        <div className="relative w-full rounded-lg overflow-hidden border border-muted/50">
           <div className="p-2 lg:p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Requests />
             <DocumentRequests />

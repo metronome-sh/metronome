@@ -1,4 +1,4 @@
-import { projects, requests } from '@metronome/db.server';
+import { actions, loaders, projects, requests } from '@metronome/db.server';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 
 import { Heading } from '#app/components';
@@ -6,7 +6,7 @@ import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
-import { RequestsSection } from './components';
+import { ActionsSection, LoadersSection, RequestsSection } from './components';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
@@ -40,7 +40,30 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     range,
   });
 
-  return defer({ requestsOverview, requestsCountSeries });
+  const loadersOverview = loaders.overview({ project, range, interval });
+
+  const loadersOverviewSeries = loaders.overviewSeries({
+    project,
+    range,
+    interval,
+  });
+
+  const actionsOverview = actions.overview({ project, range, interval });
+
+  const actionsOverviewSeries = actions.overviewSeries({
+    project,
+    range,
+    interval,
+  });
+
+  return defer({
+    requestsOverview,
+    requestsCountSeries,
+    loadersOverview,
+    loadersOverviewSeries,
+    actionsOverview,
+    actionsOverviewSeries,
+  });
 }
 
 export default function Component() {
@@ -57,17 +80,8 @@ export default function Component() {
         </div>
         <div className="px-2">
           <RequestsSection />
-        </div>
-        <div className="space-y-4 pb-4">
-          <div className="w-full h-80 px-4">
-            <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-          </div>
-          <div className="w-full h-80 px-4">
-            <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-          </div>
-          <div className="w-full h-80 px-4">
-            <div className="w-full h-full bg-muted/40 rounded-lg"></div>
-          </div>
+          <LoadersSection />
+          <ActionsSection />
         </div>
       </div>
     </div>

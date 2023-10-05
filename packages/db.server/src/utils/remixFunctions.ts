@@ -68,14 +68,14 @@ export function createRemixFunctionOverview(
   return async function overview({
     project,
     range: { from, to },
-    by = 'hour',
+    interval = 'hour',
   }: {
     project: Project;
     range: {
       from: Temporal.ZonedDateTime;
       to: Temporal.ZonedDateTime;
     };
-    by?: 'hour' | 'day' | 'week' | 'month';
+    interval?: 'hour' | 'day' | 'week' | 'month';
   }): Promise<{
     count: number;
     erroredCount: number;
@@ -86,7 +86,7 @@ export function createRemixFunctionOverview(
     const table = await getRemixFunctionOverviewAggregatedView({
       base,
       timeZone: from.timeZoneId,
-      interval: by,
+      interval,
     });
 
     const fromDate = new Date(from.toInstant().epochMilliseconds);
@@ -127,14 +127,14 @@ export function createRemixFunctionOverviewSeries(
   return async function series({
     project,
     range: { from, to },
-    by = 'hour',
+    interval = 'hour',
   }: {
     project: Project;
     range: {
       from: Temporal.ZonedDateTime;
       to: Temporal.ZonedDateTime;
     };
-    by?: 'hour' | 'day' | 'week' | 'month';
+    interval?: 'hour' | 'day' | 'week' | 'month';
   }): Promise<{
     series: {
       timestamp: number;
@@ -148,7 +148,7 @@ export function createRemixFunctionOverviewSeries(
     const table = await getRemixFunctionOverviewAggregatedView({
       base,
       timeZone: from.timeZoneId,
-      interval: by,
+      interval,
     });
 
     const fromDate = new Date(from.toInstant().epochMilliseconds);
@@ -159,7 +159,7 @@ export function createRemixFunctionOverviewSeries(
     const result = await db()
       .select({
         // prettier-ignore
-        timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(by)}', ${table.timestamp}, ${sql.raw(pgTz)})`,
+        timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${table.timestamp}, ${sql.raw(pgTz)})`,
         count: sql<number | null>`sum(${table.count})::integer`,
         erroredCount: sql<number | null>`sum(${table.erroredCount})::integer`,
         okCount: sql<
@@ -196,7 +196,7 @@ export function createRemixFunctionWatch(
     getTableConfig(schema).name === 'loaders' ? ['loader'] : ['action'];
 
   return function watch(
-    { project }: { project: Project },
+    project: Project,
     callback: (event: { ts: number }) => Promise<void>,
   ): () => void {
     callback({ ts: Date.now() });

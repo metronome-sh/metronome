@@ -2,10 +2,13 @@ import { faker } from '@faker-js/faker';
 import { env } from '@metronome/env.server';
 import fetch from 'node-fetch';
 
-import { generateRequest } from './mocks/request';
+import { generateRemixFunction, generateRequest } from './mocks';
 
 const postData = async () => {
-  const data = faker.helpers.arrayElement([[generateRequest()]]);
+  const data = faker.helpers.arrayElement([
+    [generateRequest('loader'), generateRemixFunction('loader')],
+    [generateRequest('action'), generateRemixFunction('action')],
+  ]);
 
   try {
     await fetch('http://127.0.0.1:3000/metrics', {

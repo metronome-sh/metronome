@@ -305,3 +305,34 @@ export async function createTimeOffsetAggregatedView({
 
   await lock.release();
 }
+
+export async function refreshAggregation({
+  aggregation,
+  watermark,
+}: {
+  aggregation: string;
+  watermark: string;
+}) {
+  const refreshContinuous = (interval: string) => {
+    // prettier-ignore
+    return db({ write: true }).execute(sql`CALL refresh_continuous_aggregate('${sql.raw(aggregation)}', '2023-01-01', date_trunc('${sql.raw(interval)}', now() - interval '1 ${sql.raw(interval)}'));`);
+  };
+
+  if (watermark === '1 hour') {
+    return refreshContinuous('hour');
+  }
+
+  if (watermark === '1 day') {
+    return refreshContinuous('day');
+  }
+
+  if (watermark === '1 week') {
+    return refreshContinuous('week');
+  }
+
+  if (watermark === '1 month') {
+    return refreshContinuous('month');
+  }
+
+  throw new Error(`Unknown watermark ${watermark}`);
+}

@@ -53,7 +53,7 @@ export const Usage: FunctionComponent = () => {
         </Await>
       </Suspense>
       <p className="text-[0.8rem] text-muted-foreground">
-        Your project usage during this billing period.
+        Your project usage during this month.
       </p>
     </div>
   );

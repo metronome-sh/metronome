@@ -11,3 +11,4 @@ export { insertMetrics } from './insertMetrics';
 export { actions, loaders, projects, requests, teams, usages, users };
 
 export type { Project, Team, User } from './types';
+export { refreshAggregation } from './utils/aggregations';

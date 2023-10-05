@@ -1,4 +1,4 @@
-import { projects, requests } from '@metronome/db.server';
+import { actions, loaders, projects, requests } from '@metronome/db.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 
 import { filters } from '#app/filters';
@@ -49,8 +49,36 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         },
       );
 
+      const cleanupLoadersWatch = await loaders.watch(
+        project,
+        async ({ ts }) => {
+          const [loadersOverview, loadersOverviewSeries] = await Promise.all([
+            loaders.overview({ project, range, interval }),
+            loaders.overviewSeries({ project, range, interval }),
+          ]);
+
+          send({ loadersOverview, loadersOverviewSeries }, ts);
+        },
+      );
+
+      const cleanupActionsWatch = await actions.watch(
+        project,
+        async ({ ts }) => {
+          const [actionsOverview, actionsOverviewSeries] = await Promise.all([
+            actions.overview({ project, range, interval }),
+            actions.overviewSeries({ project, range, interval }),
+          ]);
+
+          send({ actionsOverview, actionsOverviewSeries }, ts);
+        },
+      );
+
       return async function cleanup() {
-        await cleanupRequestsWatch();
+        await Promise.all([
+          cleanupRequestsWatch(),
+          cleanupLoadersWatch(),
+          cleanupActionsWatch(),
+        ]);
       };
     },
   );
