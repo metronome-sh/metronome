@@ -27,6 +27,7 @@ import { SquareRoundedPlus } from './SquareRoundedPlus';
 import { SquaresFilled } from './SquaresFilled';
 import { Sun } from './Sun';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
+import { TriangleInvertedFilled } from './TriangleInvertedFilled';
 import { World } from './World';
 
 export const Icon = {
@@ -58,6 +59,7 @@ export const Icon = {
   SquareRoundedPlus,
   BuildingLighthouse,
   AlertTriangleFilled,
+  TriangleInvertedFilled,
   TimelineEventExclamation,
   AlertSquareRoundedOutline,
 };

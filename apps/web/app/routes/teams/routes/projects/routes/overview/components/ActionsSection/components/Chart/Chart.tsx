@@ -18,29 +18,14 @@ export const Chart: FunctionComponent = () => {
   const isNavigating = useIsNavigatingOverview();
 
   if (isNavigating) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <Spinner className="-mt-12 h-10 w-10 text-xl" />
-      </div>
-    );
+    return <BarStackChart.Skeleton />;
   }
 
   return (
-    <Suspense
-      fallback={
-        <div className="h-full flex items-center justify-center">
-          <Spinner className="-mt-12 h-10 w-10 text-xl" />
-        </div>
-      }
-    >
+    <Suspense fallback={<BarStackChart.Skeleton />}>
       <Await
         resolve={actionsOverviewSeries}
-        errorElement={
-          <div className="flex flex-col items-center justify-center w-full h-full text-muted-foreground">
-            <Icon.AlertSquareRoundedOutline className="stroke-red-500" />
-            <span className="text-sm">An error has occurred</span>
-          </div>
-        }
+        errorElement={<BarStackChart.Error />}
       >
         {(resolvedActionsSeries) => {
           const series = (

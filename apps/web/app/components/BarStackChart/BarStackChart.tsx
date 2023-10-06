@@ -336,7 +336,7 @@ const Root = <T extends string | number>({
 const Skeleton: FunctionComponent = () => {
   return (
     <div className="h-full flex items-center justify-center">
-      <Spinner className="-mt-12 h-10 w-10 text-xl" />
+      <Spinner className="-mt-12 h-8 w-8 " />
     </div>
   );
 };

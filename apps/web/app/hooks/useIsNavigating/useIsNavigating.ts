@@ -13,7 +13,7 @@ export function useIsNavigating(routeId: string) {
     if (navigation?.location?.key === previousKey && navigation.state == 'idle')
       return false;
 
-    const path = routeId.replace(/\$(\w+)\./g, '/:$1/');
+    const path = '/' + routeId.replace(/\$/g, ':').replace(/\./g, '/');
     const pathRegexp = pathToRegexp(path);
 
     return pathRegexp.test(navigation.location?.pathname ?? '');

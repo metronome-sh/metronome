@@ -3,6 +3,7 @@ import { relations } from 'drizzle-orm';
 import {
   bigint,
   boolean,
+  decimal,
   index,
   integer,
   jsonb,
@@ -192,7 +193,7 @@ const remixFunctionSchema = {
 
 export const loaders = pgTable('loaders', remixFunctionSchema, (table) => {
   return {
-    organizationTimestampIdx: index('loaders_organization_timestamp_idx').on(
+    teampTimestampIdx: index('loaders_team_timestamp_idx').on(
       table.teamId,
       table.timestamp,
     ),
@@ -205,7 +206,7 @@ export const loaders = pgTable('loaders', remixFunctionSchema, (table) => {
 
 export const actions = pgTable('actions', remixFunctionSchema, (table) => {
   return {
-    organizationTimestampIdx: index('actions_organization_timestamp_idx').on(
+    teampTimestampIdx: index('actions_team_timestamp_idx').on(
       table.teamId,
       table.timestamp,
     ),
@@ -215,3 +216,45 @@ export const actions = pgTable('actions', remixFunctionSchema, (table) => {
     ),
   };
 });
+
+export const webVitalName = pgEnum('web_vital_name', [
+  'LCP',
+  'FCP',
+  'FID',
+  'CLS',
+  'TTFB',
+  'INP',
+]);
+
+export const webVitals = pgTable(
+  'web_vitals',
+  {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    name: webVitalName('name').notNull(),
+    value: decimal('value').notNull(),
+    deviceType: text('device_type').notNull(),
+    deviceCategory: text('device_category').notNull(),
+    deviceConnection: text('device_connection').notNull(),
+    routeId: text('remix_route_id').notNull(),
+    pathname: text('remix_pathname').notNull(),
+    ...geo,
+  },
+  (table) => {
+    return {
+      teampTimestampIdx: index('web_vitals_team_timestamp_idx').on(
+        table.teamId,
+        table.timestamp,
+      ),
+      projectTimestampIdx: index('web_vitals_project_timestamp_idx').on(
+        table.projectId,
+        table.timestamp,
+      ),
+      nameTimestampIdx: index('web_vitals_name_timestamp_idx').on(
+        table.name,
+        table.timestamp,
+      ),
+    };
+  },
+);

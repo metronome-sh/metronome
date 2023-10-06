@@ -65,3 +65,37 @@ export type Range = {
   from: Temporal.ZonedDateTime;
   to: Temporal.ZonedDateTime;
 };
+
+export type WebVitalName = 'LCP' | 'FID' | 'TTFB' | 'CLS' | 'FCP' | 'INP';
+
+export type WebVital = {
+  name: WebVitalName;
+  values: {
+    p50: number | null;
+    p75: number | null;
+    p90: number | null;
+    p95: number | null;
+    p99: number | null;
+  };
+};
+
+export type ScoredWebVital = WebVital & {
+  scores: {
+    p50: number | null;
+    p75: number | null;
+    p90: number | null;
+    p95: number | null;
+    p99: number | null;
+  };
+};
+
+export type WebVitalsScore = {
+  scores: {
+    p50: number | null;
+    p75: number | null;
+    p90: number | null;
+    p95: number | null;
+    p99: number | null;
+  };
+  webVitals: ScoredWebVital[];
+};

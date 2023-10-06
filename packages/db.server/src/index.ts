@@ -9,6 +9,6 @@ import * as users from './models/users';
 export { insertMetrics } from './insertMetrics';
 
 export { actions, loaders, projects, requests, teams, usages, users };
-
+export { webVitals } from './models/webVitals';
 export type { Project, Team, User } from './types';
 export { refreshAggregation } from './utils/aggregations';

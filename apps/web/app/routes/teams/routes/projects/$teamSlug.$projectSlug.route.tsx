@@ -40,7 +40,7 @@ export default function Component() {
     <div className="flex flex-col flex-grow">
       <Navigation />
       <div className="w-full flex-grow h-full">
-        <div className="mx-auto w-full max-w-screen-lg rounded-lg">
+        <div className="mx-auto w-full max-w-screen-xl rounded-lg">
           <Outlet />
         </div>
       </div>

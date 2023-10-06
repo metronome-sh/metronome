@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { sql } from 'drizzle-orm';
-import { bigint, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  bigint,
+  decimal,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 
 import { Interval } from '../types';
 import {
@@ -9,6 +16,7 @@ import {
   timeOffsetAggregatedTableExists,
 } from '../utils/aggregations';
 import { getTimeZoneOffset } from '../utils/timeZones';
+import { webVitalName } from './schema';
 
 export function getUsagesAggregatedView({
   interval,
@@ -206,4 +214,93 @@ export async function getRemixFunctionOverviewAggregatedView({
   });
 
   return pgTable(name, aggregatedSchemaColumns);
+}
+
+export async function getWebVitalsOverviewAggregatedView({
+  timeZoneId,
+  interval,
+}: {
+  timeZoneId: string;
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchema = {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    name: webVitalName('name').notNull(),
+    count: integer('count').notNull(),
+    valuePctAgg: decimal('value_pct_agg').notNull(),
+    deviceCategory: text('device_category').notNull(),
+  };
+
+  const offset = getTimeZoneOffset(timeZoneId);
+  const name = tableName({ base: 'web_vitals', offset, interval });
+  const exists = await timeOffsetAggregatedTableExists({
+    base: 'web_vitals',
+    offset,
+    interval,
+  });
+
+  if (exists) {
+    return pgTable(name, aggregatedSchema);
+  }
+
+  await createTimeOffsetAggregatedView({
+    from: 'web_vitals',
+    base: 'web_vitals',
+    offset,
+    interval,
+    definitions: {
+      hour: ({ baseTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          percentile_agg(value) as value_pct_agg
+        FROM ${sql.raw(baseTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      day: ({ hourTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(hourTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      week: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      month: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+    },
+  });
+
+  return pgTable(name, aggregatedSchema);
 }
