@@ -258,3 +258,87 @@ export const webVitals = pgTable(
     };
   },
 );
+
+export const sessions = pgTable(
+  'sessions',
+  {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    sessionId: text('session_id').notNull(),
+    userId: text('user_id'),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    duration: bigint('duration', { mode: 'bigint' }).notNull(),
+    browser: text('browser').notNull(),
+    os: text('os').notNull(),
+    device: text('device').notNull(),
+    deviceCategory: text('device_category').notNull(),
+    screen: text('screen').notNull(),
+    language: text('language').notNull(),
+    connection: text('connection').notNull(),
+    pageviews: integer('pageviews').default(1),
+    ...geo,
+  },
+  (table) => {
+    return {
+      teamTimestampIdx: index('session_team_timestamp_idx').on(
+        table.teamId,
+        table.timestamp,
+      ),
+      projectTimestampIdx: index('session_project_timestamp_idx').on(
+        table.projectId,
+        table.timestamp,
+      ),
+      sessionTimestampIdx: index('session_session_timestamp_idx').on(
+        table.sessionId,
+        table.timestamp,
+      ),
+      userTimestampIdx: index('session_user_timestamp_idx').on(
+        table.userId,
+        table.timestamp,
+      ),
+    };
+  },
+);
+
+export const pageviews = pgTable(
+  'pageviews',
+  {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    sessionId: text('session_id').notNull(),
+    userId: text('user_id'),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    routeId: text('route_id').notNull(),
+    routePath: text('route_path').notNull(),
+    hash: text('hash').notNull(),
+    urlPath: text('url_path').notNull(),
+    urlQuery: text('url_query').notNull(),
+    referrer: text('referrer'),
+    referrerDomain: text('referrer_domain'),
+    ...geo,
+  },
+  (table) => {
+    return {
+      teamTimestampIdx: index('pageview_team_timestamp_idx').on(
+        table.teamId,
+        table.timestamp,
+      ),
+      projectTimestampIdx: index('pageview_project_timestamp_idx').on(
+        table.projectId,
+        table.timestamp,
+      ),
+      sessionIdTimestampIdx: index('pageview_team_session_idx').on(
+        table.sessionId,
+        table.timestamp,
+      ),
+      userIdTimestampIdx: index('pageview_team_user_idx').on(
+        table.userId,
+        table.timestamp,
+      ),
+      referrerDomainTimestampIdx: index('pageview_team_referrer_domain_idx').on(
+        table.referrerDomain,
+        table.timestamp,
+      ),
+    };
+  },
+);
