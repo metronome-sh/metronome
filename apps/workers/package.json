@@ -12,13 +12,13 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@types/node": "^20.6.2",
+    "@types/node": "^20.8.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@metronome/db.server": "workspace:*",
     "@metronome/env.server": "workspace:*",
     "@metronome/queues.server": "workspace:*",
-    "@metronome/db.server": "workspace:*",
     "tsx": "^3.13.0"
   }
 }
