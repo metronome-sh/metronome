@@ -15,7 +15,7 @@ import { observable, operators, throttleTime } from './events';
 export function createRemixFunctionInsert(
   schema: typeof loaders | typeof actions,
 ) {
-  return async function insert(
+  return async function create(
     project: Project,
     event: ActionEvent | LoaderEvent,
   ) {
@@ -195,11 +195,11 @@ export function createRemixFunctionWatch(
   const schemaEvents: ('loader' | 'action')[] =
     getTableConfig(schema).name === 'loaders' ? ['loader'] : ['action'];
 
-  return function watch(
+  return async function watch(
     project: Project,
     callback: (event: { ts: number }) => Promise<void>,
-  ): () => void {
-    callback({ ts: Date.now() });
+  ): Promise<() => void> {
+    await callback({ ts: Date.now() });
 
     const subscription = observable
       .pipe(
@@ -207,8 +207,8 @@ export function createRemixFunctionWatch(
         operators.events(schemaEvents),
         throttleTime(1000, undefined, { leading: true, trailing: true }),
       )
-      .subscribe(([e]) => {
-        callback({ ts: e.returnvalue.ts });
+      .subscribe(async ([e]) => {
+        await callback({ ts: e.returnvalue.ts });
       });
 
     return () => subscription.unsubscribe();

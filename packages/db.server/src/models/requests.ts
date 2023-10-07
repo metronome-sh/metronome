@@ -139,11 +139,11 @@ export async function countSeries({
   return { series };
 }
 
-export function watch(
+export async function watch(
   project: Project,
   callback: (event: { ts: number }) => Promise<void>,
-): () => void {
-  callback({ ts: Date.now() });
+): Promise<() => void> {
+  await callback({ ts: Date.now() });
 
   const subscription = observable
     .pipe(
@@ -151,8 +151,8 @@ export function watch(
       operators.events(['request']),
       throttleTime(1000, undefined, { leading: true, trailing: true }),
     )
-    .subscribe(([e]) => {
-      callback({ ts: e.returnvalue.ts });
+    .subscribe(async ([e]) => {
+      await callback({ ts: e.returnvalue.ts });
     });
 
   return () => subscription.unsubscribe();

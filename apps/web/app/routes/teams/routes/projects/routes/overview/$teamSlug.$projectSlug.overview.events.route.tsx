@@ -1,4 +1,10 @@
-import { actions, loaders, projects, requests } from '@metronome/db.server';
+import {
+  actions,
+  loaders,
+  projects,
+  requests,
+  webVitals,
+} from '@metronome/db.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 
 import { filters } from '#app/filters';
@@ -73,12 +79,23 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         },
       );
 
+      const cleanupWebVitals = await webVitals.watch(
+        project,
+        async ({ ts }) => {
+          const webVitalsOverview = await webVitals.overview({
+            project,
+            range,
+            interval,
+          });
+          send({ webVitalsOverview }, ts);
+        },
+      );
+
       return async function cleanup() {
-        await Promise.all([
-          cleanupRequestsWatch(),
-          cleanupLoadersWatch(),
-          cleanupActionsWatch(),
-        ]);
+        cleanupRequestsWatch();
+        cleanupLoadersWatch();
+        cleanupActionsWatch();
+        cleanupWebVitals();
       };
     },
   );

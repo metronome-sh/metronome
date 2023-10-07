@@ -13,7 +13,7 @@ export function isLoaderEvent(event: unknown): event is LoaderEvent {
   return result.success;
 }
 
-export const insert = createRemixFunctionInsert(loaders);
+export const create = createRemixFunctionInsert(loaders);
 
 export const overview = createRemixFunctionOverview(loaders);
 

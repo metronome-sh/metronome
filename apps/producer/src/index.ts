@@ -2,12 +2,18 @@ import { faker } from '@faker-js/faker';
 import { env } from '@metronome/env.server';
 import fetch from 'node-fetch';
 
-import { generateRemixFunction, generateRequest } from './mocks';
+import {
+  generateRemixFunction,
+  generateRequest,
+  generateWebVital,
+} from './mocks';
 
 const postData = async () => {
+  // prettier-ignore
   const data = faker.helpers.arrayElement([
     [generateRequest('loader'), generateRemixFunction('loader')],
     [generateRequest('action'), generateRemixFunction('action')],
+    [generateWebVital('fcp'), generateWebVital('lcp'), generateWebVital('cls'), generateWebVital('fid'), generateWebVital('ttfb'), generateWebVital('inp')],
   ]);
 
   try {

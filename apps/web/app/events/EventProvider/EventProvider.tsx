@@ -53,7 +53,7 @@ export const EventProvider: FunctionComponent<PropsWithChildren> = ({
       const data = JSON.parse(event.data);
 
       eventTarget.dispatchEvent(
-        new CustomEvent(data.name, { detail: data.detail }),
+        new CustomEvent(data.routeId, { detail: data.detail }),
       );
     });
 

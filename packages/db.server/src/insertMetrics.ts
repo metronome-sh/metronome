@@ -1,5 +1,4 @@
-import { actions, loaders, usages, webVitals } from './';
-import { create as createRequest, isRequestEvent } from './models/requests';
+import { actions, loaders, requests, usages, webVitals } from './';
 import { type Project } from './types';
 
 export async function insertMetrics({
@@ -23,25 +22,27 @@ export async function insertMetrics({
       //   return pageviews.insert(project, event);
       // }
 
-      if (isRequestEvent(event)) {
+      if (requests.isRequestEvent(event)) {
         eventNames.add(event.name);
-        return createRequest(project, event);
+        return requests.create(project, event);
       }
 
       if (loaders.isLoaderEvent(event)) {
         eventNames.add(event.name);
-        return loaders.insert(project, event);
+        return loaders.create(project, event);
       }
 
       if (actions.isActionEvent(event)) {
         eventNames.add(event.name);
-        return actions.insert(project, event);
+        return actions.create(project, event);
       }
 
       if (webVitals.isWebVitalEvent(event)) {
         eventNames.add(event.name);
-        return webVitals.insert(project, event);
+        return webVitals.create(project, event);
       }
+
+      console.warn(`Failed to process data: unknown event type ${event.name}`);
     }),
   );
 

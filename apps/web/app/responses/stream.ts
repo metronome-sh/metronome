@@ -48,14 +48,6 @@ export async function stream<LoaderFunction>(
 
       if (request.signal.aborted) close();
 
-      // Send a ping every 30 seconds to keep the connection alive
-      // const pingInterval = setInterval(() => {
-      //   const event = { name: 'keepalive', detail: { data: null, ts: Date.now() } };
-      //   const stringified = JSON.stringify(event);
-      //   controller.enqueue(encoder.encode('event: message\n'));
-      //   controller.enqueue(encoder.encode(`data: ${stringified}\n\n`));
-      // }, 55_000);
-
       request.signal.addEventListener('abort', close);
 
       function send(
@@ -65,7 +57,7 @@ export async function stream<LoaderFunction>(
         if (closed) return;
 
         const stringified = JSON.stringify({
-          name: routeId,
+          routeId,
           detail: { data: sendData, ts },
         });
 

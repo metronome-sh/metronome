@@ -68,6 +68,9 @@ importers:
       tsx:
         specifier: ^3.13.0
         version: 3.13.0
+      web-vitals:
+        specifier: ^3.5.0
+        version: 3.5.0
     devDependencies:
       '@types/node':
         specifier: ^20.6.2
