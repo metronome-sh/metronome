@@ -30,14 +30,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { name, email, password } = form.validate(CreateUserSchema);
 
-  const user = await users.create({
+  const user = await users.insert({
     name,
     email,
     password,
     strategy: 'form',
   });
 
-  const team = await teams.create({ createdBy: user.id });
+  const team = await teams.insert({ createdBy: user.id });
 
   await users.addToTeam({ userId: user.id, teamId: team.id });
 

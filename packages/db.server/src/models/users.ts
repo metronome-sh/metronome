@@ -6,7 +6,7 @@ import { nanoid } from '../modules/nanoid';
 import { users, usersToTeams } from '../schema';
 import { type NewUser, type User } from '../types';
 
-export async function create(newUser: NewUser): Promise<User> {
+export async function insert(newUser: NewUser): Promise<User> {
   const hashedPassword = newUser.password
     ? await hash(newUser.password, 10)
     : null;

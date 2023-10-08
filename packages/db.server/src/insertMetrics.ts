@@ -24,22 +24,22 @@ export async function insertMetrics({
 
       if (requests.isRequestEvent(event)) {
         eventNames.add(event.name);
-        return requests.create(project, event);
+        return requests.insert(project, event);
       }
 
       if (loaders.isLoaderEvent(event)) {
         eventNames.add(event.name);
-        return loaders.create(project, event);
+        return loaders.insert(project, event);
       }
 
       if (actions.isActionEvent(event)) {
         eventNames.add(event.name);
-        return actions.create(project, event);
+        return actions.insert(project, event);
       }
 
       if (webVitals.isWebVitalEvent(event)) {
         eventNames.add(event.name);
-        return webVitals.create(project, event);
+        return webVitals.insert(project, event);
       }
 
       console.warn(`Failed to process data: unknown event type ${event.name}`);
@@ -48,7 +48,7 @@ export async function insertMetrics({
 
   const failures = settled.filter((s) => s.status === 'rejected');
 
-  await usages.create({
+  await usages.insert({
     projectId: project.id,
     teamId: project.teamId,
     events: BigInt(unverifiedEvents.length),

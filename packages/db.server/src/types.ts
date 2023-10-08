@@ -99,3 +99,9 @@ export type WebVitalsScore = {
   };
   webVitals: ScoredWebVital[];
 };
+
+export interface CachedSession {
+  id: string;
+  userId: string;
+  timestamp: number;
+}

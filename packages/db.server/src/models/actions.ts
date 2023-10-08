@@ -13,7 +13,7 @@ export function isActionEvent(event: unknown): event is ActionEvent {
   return result.success;
 }
 
-export const create = createRemixFunctionInsert(actions);
+export const insert = createRemixFunctionInsert(actions);
 
 export const overview = createRemixFunctionOverview(actions);
 

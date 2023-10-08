@@ -1,8 +1,8 @@
+import { cache } from '@metronome/cache.server';
 import { queues } from '@metronome/queues.server';
 import { sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { redlock } from '../modules/redlock';
 import { Interval } from '../types';
 import { getTimeZoneOffset } from './timeZones';
 
@@ -108,7 +108,7 @@ export async function createTimeOffsetAggregatedView({
     }) => ReturnType<typeof sql>;
   };
 }) {
-  const lock = await redlock.acquire(
+  const lock = await cache.lock(
     [JSON.stringify([from, base, offset, interval])],
     20_000,
   );

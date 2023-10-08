@@ -6,7 +6,7 @@ import { projects, teams, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
 import { generateSlug } from '../utils/slugs';
 
-export async function create(newProject: NewProject) {
+export async function insert(newProject: NewProject) {
   const slug = await generateSlug({
     text: newProject.name || 'projects',
     table: projects,

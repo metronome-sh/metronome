@@ -8,7 +8,7 @@ import {
   Worker,
 } from 'bullmq';
 
-import { connection } from './ioredis';
+import { ioredis as connection } from './ioredis';
 
 export function createQueue<T extends object, R = unknown>(
   name: string,

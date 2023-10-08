@@ -12,7 +12,7 @@ export function isRequestEvent(event: unknown): event is RequestEvent {
   return result.success;
 }
 
-export async function create(project: Project, requestEvent: RequestEvent) {
+export async function insert(project: Project, requestEvent: RequestEvent) {
   const {
     details: { timestamp, duration, method, statusCode, pathname, type, ip },
   } = requestEvent;

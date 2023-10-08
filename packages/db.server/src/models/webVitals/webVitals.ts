@@ -24,7 +24,7 @@ export function isWebVitalEvent(event: unknown): event is WebVitalEvent {
   return result.success;
 }
 
-export async function create(project: Project, webVitalEvent: WebVitalEvent) {
+export async function insert(project: Project, webVitalEvent: WebVitalEvent) {
   const {
     details: {
       timestamp,

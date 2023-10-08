@@ -2,11 +2,11 @@ import { Temporal } from '@js-temporal/polyfill';
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { observable, operators, throttleTime } from '../utils/events';
 import { getUsagesAggregatedView, usages } from '../schema';
 import { NewUsage, Project, Usage } from '../types';
+import { observable, operators, throttleTime } from '../utils/events';
 
-export async function create(newUsage: NewUsage): Promise<Usage> {
+export async function insert(newUsage: NewUsage): Promise<Usage> {
   const [usage] = await db({ write: true })
     .insert(usages)
     .values({ ...newUsage })

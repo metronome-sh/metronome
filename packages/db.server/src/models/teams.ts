@@ -1,12 +1,12 @@
 import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { generateSlug } from '../utils/slugs';
 import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewTeam, Team } from '../types';
+import { generateSlug } from '../utils/slugs';
 
-export async function create(newTeam: NewTeam): Promise<Team> {
+export async function insert(newTeam: NewTeam): Promise<Team> {
   const slug = await generateSlug({
     text: newTeam.name || 'projects',
     table: teams,
