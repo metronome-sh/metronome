@@ -17,7 +17,7 @@ type MetricProps = PropsWithChildren<{
   titleClassName?: string;
 }>;
 
-const Root = forwardRef<HTMLDivElement, MetricProps>(
+const BaseComponent = forwardRef<HTMLDivElement, MetricProps>(
   (
     {
       title,
@@ -37,10 +37,10 @@ const Root = forwardRef<HTMLDivElement, MetricProps>(
         ref={ref}
         {...props}
         className={cn(
-          'bg-opacity-50 flex flex-col',
+          'bg-opacity-50 flex flex-col bg-muted/30',
           compact
-            ? 'py-3 px-6 bg-muted/30 transition-all hover:bg-muted/60 rounded-lg'
-            : 'py-3 lg:py-5 px-4 lg:px-8 space-y-1 bg-background rounded-xl',
+            ? 'py-3 px-6 transition-all hover:bg-muted/60 rounded-lg'
+            : 'py-3 lg:py-5 px-4 lg:px-8 space-y-1 rounded-xl',
           containerClassName,
         )}
       >
@@ -77,7 +77,7 @@ const Root = forwardRef<HTMLDivElement, MetricProps>(
   },
 );
 
-Root.displayName = 'Metric';
+BaseComponent.displayName = 'Metric';
 
 type MetricSkeletonProps = {
   title: ReactNode;
@@ -89,7 +89,7 @@ const MetricSkeleton: FunctionComponent<MetricSkeletonProps> = ({
   compact,
 }) => {
   return (
-    <Root
+    <BaseComponent
       title={title}
       value="0000"
       compact={compact}
@@ -111,7 +111,7 @@ const MetricError: FunctionComponent<MetricErrorProps> = ({
   compact,
 }) => {
   return (
-    <Root
+    <BaseComponent
       title={title}
       value="0000"
       compact={compact}
@@ -126,15 +126,15 @@ const MetricError: FunctionComponent<MetricErrorProps> = ({
         )}
       >
         <div className="text-destructive">
-          <Icon.MoodSadDizzy />
+          <Icon.MoodSadDizzy className="w-6 h-6" />
         </div>
         <div className="text-muted-foreground text-sm">Oops!</div>
       </div>
-    </Root>
+    </BaseComponent>
   );
 };
 
-export const Metric = Object.assign(Root, {
+export const Metric = Object.assign(BaseComponent, {
   Skeleton: MetricSkeleton,
   Error: MetricError,
 });

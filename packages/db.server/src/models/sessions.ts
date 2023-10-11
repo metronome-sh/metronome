@@ -1,15 +1,29 @@
 import { cache } from '@metronome/cache.server';
 import { env } from '@metronome/env.server';
 import crypto from 'crypto';
-import { and, eq, sql } from 'drizzle-orm';
-import { CachedSession, Identifier, PageviewEvent, Project } from 'src/types';
+import { and, between, eq, sql } from 'drizzle-orm';
+import { interval } from 'rxjs';
 import { UAParser } from 'ua-parser-js';
 
 // import { resolveIp } from '../../utils/ip.js';
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 // import { pageviews } from '../pageviews/pageviews.schema';
-import { sessions } from '../schema';
+import {
+  getBounceRateAggregatedView,
+  getSessionOverviewAggregatedView,
+  pageviews,
+  sessions,
+} from '../schema';
+import {
+  CachedSession,
+  Identifier,
+  Interval,
+  PageviewEvent,
+  Project,
+  Range,
+} from '../types';
+import { observable, operators, throttleTime } from '../utils/events';
 // import { toPostgresTzName } from '../utils/aggregations';
 // import { observable, operators } from '../utils/events';
 // import { SessionFunctionArgs } from './session.types';
@@ -181,78 +195,78 @@ export async function upsert(
   return { sessionId: session.id, userId: session.userId };
 }
 
-// export async function visitorsRightNow({
-//   project,
-// }: {
-//   project: Project;
-// }): Promise<{ visitorsRightNow: number }> {
-//   const [{ visitorsRightNow }] = await db()
-//     .select({
-//       visitorsRightNow: sql<number>`count(distinct ${pageviews.sessionId})::integer`,
-//     })
-//     .from(pageviews)
-//     .innerJoin(
-//       sessions,
-//       and(
-//         // prettier-ignore
-//         sql`${sessions.timestamp} >= now() - '${sql.raw(SESSION_DURATION_MINUTES.toString())} minutes'::interval`,
-//         eq(sessions.sessionId, pageviews.sessionId),
-//         eq(sessions.teamId, project.teamId),
-//         eq(sessions.projectId, project.id),
-//       ),
-//     )
-//     .where(
-//       and(
-//         // prettier-ignore
-//         sql`${pageviews.timestamp} >= now() - '${sql.raw(VISITORS_RIGHT_NOW_DURATION_MINUTES.toString())} minutes'::interval`,
-//         eq(pageviews.teamId, project.teamId),
-//         eq(pageviews.projectId, project.id),
-//       ),
-//     );
+export async function visitorsRightNow(project: Project): Promise<number> {
+  const [{ visitorsRightNow = 0 }] = await db()
+    .select({
+      visitorsRightNow: sql<number>`count(distinct ${pageviews.sessionId})::integer`,
+    })
+    .from(pageviews)
+    .innerJoin(
+      sessions,
+      and(
+        // prettier-ignore
+        sql`${sessions.timestamp} >= now() - '${sql.raw(SESSION_DURATION_MINUTES.toString())} minutes'::interval`,
+        eq(sessions.sessionId, pageviews.sessionId),
+        eq(sessions.teamId, project.teamId),
+        eq(sessions.projectId, project.id),
+      ),
+    )
+    .where(
+      and(
+        // prettier-ignore
+        sql`${pageviews.timestamp} >= now() - '${sql.raw(VISITORS_RIGHT_NOW_DURATION_MINUTES.toString())} minutes'::interval`,
+        eq(pageviews.teamId, project.teamId),
+        eq(pageviews.projectId, project.id),
+      ),
+    );
 
-//   return { visitorsRightNow };
-// }
+  return visitorsRightNow;
+}
 
-// export async function overview({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<{
-//   totalSessions: number;
-//   uniqueVisitors: number;
-//   duration: { p50: null | number };
-// }> {
-//   const sessions = await getSessionTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function overview({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<{
+  totalSessions: number;
+  uniqueVisitors: number;
+  duration: { p50: null | number };
+}> {
+  const sessions = await getSessionOverviewAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const [
-//     { totalSessions, uniqueVisitors, durationP50 } = {
-//       totalSessions: 0,
-//       uniqueVisitors: 0,
-//       durationP50: null,
-//     },
-//   ] = await db()
-//     .select({
-//       totalSessions: sql<number>`sum(${sessions.count})::integer`,
-//       uniqueVisitors: sql<number>`sum(${sessions.uniqueUserIds})::integer`,
-//       durationP50: sql<number>`approx_percentile(0.5, rollup(${sessions.durationPctAgg}))`,
-//     })
-//     .from(sessions)
-//     .where(
-//       and(
-//         eq(sessions.teamId, project.teamId),
-//         eq(sessions.projectId, project.id),
-//         between(sessions.timestamp, fromDate, toDate),
-//       ),
-//     );
+  const [
+    { totalSessions, uniqueVisitors, durationP50 } = {
+      totalSessions: 0,
+      uniqueVisitors: 0,
+      durationP50: null,
+    },
+  ] = await db()
+    .select({
+      totalSessions: sql<number>`sum(${sessions.count})::integer`,
+      uniqueVisitors: sql<number>`sum(${sessions.uniqueUserIds})::integer`,
+      durationP50: sql<number>`approx_percentile(0.5, rollup(${sessions.durationPctAgg}))`,
+    })
+    .from(sessions)
+    .where(
+      and(
+        eq(sessions.teamId, project.teamId),
+        eq(sessions.projectId, project.id),
+        between(sessions.timestamp, fromDate, toDate),
+      ),
+    );
 
-//   return { totalSessions, uniqueVisitors, duration: { p50: durationP50 } };
-// }
+  return { totalSessions, uniqueVisitors, duration: { p50: durationP50 } };
+}
 
 // export async function overviewSeries({
 //   project,
@@ -309,45 +323,46 @@ export async function upsert(
 //   return { series };
 // }
 
-// export async function bounceRate({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<{ bounceRate: number | null }> {
-//   const bounceRates = await getBounceRateTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function bounceRate({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<number | null> {
+  const bounceRates = await getBounceRateAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const [
-//     { singlePageSessions, totalSessions } = {
-//       singlePageSessions: 0,
-//       totalSessions: 0,
-//     },
-//   ] = await db()
-//     .select({
-//       singlePageSessions: sql<number>`sum(${bounceRates.singlePageSessions})::integer`,
-//       totalSessions: sql<number>`sum(${bounceRates.totalSessions})::integer`,
-//     })
-//     .from(bounceRates)
-//     .where(
-//       and(
-//         eq(bounceRates.teamId, project.teamId),
-//         eq(bounceRates.projectId, project.id),
-//         between(bounceRates.timestamp, fromDate, toDate),
-//       ),
-//     );
+  const [
+    { singlePageSessions, totalSessions } = {
+      singlePageSessions: 0,
+      totalSessions: 0,
+    },
+  ] = await db()
+    .select({
+      singlePageSessions: sql<number>`sum(${bounceRates.singlePageSessions})::integer`,
+      totalSessions: sql<number>`sum(${bounceRates.totalSessions})::integer`,
+    })
+    .from(bounceRates)
+    .where(
+      and(
+        eq(bounceRates.teamId, project.teamId),
+        eq(bounceRates.projectId, project.id),
+        between(bounceRates.timestamp, fromDate, toDate),
+      ),
+    );
 
-//   return {
-//     bounceRate:
-//       totalSessions === 0 || totalSessions === null
-//         ? null
-//         : (singlePageSessions / totalSessions) * 100,
-//   };
-// }
+  return totalSessions === 0 || totalSessions === null
+    ? null
+    : (singlePageSessions / totalSessions) * 100;
+}
 
 // export async function bounceRateSeries({
 //   project,
@@ -478,42 +493,35 @@ export async function upsert(
 //   return result;
 // }
 
-// export function watch(
-//   {
-//     project,
-//     events = ['pageview'],
-//   }: { project: Project; events?: 'pageview'[] },
-//   callback: (event: {
-//     name: (typeof events)[number];
-//     ts: number;
-//   }) => Promise<void>,
-// ): () => void {
-//   callback({ name: events[0], ts: Date.now() });
+export function watch(
+  project: Project,
+  callback: (event: { ts: number }) => Promise<void>,
+): () => void {
+  callback({ ts: Date.now() });
 
-//   const subscription = observable()
-//     .pipe(
-//       operators.project(project),
-//       operators.event(events),
-//       throttleTime(1000, undefined, { leading: true, trailing: true }),
-//     )
-//     .subscribe((data) => {
-//       const [e] = data;
+  const subscription = observable
+    .pipe(
+      operators.project(project),
+      operators.events(['pageviews']),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    )
+    .subscribe((data) => {
+      const [e] = data;
 
-//       callback({
-//         name: e.returnvalue.event.name as (typeof events)[number],
-//         ts: e.returnvalue.event.ts,
-//       });
-//     });
+      callback({
+        ts: e.returnvalue.ts,
+      });
+    });
 
-//   const intervalSubscription = interval(1000 * 60 * 1).subscribe(() => {
-//     callback({ name: 'pageview', ts: Date.now() });
-//   });
+  const intervalSubscription = interval(1000 * 60 * 1).subscribe(() => {
+    callback({ ts: Date.now() });
+  });
 
-//   return () => {
-//     subscription.unsubscribe();
-//     intervalSubscription.unsubscribe();
-//   };
-// }
+  return () => {
+    subscription.unsubscribe();
+    intervalSubscription.unsubscribe();
+  };
+}
 
 // export async function devicesByBrowser({
 //   project,

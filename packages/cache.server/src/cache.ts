@@ -26,14 +26,14 @@ function createSetFunction(connection: typeof ioredis) {
 function createGetFunction(connection: typeof ioredis) {
   return async function get<Data>(key: Key | Key[]) {
     const value = await connection.get(JSON.stringify(key));
-    return JSON.stringify(value) as Data;
+    return value ? (JSON.parse(value) as Data) : null;
   };
 }
 
 function createRememberFunction(connection: typeof ioredis) {
   return async function remember<Data>(
     key: Key | Key[],
-    callback: () => Promise<string | object>,
+    callback: () => Promise<Data> | Data,
     ttl: number,
   ) {
     const stringifiedKey = JSON.stringify(key);
@@ -41,8 +41,15 @@ function createRememberFunction(connection: typeof ioredis) {
     const value = await connection.get(stringifiedKey);
     if (value) return JSON.parse(value) as Data;
 
-    const newValue = JSON.stringify(await callback());
-    await connection.set(stringifiedKey, newValue, 'EX', ttl);
+    const newValue = await callback();
+
+    await connection.set(
+      stringifiedKey,
+      JSON.stringify(await callback()),
+      'EX',
+      ttl,
+    );
+
     return newValue as Data;
   };
 }

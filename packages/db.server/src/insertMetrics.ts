@@ -1,4 +1,4 @@
-import { actions, loaders, requests, usages, webVitals } from './';
+import { actions, loaders, pageviews, requests, usages, webVitals } from './';
 import { type Project } from './types';
 
 export async function insertMetrics({
@@ -17,10 +17,10 @@ export async function insertMetrics({
 
   const settled = await Promise.allSettled(
     unverifiedEvents.map((event) => {
-      // if (pageviews.isPageviewEvent(event)) {
-      //   names.add(event.name);
-      //   return pageviews.insert(project, event);
-      // }
+      if (pageviews.isPageviewEvent(event)) {
+        eventNames.add(event.name);
+        return pageviews.insert(project, event);
+      }
 
       if (requests.isRequestEvent(event)) {
         eventNames.add(event.name);

@@ -1,3 +1,5 @@
+import { env } from '@metronome/env.server';
+
 import { createQueue } from './createQueue';
 
 export const metrics = createQueue<{ apiKey: string; data: unknown }>(
@@ -5,7 +7,7 @@ export const metrics = createQueue<{ apiKey: string; data: unknown }>(
   {
     removeOnComplete: true,
     removeOnFail: true,
-    attempts: 288 * 2, // 2 days worth of attempts
+    attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
     backoff: {
       type: 'fixed',
       delay: 1000 * 60 * 5, // 5 minutes

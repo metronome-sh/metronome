@@ -1,8 +1,10 @@
 import {
   actions,
   loaders,
+  pageviews,
   projects,
   requests,
+  sessions,
   webVitals,
 } from '@metronome/db.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -91,11 +93,43 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         },
       );
 
+      const cleanupSessionsWatch = await sessions.watch(
+        project,
+        async ({ ts }) => {
+          const [visitorsRightNow, sessionsOverview, bounceRate] =
+            await Promise.all([
+              sessions.visitorsRightNow(project),
+              sessions.overview({
+                project,
+                range,
+                interval,
+              }),
+              sessions.bounceRate({ project, range, interval }),
+            ]);
+
+          send({ visitorsRightNow, sessionsOverview, bounceRate }, ts);
+        },
+      );
+
+      const cleanupPageviewsWatch = await pageviews.watch(
+        project,
+        async ({ ts }) => {
+          const pageviewsOverview = await pageviews.overview({
+            project,
+            range,
+            interval,
+          });
+          send({ pageviewsOverview }, ts);
+        },
+      );
+
       return async function cleanup() {
         cleanupRequestsWatch();
         cleanupLoadersWatch();
         cleanupActionsWatch();
         cleanupWebVitals();
+        cleanupSessionsWatch();
+        cleanupPageviewsWatch();
       };
     },
   );

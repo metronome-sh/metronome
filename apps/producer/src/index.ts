@@ -7,6 +7,7 @@ import {
   generateRequest,
   generateWebVital,
 } from './mocks';
+import { generatePageview } from './mocks/pageviews';
 
 const postData = async () => {
   // prettier-ignore
@@ -14,6 +15,7 @@ const postData = async () => {
     [generateRequest('loader'), generateRemixFunction('loader')],
     [generateRequest('action'), generateRemixFunction('action')],
     [generateWebVital('fcp'), generateWebVital('lcp'), generateWebVital('cls'), generateWebVital('fid'), generateWebVital('ttfb'), generateWebVital('inp')],
+    [generatePageview()]
   ]);
 
   try {

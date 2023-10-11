@@ -11,7 +11,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
-import { invariant } from 'ts-invariant';
 
 import { EventProvider, getObservableRoutes } from '#app/events';
 import { handle } from '#app/handlers';
@@ -29,18 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const observableRoutes = getObservableRoutes();
 
-  const regexp = new RegExp('(^| )tzOffset=([^;]+)');
-  const cookie = request.headers.get('cookie');
-
-  invariant(cookie, 'cookie is required');
-
-  const cookieTzOffset = cookie.match(regexp)?.[2];
-
-  invariant(cookieTzOffset, 'cookie tzOffset is required');
-
   const timeZone = getTimeZoneFromRequest(request);
-
-  console.log({ timeZone });
 
   return json({ user, observableRoutes, timeZoneId: timeZone.id });
 }

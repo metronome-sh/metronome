@@ -1,8 +1,10 @@
 import {
   actions,
   loaders,
+  pageviews,
   projects,
   requests,
+  sessions,
   webVitals,
 } from '@metronome/db.server';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
@@ -16,6 +18,7 @@ import {
   ActionsSection,
   LoadersSection,
   RequestsSection,
+  WebAnalyticsSection,
   WebVitalsSection,
 } from './components';
 
@@ -73,6 +76,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
+  const visitorsRightNow = sessions.visitorsRightNow(project);
+
+  const sessionsOverview = sessions.overview({
+    project,
+    range,
+    interval,
+  });
+
+  const bounceRate = sessions.bounceRate({ project, range, interval });
+
+  const pageviewsOverview = pageviews.overview({
+    project,
+    range,
+    interval,
+  });
+
   return defer({
     requestsOverview,
     requestsCountSeries,
@@ -81,6 +100,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     actionsOverview,
     actionsOverviewSeries,
     webVitalsOverview,
+    visitorsRightNow,
+    sessionsOverview,
+    pageviewsOverview,
+    bounceRate,
   });
 }
 
@@ -96,7 +119,8 @@ export default function Component() {
         <div className="pb-2">
           <Filters filters={[filters.dateRange(), filters.interval()]} />
         </div>
-        <div className="px-2">
+        <div className="px-2 space-y-4">
+          <WebAnalyticsSection />
           <WebVitalsSection />
           <RequestsSection />
           <LoadersSection />
