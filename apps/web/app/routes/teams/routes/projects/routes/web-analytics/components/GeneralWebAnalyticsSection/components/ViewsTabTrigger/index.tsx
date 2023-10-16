@@ -1,0 +1,1 @@
+export { ViewsTabTrigger } from './ViewsTabTrigger';

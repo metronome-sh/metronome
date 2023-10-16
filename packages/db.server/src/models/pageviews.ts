@@ -93,7 +93,7 @@ export function watch(
   const subscription = observable
     .pipe(
       operators.project(project),
-      operators.events(['pageviews']),
+      operators.events(['pageview']),
       throttleTime(1000, undefined, { leading: true, trailing: true }),
     )
     .subscribe((data) => {

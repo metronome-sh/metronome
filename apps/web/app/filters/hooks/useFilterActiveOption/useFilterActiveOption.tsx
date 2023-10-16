@@ -1,5 +1,5 @@
 import { useSearchParams } from '@remix-run/react';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import {
   type ActiveFilterOption,
@@ -10,10 +10,15 @@ import { mergeFilterOptionsWithSearch } from '#app/filters/helpers';
 export function useFilterActiveOption<T extends string>(
   filter: FilterObject<T, unknown>,
 ) {
+  // TODO filter returns a function, so this is a hack to get around the useMemo
+  const filterRef = useRef(filter);
+
   const [search] = useSearchParams();
+
   const [activeOption] = useMemo(
-    () => mergeFilterOptionsWithSearch(search, [filter]),
-    [filter, search],
+    () => mergeFilterOptionsWithSearch(search, [filterRef.current]),
+    [search],
   );
+
   return activeOption as ActiveFilterOption<T>;
 }

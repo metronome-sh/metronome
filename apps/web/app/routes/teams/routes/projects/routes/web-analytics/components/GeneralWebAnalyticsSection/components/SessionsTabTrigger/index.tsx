@@ -1,0 +1,1 @@
+export { SessionsTabTrigger } from './SessionsTabTrigger';

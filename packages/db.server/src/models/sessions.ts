@@ -5,10 +5,8 @@ import { and, between, eq, sql } from 'drizzle-orm';
 import { interval } from 'rxjs';
 import { UAParser } from 'ua-parser-js';
 
-// import { resolveIp } from '../../utils/ip.js';
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
-// import { pageviews } from '../pageviews/pageviews.schema';
 import {
   getBounceRateAggregatedView,
   getSessionOverviewAggregatedView,
@@ -23,17 +21,8 @@ import {
   Project,
   Range,
 } from '../types';
+import { toPostgresTzName } from '../utils/aggregations';
 import { observable, operators, throttleTime } from '../utils/events';
-// import { toPostgresTzName } from '../utils/aggregations';
-// import { observable, operators } from '../utils/events';
-// import { SessionFunctionArgs } from './session.types';
-// import {
-//   getBounceRateTimeZonedAggregatedView,
-//   getDevicesTimeZonedAggregatedView,
-//   getLocationsTimeZonedAggregatedView,
-//   getSessionTimeZonedAggregatedView,
-//   sessions,
-// } from './sessions.schema';
 
 const SESSION_DURATION_MINUTES = 30;
 const VISITORS_RIGHT_NOW_DURATION_MINUTES = env.when({
@@ -268,60 +257,64 @@ export async function overview({
   return { totalSessions, uniqueVisitors, duration: { p50: durationP50 } };
 }
 
-// export async function overviewSeries({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<{
-//   series: {
-//     timestamp: number;
-//     count: number;
-//     pageviews: number;
-//     uniqueUserIds: number;
-//     duration: number;
-//   }[];
-// }> {
-//   const sessions = await getSessionTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function overviewSeries({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<{
+  series: {
+    timestamp: number;
+    count: number;
+    pageviews: number;
+    uniqueUserIds: number;
+    duration: number;
+  }[];
+}> {
+  const sessions = await getSessionOverviewAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const pgTz = await toPostgresTzName({ timeZone: from.timeZoneId });
+  const pgTz = await toPostgresTzName({ timeZoneId: from.timeZoneId });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await db()
-//     .select({
-//       // prettier-ignore
-//       timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(by)}', ${sessions.timestamp}, ${sql.raw(pgTz)})`,
-//       count: sql<number>`sum(${sessions.count})::integer`,
-//       pageviews: sql<number>`sum(${sessions.pageviews})::integer`,
-//       uniqueUserIds: sql<number>`sum(${sessions.uniqueUserIds})::integer`,
-//       duration: sql<number>`approx_percentile(0.5, rollup(${sessions.durationPctAgg}))`,
-//     })
-//     .from(sessions)
-//     .where(
-//       and(
-//         eq(sessions.teamId, project.teamId),
-//         eq(sessions.projectId, project.id),
-//         between(sessions.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(sql`1`);
+  const result = await db()
+    .select({
+      // prettier-ignore
+      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${sessions.timestamp}, ${sql.raw(pgTz)})`,
+      count: sql<number>`sum(${sessions.count})::integer`,
+      pageviews: sql<number>`sum(${sessions.pageviews})::integer`,
+      uniqueUserIds: sql<number>`sum(${sessions.uniqueUserIds})::integer`,
+      duration: sql<number>`approx_percentile(0.5, rollup(${sessions.durationPctAgg}))`,
+    })
+    .from(sessions)
+    .where(
+      and(
+        eq(sessions.teamId, project.teamId),
+        eq(sessions.projectId, project.id),
+        between(sessions.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(sql`1`);
 
-//   const series = result.map(
-//     ({ timestamp, count, pageviews, uniqueUserIds, duration }) => ({
-//       timestamp: timestamp.valueOf(),
-//       count,
-//       pageviews,
-//       uniqueUserIds,
-//       duration,
-//     }),
-//   );
+  const series = result.map(
+    ({ timestamp, count, pageviews, uniqueUserIds, duration }) => ({
+      timestamp: timestamp.valueOf(),
+      count,
+      pageviews,
+      uniqueUserIds,
+      duration,
+    }),
+  );
 
-//   return { series };
-// }
+  return { series };
+}
 
 export async function bounceRate({
   project,
@@ -364,55 +357,59 @@ export async function bounceRate({
     : (singlePageSessions / totalSessions) * 100;
 }
 
-// export async function bounceRateSeries({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<{
-//   series: {
-//     timestamp: number;
-//     bounceRate: number | null;
-//   }[];
-// }> {
-//   const bounceRates = await getBounceRateTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function bounceRateSeries({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<{
+  series: {
+    timestamp: number;
+    bounceRate: number | null;
+  }[];
+}> {
+  const bounceRates = await getBounceRateAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const pgTz = await toPostgresTzName({ timeZone: from.timeZoneId });
+  const pgTz = await toPostgresTzName({ timeZoneId: from.timeZoneId });
 
-//   const result = await db()
-//     .select({
-//       // prettier-ignore
-//       timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(by)}', ${bounceRates.timestamp}, ${sql.raw(pgTz)})`,
-//       singlePageSessions: sql<number>`sum(${bounceRates.singlePageSessions})::integer`,
-//       totalSessions: sql<number>`sum(${bounceRates.totalSessions})::integer`,
-//     })
-//     .from(bounceRates)
-//     .where(
-//       and(
-//         eq(bounceRates.teamId, project.teamId),
-//         eq(bounceRates.projectId, project.id),
-//         between(bounceRates.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(sql`1`);
+  const result = await db()
+    .select({
+      // prettier-ignore
+      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${bounceRates.timestamp}, ${sql.raw(pgTz)})`,
+      singlePageSessions: sql<number>`sum(${bounceRates.singlePageSessions})::integer`,
+      totalSessions: sql<number>`sum(${bounceRates.totalSessions})::integer`,
+    })
+    .from(bounceRates)
+    .where(
+      and(
+        eq(bounceRates.teamId, project.teamId),
+        eq(bounceRates.projectId, project.id),
+        between(bounceRates.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(sql`1`);
 
-//   const series = result.map(
-//     ({ timestamp, singlePageSessions, totalSessions }) => ({
-//       timestamp: timestamp.valueOf(),
-//       bounceRate:
-//         totalSessions === 0 || totalSessions === null
-//           ? null
-//           : (singlePageSessions / totalSessions) * 100,
-//     }),
-//   );
+  const series = result.map(
+    ({ timestamp, singlePageSessions, totalSessions }) => ({
+      timestamp: timestamp.valueOf(),
+      bounceRate:
+        totalSessions === 0 || totalSessions === null
+          ? null
+          : (singlePageSessions / totalSessions) * 100,
+    }),
+  );
 
-//   return { series };
-// }
+  return { series };
+}
 
 // export async function countries({
 //   project,
@@ -502,7 +499,7 @@ export function watch(
   const subscription = observable
     .pipe(
       operators.project(project),
-      operators.events(['pageviews']),
+      operators.events(['pageview']),
       throttleTime(1000, undefined, { leading: true, trailing: true }),
     )
     .subscribe((data) => {
