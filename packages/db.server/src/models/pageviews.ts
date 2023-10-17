@@ -1,7 +1,11 @@
 import { and, between, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
-import { getPageviewsOverviewAggregatedView, pageviews } from '../schema';
+import {
+  getPageviewsOverviewAggregatedView,
+  getPageviewsRoutesAggregatedView,
+  pageviews,
+} from '../schema';
 import { PageviewEventSchema } from '../schemaValidation';
 import { Interval, PageviewEvent, Project, Range } from '../types';
 import { observable, operators, throttleTime } from '../utils/events';
@@ -75,7 +79,7 @@ export async function overview({
     .from(pageviews)
     .where(
       and(
-        eq(pageviews.organizationId, project.teamId),
+        eq(pageviews.teamId, project.teamId),
         eq(pageviews.projectId, project.id),
         between(pageviews.timestamp, fromDate, toDate),
       ),
@@ -105,4 +109,90 @@ export function watch(
     });
 
   return () => subscription.unsubscribe();
+}
+
+export async function routesByRoutePath({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<
+  {
+    routePath: string;
+    uniqueUserIds: number;
+  }[]
+> {
+  const pageviews = await getPageviewsRoutesAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
+
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
+
+  const results = await db()
+    .select({
+      routePath: pageviews.routePath,
+      uniqueUserIds: sql<number>`sum(${pageviews.uniqueUserIds})::integer`,
+    })
+    .from(pageviews)
+    .where(
+      and(
+        eq(pageviews.teamId, project.teamId),
+        eq(pageviews.projectId, project.id),
+        between(pageviews.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(pageviews.routePath)
+    .orderBy(sql`2 desc`)
+    .limit(400);
+
+  return results;
+}
+
+export async function routesByUrlPath({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<
+  {
+    routePath: string;
+    urlPath: string;
+    uniqueUserIds: number;
+  }[]
+> {
+  const pageviews = await getPageviewsRoutesAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
+
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
+
+  const results = await db()
+    .select({
+      routePath: pageviews.routePath,
+      urlPath: pageviews.urlPath,
+      uniqueUserIds: sql<number>`sum(${pageviews.uniqueUserIds})::integer`,
+    })
+    .from(pageviews)
+    .where(
+      and(
+        eq(pageviews.teamId, project.teamId),
+        eq(pageviews.projectId, project.id),
+        between(pageviews.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(pageviews.routePath, pageviews.urlPath)
+    .orderBy(sql`3 desc`)
+    .limit(400);
+
+  return results;
 }

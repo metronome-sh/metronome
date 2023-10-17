@@ -1,6 +1,7 @@
 import { Alarm } from './Alarm';
 import { AlertSquareRoundedOutline } from './AlertSquareRoundedOutline';
 import { AlertTriangleFilled } from './AlertTriangleFilled';
+import { ArrowNarrowLeft } from './ArrowNarrowLeft';
 import { ArrowNarrowRight } from './ArrowNarrowRight';
 import { Bug } from './Bug';
 import { BuildingLighthouse } from './BuildingLighthouse';
@@ -21,6 +22,7 @@ import { MoodSadDizzy } from './MoodSadDizzy';
 import { Refresh } from './Refresh';
 import { RotateTwo } from './RotateTwo';
 import { RouteSquareTwo } from './RouteSquareTwo';
+import { Search } from './Search';
 import { Settings } from './Settings';
 import { SettingsTwo } from './SettingsTwo';
 import { SquareRoundedPlus } from './SquareRoundedPlus';
@@ -38,6 +40,7 @@ export const Icon = {
   Alarm,
   World,
   Filter,
+  Search,
   Refresh,
   Calendar,
   Settings,
@@ -54,6 +57,7 @@ export const Icon = {
   SquaresFilled,
   RouteSquareTwo,
   CaretDownFilled,
+  ArrowNarrowLeft,
   ArrowNarrowRight,
   InfoSquareRounded,
   SquareRoundedPlus,

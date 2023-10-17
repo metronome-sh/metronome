@@ -25,7 +25,7 @@ export const GeneralWebAnalyticsSection: FunctionComponent = () => {
   } = useFilterActiveOption(filters.dateRange());
 
   return (
-    <Section className="px-4">
+    <Section>
       <Card className="px-0 lg:px-0">
         <Tabs.Root defaultValue="visitors">
           <Tabs.List className="grid grid-cols-1 md:grid-cols-5 gap-4 px-4 py-4">

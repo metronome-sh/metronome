@@ -1,0 +1,1 @@
+export { TableWithBarChart } from './TableWithBarChart';

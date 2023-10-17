@@ -6,7 +6,8 @@ import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
-import { GeneralWebAnalyticsSection } from './components';
+import { GeneralWebAnalyticsSection, LocationsSection } from './components';
+import { RoutesSection } from './components/RoutesSection';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
@@ -56,6 +57,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
+  const locationsByCountry = sessions.countries({ project, range, interval });
+
+  const locationsByCity = sessions.cities({ project, range, interval });
+
+  const routesByRoutePath = pageviews.routesByRoutePath({
+    project,
+    range,
+    interval,
+  });
+
+  const routesByUrlPath = pageviews.routesByUrlPath({
+    project,
+    range,
+    interval,
+  });
+
   return defer({
     visitorsRightNow,
     sessionsOverview,
@@ -63,6 +80,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     bounceRate,
     bounceRateSeries,
     overviewSeries,
+    locationsByCountry,
+    locationsByCity,
+    routesByRoutePath,
+    routesByUrlPath,
   });
 }
 
@@ -79,11 +100,11 @@ export default function Component() {
       <div className="pb-2">
         <Filters filters={[filters.dateRange(), filters.interval()]} />
       </div>
-      <div className="pt-4">
+      <div className="pt-4 px-4">
         <GeneralWebAnalyticsSection />
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* <LocationsSection /> */}
-          {/* <RoutesSection /> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 space-x-4">
+          <LocationsSection />
+          <RoutesSection />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* <ReferrersSection /> */}

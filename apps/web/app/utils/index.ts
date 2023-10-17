@@ -1,3 +1,4 @@
+export { countryFlag } from './countryFlag';
 export { formatDuration } from './formatDuration';
 export { formatNumber } from './formatNumber';
 export { formatTime } from './formatTime';

@@ -9,6 +9,7 @@ import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import {
   getBounceRateAggregatedView,
+  getLocationsAggregatedView,
   getSessionOverviewAggregatedView,
   pageviews,
   sessions,
@@ -411,84 +412,92 @@ export async function bounceRateSeries({
   return { series };
 }
 
-// export async function countries({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<
-//   {
-//     countryCode: string;
-//     country: string;
-//     count: number;
-//   }[]
-// > {
-//   const locations = await getLocationsTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function countries({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<
+  {
+    countryCode: string;
+    country: string;
+    count: number;
+  }[]
+> {
+  const locations = await getLocationsAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await db()
-//     .select({
-//       countryCode: locations.countryCode,
-//       country: locations.country,
-//       count: sql<number>`sum(${locations.uniqueUserIds})::integer`,
-//     })
-//     .from(locations)
-//     .where(
-//       and(
-//         eq(locations.teamId, project.teamId),
-//         eq(locations.projectId, project.id),
-//         between(locations.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(locations.countryCode, locations.country)
-//     .orderBy(sql`3 desc`);
+  const result = await db()
+    .select({
+      countryCode: locations.countryCode,
+      country: locations.country,
+      count: sql<number>`sum(${locations.uniqueUserIds})::integer`,
+    })
+    .from(locations)
+    .where(
+      and(
+        eq(locations.teamId, project.teamId),
+        eq(locations.projectId, project.id),
+        between(locations.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(locations.countryCode, locations.country)
+    .orderBy(sql`3 desc`);
 
-//   return result;
-// }
+  return result;
+}
 
-// export async function cities({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs): Promise<
-//   {
-//     countryCode: string;
-//     city: string;
-//     count: number;
-//   }[]
-// > {
-//   const locations = await getLocationsTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function cities({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<
+  {
+    countryCode: string;
+    city: string;
+    count: number;
+  }[]
+> {
+  const locations = await getLocationsAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await db()
-//     .select({
-//       countryCode: locations.countryCode,
-//       city: locations.city,
-//       count: sql<number>`sum(${locations.uniqueUserIds})::integer`,
-//     })
-//     .from(locations)
-//     .where(
-//       and(
-//         eq(locations.teamId, project.teamId),
-//         eq(locations.projectId, project.id),
-//         between(locations.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(locations.countryCode, locations.city)
-//     .orderBy(sql`3 desc`)
-//     .limit(400);
+  const result = await db()
+    .select({
+      countryCode: locations.countryCode,
+      city: locations.city,
+      count: sql<number>`sum(${locations.uniqueUserIds})::integer`,
+    })
+    .from(locations)
+    .where(
+      and(
+        eq(locations.teamId, project.teamId),
+        eq(locations.projectId, project.id),
+        between(locations.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(locations.countryCode, locations.city)
+    .orderBy(sql`3 desc`)
+    .limit(400);
 
-//   return result;
-// }
+  return result;
+}
 
 export function watch(
   project: Project,
