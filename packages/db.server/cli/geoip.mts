@@ -32,6 +32,8 @@ if (!fs.existsSync(downloadsDir)) {
 
 const downloadPath = path.join(downloadsDir, 'geoip-city.tar.gz');
 
+const manifestPath = path.join(downloadsDir, 'manifest.json');
+
 // Function to download file
 const downloadFile = async (url: string, filePath: string) => {
   const response = await fetch(url);
@@ -41,6 +43,8 @@ const downloadFile = async (url: string, filePath: string) => {
   }
 
   await pipeline(response.body!, fs.createWriteStream(filePath));
+
+  return { lastModified: response.headers.get('last-modified') };
 };
 
 // Function to unzip file
@@ -78,23 +82,50 @@ async function getLatestGeoLite2Distro(): Promise<string | null> {
   }
 }
 
-const setManifest = async () => {
+const setManifest = async ({
+  lastModified,
+}: {
+  lastModified: string | null;
+}) => {
   const latestDirectory = await getLatestGeoLite2Distro();
 
   if (!latestDirectory) throw new Error('No latest directory found');
 
   const manifestString = JSON.stringify({
     database: path.join(dirname, '..', latestDirectory, 'GeoLite2-City.mmdb'),
+    lastModified,
   });
 
-  await fsp.writeFile(path.join(downloadsDir, 'manifest.json'), manifestString);
+  await fsp.writeFile(manifestPath, manifestString);
+};
+
+const checkForUpdates = async (url: string) => {
+  // Check if manifest exists
+  const manifestPath = path.join(downloadsDir, 'manifest.json');
+  if (!fs.existsSync(manifestPath)) return true;
+
+  // Read the manifest
+  const manifestString = await fsp.readFile(manifestPath, 'utf-8');
+  const manifest = JSON.parse(manifestString);
+
+  const response = await fetch(url, { method: 'HEAD' });
+
+  return response.headers.get('last-modified') !== manifest.lastModified;
 };
 
 // Main function
 (async () => {
   try {
+    // Check for lastModified in manifest
+    const updateAvailable = await checkForUpdates(url);
+
+    if (!updateAvailable) {
+      console.log('No updates available');
+      return;
+    }
+
     // Download the file
-    await downloadFile(url, downloadPath);
+    const { lastModified } = await downloadFile(url, downloadPath);
     console.log(`Downloaded to ${downloadPath}`);
 
     // Unzip the file to the specified directory
@@ -105,7 +136,7 @@ const setManifest = async () => {
     await removeFile(downloadPath);
     console.log(`Removed zipped file ${downloadPath}`);
 
-    await setManifest();
+    await setManifest({ lastModified });
     console.log('Updated manifest');
   } catch (err) {
     console.error(err);

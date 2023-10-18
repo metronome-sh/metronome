@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
@@ -93,4 +93,15 @@ export async function rotateApiKey({ id }: { id: string }) {
     .update(projects)
     .set({ apiKey: nanoid.id('apiKey', 30), updatedAt: new Date() })
     .where(and(eq(projects.id, id), eq(projects.deleted, false)));
+}
+
+export async function rotateSalts() {
+  await db({ write: true })
+    .update(projects)
+    .set({
+      previousSalt: sql`salt`,
+      salt: sql`substr(md5(random()::text),0,33)`,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(projects.deleted, false)));
 }

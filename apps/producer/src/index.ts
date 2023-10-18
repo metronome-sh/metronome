@@ -12,9 +12,9 @@ import { generatePageview } from './mocks/pageviews';
 const postData = async () => {
   // prettier-ignore
   const data = faker.helpers.arrayElement([
-    // [generateRequest('loader'), generateRemixFunction('loader')],
-    // [generateRequest('action'), generateRemixFunction('action')],
-    // [generateWebVital('fcp'), generateWebVital('lcp'), generateWebVital('cls'), generateWebVital('fid'), generateWebVital('ttfb'), generateWebVital('inp')],
+    [generateRequest('loader'), generateRemixFunction('loader')],
+    [generateRequest('action'), generateRemixFunction('action')],
+    [generateWebVital('fcp'), generateWebVital('lcp'), generateWebVital('cls'), generateWebVital('fid'), generateWebVital('ttfb'), generateWebVital('inp')],
     [generatePageview()]
   ]);
 

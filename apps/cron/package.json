@@ -1,0 +1,25 @@
+{
+  "name": "@metronome/cron",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch src/index.ts",
+    "start": "tsx src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "devDependencies": {
+    "@types/node": "^20.8.3",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.1.0",
+    "@metronome/db.server": "workspace:^",
+    "@metronome/env.server": "workspace:*",
+    "bree": "^9.1.3",
+    "node-fetch": "^3.3.2",
+    "tsx": "^3.13.0",
+    "web-vitals": "^3.5.0"
+  }
+}
