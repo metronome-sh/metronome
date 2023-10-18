@@ -190,3 +190,9 @@ export function when<T>(environment: {
     ? castDevelopment()!
     : castProduction();
 }
+
+export function geoip() {
+  const licenseKey = optional('MAXMIND_LICENSE_KEY');
+
+  return { licenseKey };
+}

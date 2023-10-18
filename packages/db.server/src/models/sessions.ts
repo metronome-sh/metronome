@@ -9,6 +9,7 @@ import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import {
   getBounceRateAggregatedView,
+  getDevicesAggregatedView,
   getLocationsAggregatedView,
   getSessionOverviewAggregatedView,
   pageviews,
@@ -24,6 +25,7 @@ import {
 } from '../types';
 import { toPostgresTzName } from '../utils/aggregations';
 import { observable, operators, throttleTime } from '../utils/events';
+import { resolveIp } from '../utils/ip';
 
 const SESSION_DURATION_MINUTES = 30;
 const VISITORS_RIGHT_NOW_DURATION_MINUTES = env.when({
@@ -132,13 +134,7 @@ export async function upsert(
 
   const { browser, os, device } = UAParser(ua);
 
-  // const geo = await resolveIp(ip);
-  const geo = {
-    countryCode: 'unknown',
-    country: 'unknown',
-    region: 'unknown',
-    city: 'unknown',
-  };
+  const geo = await resolveIp(ip);
 
   const { session, existed } = await sessionFromCache(ids, timestamp);
 
@@ -529,68 +525,76 @@ export function watch(
   };
 }
 
-// export async function devicesByBrowser({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs) {
-//   const devices = await getDevicesTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function devicesByBrowser({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}) {
+  const devices = await getDevicesAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await db()
-//     .select({
-//       id: sql<string>`replace(lower(${devices.browser}), ' ', '')`,
-//       browser: devices.browser,
-//       uniqueUserIds: sql<number>`sum(${devices.uniqueUserIds})::integer`,
-//     })
-//     .from(devices)
-//     .where(
-//       and(
-//         eq(devices.teamId, project.teamId),
-//         eq(devices.projectId, project.id),
-//         between(devices.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(devices.browser)
-//     .orderBy(sql`3 desc`);
+  const result = await db()
+    .select({
+      id: sql<string>`replace(lower(${devices.browser}), ' ', '')`,
+      browser: devices.browser,
+      uniqueUserIds: sql<number>`sum(${devices.uniqueUserIds})::integer`,
+    })
+    .from(devices)
+    .where(
+      and(
+        eq(devices.teamId, project.teamId),
+        eq(devices.projectId, project.id),
+        between(devices.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(devices.browser)
+    .orderBy(sql`3 desc`);
 
-//   return result;
-// }
+  return result;
+}
 
-// export async function devicesByOs({
-//   project,
-//   range: { from, to },
-//   by = 'hour',
-// }: SessionFunctionArgs) {
-//   const devices = await getDevicesTimeZonedAggregatedView({
-//     timeZone: from.timeZoneId,
-//     interval: by,
-//   });
+export async function devicesByOs({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}) {
+  const devices = await getDevicesAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
 
-//   const fromDate = new Date(from.toInstant().epochMilliseconds);
-//   const toDate = new Date(to.toInstant().epochMilliseconds);
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
 
-//   const result = await db()
-//     .select({
-//       id: sql<string>`replace(lower(${devices.os}), ' ', '')`,
-//       os: devices.os,
-//       uniqueUserIds: sql<number>`sum(${devices.uniqueUserIds})::integer`,
-//     })
-//     .from(devices)
-//     .where(
-//       and(
-//         eq(devices.teamId, project.teamId),
-//         eq(devices.projectId, project.id),
-//         between(devices.timestamp, fromDate, toDate),
-//       ),
-//     )
-//     .groupBy(devices.os)
-//     .orderBy(sql`2 desc`);
+  const result = await db()
+    .select({
+      id: sql<string>`replace(lower(${devices.os}), ' ', '')`,
+      os: devices.os,
+      uniqueUserIds: sql<number>`sum(${devices.uniqueUserIds})::integer`,
+    })
+    .from(devices)
+    .where(
+      and(
+        eq(devices.teamId, project.teamId),
+        eq(devices.projectId, project.id),
+        between(devices.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(devices.os)
+    .orderBy(sql`2 desc`);
 
-//   return result;
-// }
+  return result;
+}

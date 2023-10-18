@@ -13,7 +13,7 @@ import {
 //   useIsNavigatingOverview,
 //   useOverviewEventData,
 //   useOverviewLoaderData,
-// } from '~/routes/teams/routes/projects/routes/overview/hooks';
+// } from '#app/routes/teams/routes/projects/routes/overview/hooks';
 
 export const VisitorsRightNow: FunctionComponent = () => {
   const { visitorsRightNow } = useOverviewLoaderData();

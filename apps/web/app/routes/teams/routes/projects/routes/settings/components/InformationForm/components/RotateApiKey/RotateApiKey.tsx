@@ -3,8 +3,8 @@ import { type FunctionComponent, useState } from 'react';
 
 import { Button, Dialog, Icon, Tooltip } from '#app/components';
 
-// import { Loadable } from '~/components/Loadable';
-// import { useFetcherState } from '~/hooks/useFetcherState';
+// import { Loadable } from '#app/components/Loadable';
+// import { useFetcherState } from '#app/hooks/useFetcherState';
 
 export const RotateApiKey: FunctionComponent<{
   initialDialogOpen?: boolean;

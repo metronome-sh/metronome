@@ -785,3 +785,188 @@ export async function getPageviewsRoutesAggregatedView({
 
   return pgTable(name, aggregatedSchema);
 }
+
+export async function getPageviewsReferrersAggregatedView({
+  timeZoneId,
+  interval,
+}: {
+  timeZoneId: string;
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchema = {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    referrerDomain: text('referrer_domain').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    uniqueUserIds: integer('unique_user_ids').notNull(),
+    uniqueSessionIds: integer('unique_session_ids').notNull(),
+  };
+
+  const offset = getTimeZoneOffset(timeZoneId);
+  const name = tableName({ base: 'pageviews_referrers', offset, interval });
+
+  const exists = await timeOffsetAggregatedTableExists({
+    base: 'pageviews_referrers',
+    offset,
+    interval,
+  });
+
+  if (exists) {
+    return pgTable(name, aggregatedSchema);
+  }
+
+  await createTimeOffsetAggregatedView({
+    from: 'pageviews',
+    base: 'pageviews_referrers',
+    offset,
+    interval,
+    definitions: {
+      hour: ({ baseTable, timeZone }) => sql`
+          SELECT
+            team_id,
+            project_id,
+            referrer_domain,
+            time_bucket('1 hour', "timestamp", ${sql.raw(
+              timeZone,
+            )}) AS timestamp,
+            count(distinct user_id) as unique_user_ids,
+            count(distinct session_id) as unique_sessions
+          FROM ${sql.raw(baseTable)}
+          GROUP BY 1, 2, 3, 4
+        `,
+      day: ({ hourTable, timeZone }) => sql`
+          SELECT
+            team_id,
+            project_id,
+            referrer_domain,
+            time_bucket('1 day', "timestamp", ${sql.raw(
+              timeZone,
+            )}) AS timestamp,
+            sum(unique_user_ids) as unique_user_ids,
+            sum(unique_sessions) as unique_sessions
+          FROM ${sql.raw(hourTable)}
+          GROUP BY 1, 2, 3, 4
+        `,
+      week: ({ dayTable, timeZone }) => sql`
+          SELECT
+            team_id,
+            project_id,
+            referrer_domain,
+            time_bucket('1 week', "timestamp", ${sql.raw(
+              timeZone,
+            )}) AS timestamp,
+            sum(unique_user_ids) as unique_user_ids,
+            sum(unique_sessions) as unique_sessions
+          FROM ${sql.raw(dayTable)}
+          GROUP BY 1, 2, 3, 4
+        `,
+      month: ({ dayTable, timeZone }) => sql`
+          SELECT
+            team_id,
+            project_id,
+            referrer_domain,
+            time_bucket('1 month', "timestamp", ${sql.raw(
+              timeZone,
+            )}) AS timestamp,
+            sum(unique_user_ids) as unique_user_ids,
+            sum(unique_sessions) as unique_sessions
+          FROM ${sql.raw(dayTable)}
+          GROUP BY 1, 2, 3, 4
+        `,
+    },
+  });
+
+  return pgTable(name, aggregatedSchema);
+}
+
+export async function getDevicesAggregatedView({
+  timeZoneId,
+  interval,
+}: {
+  timeZoneId: string;
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchema = {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    browser: text('browser').notNull(),
+    os: text('os').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    uniqueUserIds: integer('unique_user_ids').notNull(),
+    uniqueSessionIds: integer('unique_session_ids').notNull(),
+  };
+
+  const offset = getTimeZoneOffset(timeZoneId);
+  const name = tableName({ base: 'sessions_devices', offset, interval });
+
+  const exists = await timeOffsetAggregatedTableExists({
+    base: 'sessions_devices',
+    offset,
+    interval,
+  });
+
+  if (exists) {
+    return pgTable(name, aggregatedSchema);
+  }
+
+  await createTimeOffsetAggregatedView({
+    from: 'sessions',
+    base: 'sessions_devices',
+    offset,
+    interval,
+    definitions: {
+      hour: ({ baseTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          browser,
+          os,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(distinct user_id) as unique_user_ids,
+          count(distinct session_id) as unique_sessions
+        FROM ${sql.raw(baseTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      day: ({ hourTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          browser,
+          os,
+          time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          sum(unique_user_ids) as unique_user_ids,
+          sum(unique_sessions) as unique_sessions
+        FROM ${sql.raw(hourTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      week: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          browser,
+          os,
+          time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          sum(unique_user_ids) as unique_user_ids,
+          sum(unique_sessions) as unique_sessions
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+      month: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          browser,
+          os,
+          time_bucket('1 month', "timestamp", ${sql.raw(
+            timeZone,
+          )}) AS timestamp,
+          sum(unique_user_ids) as unique_user_ids,
+          sum(unique_sessions) as unique_sessions
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5
+      `,
+    },
+  });
+
+  return pgTable(name, aggregatedSchema);
+}

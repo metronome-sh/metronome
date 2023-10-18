@@ -37,44 +37,63 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         return () => {};
       }
 
-      const cleanupSessionsWatch = await sessions.watch(
-        project,
-        async ({ ts }) => {
-          const [
+      const cleanupSessionsWatch = sessions.watch(project, async ({ ts }) => {
+        const [
+          visitorsRightNow,
+          sessionsOverview,
+          bounceRate,
+          bounceRateSeries,
+          overviewSeries,
+          locationsByCountry,
+          locationsByCity,
+          devicesByBrowser,
+          devicesByOs,
+        ] = await Promise.all([
+          sessions.visitorsRightNow(project),
+          sessions.overview({ project, range, interval }),
+          sessions.bounceRate({ project, range, interval }),
+          sessions.bounceRateSeries({ project, range, interval }),
+          sessions.overviewSeries({ project, range, interval }),
+          sessions.countries({ project, range, interval }),
+          sessions.cities({ project, range, interval }),
+          sessions.devicesByBrowser({ project, range, interval }),
+          sessions.devicesByOs({ project, range, interval }),
+        ]);
+
+        send(
+          {
             visitorsRightNow,
             sessionsOverview,
             bounceRate,
+            bounceRateSeries,
             overviewSeries,
-          ] = await Promise.all([
-            sessions.visitorsRightNow(project),
-            sessions.overview({
-              project,
-              range,
-              interval,
-            }),
-            sessions.bounceRate({ project, range, interval }),
-            sessions.overviewSeries({ project, range, interval }),
-          ]);
+            locationsByCountry,
+            locationsByCity,
+            devicesByBrowser,
+            devicesByOs,
+          },
+          ts,
+        );
+      });
 
-          send(
-            { visitorsRightNow, sessionsOverview, bounceRate, overviewSeries },
-            ts,
-          );
-        },
-      );
+      const cleanupPageviewsWatch = pageviews.watch(project, async ({ ts }) => {
+        const [
+          pageviewsOverview,
+          routesByRoutePath,
+          routesByUrlPath,
+          referrers,
+        ] = await Promise.all([
+          pageviews.overview({ project, range, interval }),
+          pageviews.routesByRoutePath({ project, range, interval }),
+          pageviews.routesByUrlPath({ project, range, interval }),
+          pageviews.referrers({ project, range, interval }),
+        ]);
 
-      const cleanupPageviewsWatch = await pageviews.watch(
-        project,
-        async ({ ts }) => {
-          const pageviewsOverview = await pageviews.overview({
-            project,
-            range,
-            interval,
-          });
-          send({ pageviewsOverview }, ts);
-        },
-      );
-
+        send(
+          { pageviewsOverview, routesByRoutePath, routesByUrlPath, referrers },
+          ts,
+        );
+      });
       return async function cleanup() {
         cleanupSessionsWatch();
         cleanupPageviewsWatch();

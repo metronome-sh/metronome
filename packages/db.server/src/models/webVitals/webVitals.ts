@@ -14,8 +14,7 @@ import {
 } from '../../types';
 import { getDeviceProps } from '../../utils/device';
 import { observable, operators } from '../../utils/events';
-// import { resolveIp } from '../../utils/ip';
-// import { WebVitalEventSchema } from '../models.schemas';
+import { resolveIp } from '../../utils/ip';
 import { EMPTY_SCORED_WEB_VITALS } from './constants';
 import { getScore } from './getScore';
 
@@ -40,13 +39,7 @@ export async function insert(project: Project, webVitalEvent: WebVitalEvent) {
 
   const { type } = getDeviceProps(ua);
 
-  // const geo = resolveIp(ip);
-  const geo = {
-    countryCode: 'unknown',
-    country: 'unknown',
-    region: 'unknown',
-    city: 'unknown',
-  };
+  const geo = resolveIp(ip);
 
   await db({ write: true })
     .insert(webVitals)

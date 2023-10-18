@@ -13,7 +13,8 @@
     "docker:down": "docker-compose --env-file .env -f docker/docker-compose.dev.yml down",
     "docker:restart": "docker-compose --env-file .env -f docker/docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
-    "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix"
+    "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix",
+    "geoip:download": "pnpm --filter \"@metronome/db.server\" geoip:download"
   },
   "keywords": [],
   "author": "",

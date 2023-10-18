@@ -1,0 +1,1 @@
+export { OsTabContent } from './OsTabContent';

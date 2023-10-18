@@ -4,12 +4,12 @@ import { Button, Form, Icon, Input, Label, Tooltip } from '#app/components';
 import { useTinyKeys } from '#app/hooks/useTinyKeys';
 
 import { useTeamProjectLoaderData } from '../../../../hooks';
-// import { Loadable } from '~/components/Loadable';
-// import { Button } from '~/components/ui/button';
-// import { FormSection } from '~/components/ui/form';
-// import { Input } from '~/components/ui/input';
-// import { Label } from '~/components/ui/label';
-// import { useProject } from '~/routes/teams/routes/projects/hooks';
+// import { Loadable } from '#app/components/Loadable';
+// import { Button } from '#app/components/ui/button';
+// import { FormSection } from '#app/components/ui/form';
+// import { Input } from '#app/components/ui/input';
+// import { Label } from '#app/components/ui/label';
+// import { useProject } from '#app/routes/teams/routes/projects/hooks';
 import { RotateApiKey } from './components/RotateApiKey';
 import { Usage } from './components/Usage';
 

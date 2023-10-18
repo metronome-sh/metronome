@@ -11,6 +11,7 @@ import {
 import { ActionEvent, LoaderEvent, Project } from '../types';
 import { toPostgresTzName } from './aggregations';
 import { observable, operators, throttleTime } from './events';
+import { resolveIp } from './ip';
 
 export function createRemixFunctionInsert(
   schema: typeof loaders | typeof actions,
@@ -34,13 +35,7 @@ export function createRemixFunctionInsert(
       ip,
     } = details;
 
-    // const geo = resolveIp(ip);
-    const geo = {
-      countryCode: 'unknown',
-      country: 'unknown',
-      region: 'unknown',
-      city: 'unknown',
-    };
+    const geo = resolveIp(ip);
 
     await db({ write: true })
       .insert(schema)

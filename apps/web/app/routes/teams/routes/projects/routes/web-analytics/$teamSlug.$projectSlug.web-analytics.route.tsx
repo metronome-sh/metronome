@@ -7,6 +7,8 @@ import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 import { GeneralWebAnalyticsSection, LocationsSection } from './components';
+import { DevicesSection } from './components/DevicesSection';
+import { ReferrersSection } from './components/ReferrersSection';
 import { RoutesSection } from './components/RoutesSection';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -73,6 +75,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
+  const referrers = pageviews.referrers({ project, range, interval });
+
+  const devicesByBrowser = sessions.devicesByBrowser({
+    project,
+    range,
+    interval,
+  });
+
+  const devicesByOs = sessions.devicesByOs({ project, range, interval });
+
   return defer({
     visitorsRightNow,
     sessionsOverview,
@@ -84,6 +96,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     locationsByCity,
     routesByRoutePath,
     routesByUrlPath,
+    referrers,
+    devicesByBrowser,
+    devicesByOs,
   });
 }
 
@@ -102,13 +117,13 @@ export default function Component() {
       </div>
       <div className="pt-4 px-4">
         <GeneralWebAnalyticsSection />
-        <div className="grid grid-cols-1 md:grid-cols-2 space-x-4">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <LocationsSection />
           <RoutesSection />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* <ReferrersSection /> */}
-          {/* <DevicesSection /> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ReferrersSection />
+          <DevicesSection />
         </div>
       </div>
     </div>

@@ -1,16 +1,14 @@
-import { FunctionComponent, PropsWithChildren } from 'react';
+import { FunctionComponent, SVGProps } from 'react';
 
 import { cn } from '../utils';
 
-export type SvgProps = {
-  className?: string;
-  strokeWidth?: number;
-};
+export type SvgProps = SVGProps<SVGSVGElement>;
 
-export const Svg: FunctionComponent<PropsWithChildren<SvgProps>> = ({
+export const Svg: FunctionComponent<SvgProps> = ({
   children,
   className,
   strokeWidth = 1.75,
+  ...props
 }) => {
   return (
     <svg
@@ -25,6 +23,7 @@ export const Svg: FunctionComponent<PropsWithChildren<SvgProps>> = ({
       strokeLinejoin="round"
       strokeWidth={strokeWidth}
       shapeRendering="geometricPrecision"
+      {...props}
     >
       {children}
     </svg>

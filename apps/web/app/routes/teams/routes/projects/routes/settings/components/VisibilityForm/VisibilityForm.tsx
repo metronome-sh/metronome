@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import { Button, Form, Input, Switch } from '#app/components';
 import { cn } from '#app/components/utils';
 
-// import { Loadable } from '~/components/Loadable';
-// import { useFetcherState } from '~/hooks/useFetcherState';
+// import { Loadable } from '#app/components/Loadable';
+// import { useFetcherState } from '#app/hooks/useFetcherState';
 import { useTeamProjectLoaderData } from '../../../../hooks';
 import {
   ProjectVisibilitySchema,

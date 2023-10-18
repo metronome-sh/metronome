@@ -4,7 +4,7 @@ import React, {
   createContext,
 } from 'react';
 import type { Navigation, Location } from '@remix-run/router';
-// import { EventProvider } from '~/events/EventProvider/EventProvider';
+// import { EventProvider } from '#app/events/EventProvider/EventProvider';
 
 type NavigationOverride = Partial<{
   state: 'loading' | 'idle' | 'submitting';

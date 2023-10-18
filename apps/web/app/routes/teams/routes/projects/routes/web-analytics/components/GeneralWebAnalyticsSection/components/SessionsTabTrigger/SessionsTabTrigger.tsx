@@ -40,6 +40,7 @@ export const SessionsTabTrigger: FunctionComponent = () => {
                 title={title}
                 value={formatNumber(value)}
                 containerClassName="relative group cursor-pointer"
+                rawValue={`${value.toLocaleString()} sessions`}
               >
                 <div className="absolute inset-y-1 left-1 w-1 rounded-full bg-muted group-[[data-state=active]]:bg-cyan-600" />
               </Metric>

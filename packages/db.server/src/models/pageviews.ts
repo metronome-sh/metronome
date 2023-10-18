@@ -3,13 +3,16 @@ import { and, between, eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import {
   getPageviewsOverviewAggregatedView,
+  getPageviewsReferrersAggregatedView,
   getPageviewsRoutesAggregatedView,
   pageviews,
 } from '../schema';
 import { PageviewEventSchema } from '../schemaValidation';
 import { Interval, PageviewEvent, Project, Range } from '../types';
 import { observable, operators, throttleTime } from '../utils/events';
+import { resolveIp } from '../utils/ip';
 import { resolveReferrer } from '../utils/referrer';
+import { getDisplayNameFromURL } from '../utils/url';
 import { upsert as upsertSession } from './sessions';
 
 export function isPageviewEvent(event: unknown): event is PageviewEvent {
@@ -28,13 +31,7 @@ export async function insert(project: Project, pageviewEvent: PageviewEvent) {
     pageviewEvent.details.referrer,
   );
 
-  // const geo = resolveIp(ip);
-  const geo = {
-    countryCode: 'unknown',
-    country: 'unknown',
-    region: 'unknown',
-    city: 'unknown',
-  };
+  const geo = resolveIp(ip);
 
   await db({ write: true })
     .insert(pageviews)
@@ -195,4 +192,51 @@ export async function routesByUrlPath({
     .limit(400);
 
   return results;
+}
+
+export async function referrers({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}): Promise<
+  {
+    name: string | null;
+    referrerDomain: string;
+    uniqueUserIds: number;
+  }[]
+> {
+  const pageviews = await getPageviewsReferrersAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval,
+  });
+
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
+
+  const results = await db()
+    .select({
+      referrerDomain: pageviews.referrerDomain,
+      uniqueUserIds: sql<number>`sum(${pageviews.uniqueUserIds})::integer`,
+    })
+    .from(pageviews)
+    .where(
+      and(
+        eq(pageviews.teamId, project.teamId),
+        eq(pageviews.projectId, project.id),
+        between(pageviews.timestamp, fromDate, toDate),
+      ),
+    )
+    .groupBy(pageviews.referrerDomain)
+    .orderBy(sql`2 desc`)
+    .limit(400);
+
+  return results.map((r) => ({
+    referrerDomain: r.referrerDomain,
+    name: getDisplayNameFromURL(r.referrerDomain),
+    uniqueUserIds: r.uniqueUserIds,
+  }));
 }

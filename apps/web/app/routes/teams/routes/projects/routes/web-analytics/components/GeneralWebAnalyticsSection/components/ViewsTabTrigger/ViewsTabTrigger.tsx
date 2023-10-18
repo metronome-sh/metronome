@@ -42,6 +42,7 @@ export const ViewsTabTrigger: FunctionComponent = () => {
                 title={title}
                 value={formatNumber(value, '0')}
                 containerClassName="relative group cursor-pointer"
+                rawValue={`${value.toLocaleString()} views`}
               >
                 <div className="absolute inset-y-1 left-1 w-1 rounded-full bg-muted group-[[data-state=active]]:bg-violet-500" />
               </Metric>

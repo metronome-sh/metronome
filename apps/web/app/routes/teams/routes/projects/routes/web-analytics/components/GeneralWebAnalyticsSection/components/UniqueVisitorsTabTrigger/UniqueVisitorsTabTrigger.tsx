@@ -39,6 +39,7 @@ export const UniqueVisitorsTabTrigger: FunctionComponent = () => {
                 compact
                 title={title}
                 value={formatNumber(value)}
+                rawValue={`${value.toLocaleString()} unique visitors`}
                 containerClassName="relative group cursor-pointer"
               >
                 <div className="absolute inset-y-1 left-1 w-1 rounded-full bg-muted group-[[data-state=active]]:bg-teal-600" />

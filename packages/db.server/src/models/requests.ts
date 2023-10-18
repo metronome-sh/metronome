@@ -6,6 +6,7 @@ import { RequestEventSchema } from '../schemaValidation';
 import { Interval, Project, Range, RequestEvent } from '../types';
 import { toPostgresTzName } from '../utils/aggregations';
 import { observable, operators, throttleTime } from '../utils/events';
+import { resolveIp } from '../utils/ip';
 
 export function isRequestEvent(event: unknown): event is RequestEvent {
   const result = RequestEventSchema.safeParse(event);
@@ -17,13 +18,7 @@ export async function insert(project: Project, requestEvent: RequestEvent) {
     details: { timestamp, duration, method, statusCode, pathname, type, ip },
   } = requestEvent;
 
-  // const geo = resolveIp(ip);
-  const geo = {
-    countryCode: 'unknown',
-    country: 'unknown',
-    region: 'unknown',
-    city: 'unknown',
-  };
+  const geo = resolveIp(ip);
 
   await db({ write: true })
     .insert(requests)

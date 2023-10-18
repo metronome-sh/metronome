@@ -3,8 +3,8 @@ import { type FunctionComponent, useState } from 'react';
 
 import { Alert, Button, Dialog, Icon } from '#app/components';
 import { useTeamLoaderData } from '#app/routes/teams/hooks';
-// import { Loadable } from '~/components/Loadable';
-// import { useFetcherState } from '~/hooks/useFetcherState';
+// import { Loadable } from '#app/components/Loadable';
+// import { useFetcherState } from '#app/hooks/useFetcherState';
 
 export const DeleteProject: FunctionComponent<{
   initialDialogOpen?: boolean;

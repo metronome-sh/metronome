@@ -14,11 +14,11 @@ import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 import { namedAction } from '#app/utils';
 
-// import { handlers } from '~/handlers';
-// import { failed } from '~/modules/assertions';
-// import { nanoid } from '~/modules/nanoid';
-// import { notFound } from '~/responses';
-// import { CreateProjectSchema, ProjectVisibilitySchema } from '~/schemas';
+// import { handlers } from '#app/handlers';
+// import { failed } from '#app/modules/assertions';
+// import { nanoid } from '#app/modules/nanoid';
+// import { notFound } from '#app/responses';
+// import { CreateProjectSchema, ProjectVisibilitySchema } from '#app/schemas';
 // import { Page } from '../../components/Page';
 import { DangerZoneForm } from './components/DangerZoneForm';
 import { GeneralSettingsForm } from './components/GeneralSettingsForm';

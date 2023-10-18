@@ -47,8 +47,8 @@
 //     // "rootDir": "./app",
 //     "baseUrl": ".",
 //     "paths": {
-//       "~/*": ["./app/*"]
-//       // "~/storybook/*": ["./.storybook/*"]
+//       "#app/*": ["./app/*"]
+//       // "#app/storybook/*": ["./.storybook/*"]
 //     },
 
 //     // Remix takes care of building everything in `remix build`.

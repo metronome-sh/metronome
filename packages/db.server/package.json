@@ -13,6 +13,7 @@
     "dev:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
     "dk": "drizzle-kit",
     "migrate:up": "tsx ./drizzle/migrate.mts",
+    "geoip:download": "tsx ./cli/geoip.mts",
     "test": "vitest run"
   },
   "keywords": [],
@@ -20,6 +21,8 @@
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@types/bcryptjs": "^2.4.4",
+    "@types/tar": "^6.1.6",
+    "@types/tldjs": "^2.3.2",
     "@types/ua-parser-js": "^0.7.37",
     "concurrently": "^8.2.1",
     "drizzle-kit": "^0.19.13",
@@ -30,6 +33,7 @@
   "dependencies": {
     "@epic-web/remember": "^1.0.2",
     "@js-temporal/polyfill": "^0.4.4",
+    "@maxmind/geoip2-node": "^4.2.0",
     "@metronome/cache.server": "workspace:*",
     "@metronome/env.server": "workspace:*",
     "@metronome/queues.server": "workspace:*",
@@ -38,9 +42,12 @@
     "drizzle-orm": "^0.28.6",
     "ioredis": "^5.3.2",
     "nanoid": "^3.3.6",
+    "node-fetch": "^3.3.2",
     "postgres": "^3.3.5",
     "rxjs": "^7.8.1",
     "slugify": "^1.6.6",
+    "tar": "^6.2.0",
+    "tldjs": "^2.3.1",
     "tsx": "^3.13.0",
     "ua-parser-js": "^1.0.36",
     "web-vitals": "^3.5.0",
