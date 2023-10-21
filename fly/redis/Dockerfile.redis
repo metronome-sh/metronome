@@ -1,0 +1,14 @@
+ARG REDIS_VERSION=6.2.6
+FROM redis:${REDIS_VERSION}-alpine
+
+RUN apk add --update nodejs npm
+
+COPY --chown=redis:redis fly/redis/start-redis-server.sh /usr/bin/start-redis-server.sh
+
+COPY --chown=redis:redis fly/redis/healthcheck.js /home/redis/healthcheck.js
+COPY --chown=redis:redis fly/redis/package.json /home/redis/package.json
+
+# Install dependencies
+RUN cd /home/redis && npm install
+
+CMD ["/usr/bin/start-redis-server.sh"]

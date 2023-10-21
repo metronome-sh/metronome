@@ -1,4 +1,5 @@
 **/scripts/**.mjs
+**/scripts/**.mts
 **/drizzle/migrate.mts
 **/templates/**/*
 **/dist/**/*

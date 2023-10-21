@@ -1,13 +1,13 @@
 /* eslint-disable import/no-named-as-default-member */
+import { env } from '@metronome/env.server';
 import { createRequestHandler } from '@remix-run/express';
 import { broadcastDevReady, installGlobals } from '@remix-run/node';
-import chokidar from 'chokidar';
+import * as chokidar from 'chokidar';
 import compression from 'compression';
 import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import { install as installSourceMapSupport } from 'source-map-support';
-
 installSourceMapSupport();
 installGlobals();
 
@@ -43,7 +43,7 @@ app.all(
         mode: initialBuild.mode,
       }),
 );
-const port = Number(process.env.PORT || 3000);
+const port = env.app().port;
 
 app.listen(port, '0.0.0.0', async () => {
   console.log(`Express server listening on port ${port}`);

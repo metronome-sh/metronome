@@ -81,17 +81,16 @@ export function session() {
   };
 }
 
-export function url(pathname: string) {
+export function app() {
   const appUrl = defined('APP_URL');
-  return `${appUrl}${pathname}`;
+  const port = Number(defined('APP_PORT'));
+
+  return { url: appUrl, port };
 }
 
-export function kafka() {
-  const brokers = defined('KAFKA_BROKERS');
-
-  return {
-    brokers: brokers.split(','),
-  };
+export function url(pathname: string) {
+  const { url: appUrl, port } = app();
+  return `${appUrl}${pathname}:${port}`;
 }
 
 export function producer() {

@@ -39,7 +39,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!team) throw notFound();
 
-  const project = await projects.create({
+  const project = await projects.insert({
     name,
     url: url || null,
     teamId: team.id,

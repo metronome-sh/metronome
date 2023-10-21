@@ -1,0 +1,37 @@
+app = "redis-metronome-sh"
+primary_region = "yyz"
+kill_signal = "SIGINT"
+kill_timeout = 5
+
+processes = []
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "Dockerfile.redis"
+
+[env]
+  APPEND_ONLY = "yes"
+  MAXMEMORY_POLICY = "noeviction"
+  PRIMARY_REGION = "yyz"
+
+[checks]
+  [checks.redis]
+    grace_period = "30s"
+    interval = "15s"
+    method = "get"
+    path = "/"
+    port = 8080
+    timeout = "10s"
+    type = "http"
+    restart_limit= 10
+
+[[mounts]]
+  source = "production_redis_data"
+  destination = "/data"
+  processes = ["app"]
+
+[metrics]
+  port = 9091
+  path = "/metrics"

@@ -118,7 +118,6 @@ function handleBrowserRequest(
       {
         headers: {
           'Content-Type': 'text/html',
-          'Set-Cookie': 'tzOffset=0; path=/',
           Refresh: `0; url=${request.url}`,
         },
       },

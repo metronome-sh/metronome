@@ -99,7 +99,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       let projectToRedirectTo: Project;
 
       if (teamProjects.length === 1) {
-        projectToRedirectTo = await projects.create({
+        projectToRedirectTo = await projects.insert({
           teamId: project.teamId,
           name: 'New Project',
         });

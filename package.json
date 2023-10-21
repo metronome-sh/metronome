@@ -7,14 +7,15 @@
     "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
     "dev": "pnpm -r --parallel dev",
     "dev:web": "pnpm -r --parallel --filter web... dev",
-    "build": "pnpm -r --parallel build",
+    "build": "pnpm -r build",
     "docker:up": "docker-compose --env-file .env -f docker/docker-compose.dev.yml up -d",
     "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",
     "docker:down": "docker-compose --env-file .env -f docker/docker-compose.dev.yml down",
     "docker:restart": "docker-compose --env-file .env -f docker/docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
     "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix",
-    "geoip:download": "pnpm --filter \"@metronome/db.server\" geoip:download"
+    "geoip:download": "pnpm --filter \"@metronome/db.server\" geoip:download",
+    "setup:docker": "node ./scripts/setup-docker.mjs"
   },
   "keywords": [],
   "author": "",
@@ -35,5 +36,13 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "prettier": "^3.0.3",
     "tailwindcss": "^3.3.3"
+  },
+  "dependencies": {
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
+    "cross-env": "^7.0.3",
+    "nanoid": "^3.3.6",
+    "ora": "^7.0.1",
+    "yargs": "^17.7.2"
   }
 }
