@@ -1,4 +1,8 @@
 import { env } from '@metronome/env.server';
+import EventEmitter from 'events';
+
+EventEmitter.defaultMaxListeners = 1_000;
+
 
 import { createQueue } from './createQueue';
 

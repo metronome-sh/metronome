@@ -13,7 +13,45 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    # command: pnpm --filter @metronome/db.server migrate:up && pnpm --filter @metronome/web start
     command: /bin/sh -c "pnpm --filter @metronome/db.server migrate:up && pnpm --filter @metronome/web start"
+    healthcheck:
+      test: "curl --fail http://localhost:${APP_PORT}/healthcheck"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - metronome-network
+
+  workers:
+    depends_on:
+      web:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: "pnpm --filter @metronome/workers start"
+    networks:
+      - metronome-network
+
+  cron:
+    depends_on:
+      web:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: "pnpm --filter @metronome/cron start"
     networks:
       - metronome-network
 
@@ -27,11 +65,12 @@ services:
       POSTGRES_USER: "${DB_WRITE_USER}"
       POSTGRES_PASSWORD: "${DB_WRITE_PASSWORD}"
       POSTGRES_DB: "${DB_WRITE_DATABASE}"
+      TIMESCALEDB_TELEMETRY: "off"
 
     volumes:
       - "db:/home/postgres/pgdata/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_WRITE_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_WRITE_USER} -d ${DB_WRITE_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5

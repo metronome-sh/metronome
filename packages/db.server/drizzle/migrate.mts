@@ -1,3 +1,26 @@
+// import { env } from '@metronome/env.server';
+// import { migrate } from 'drizzle-orm/postgres-js/migrator';
+// import { drizzle as Drizzle } from 'drizzle-orm/postgres-js';
+// import postgres from 'postgres';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+
+
+
+// const sql = postgres(env.db().writableUrl, { max: 1 });
+
+// export const drizzle = Drizzle(sql);
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+// await migrate(drizzle, { migrationsFolder: `${__dirname}/migrations` });
+
+// console.log('Migrations complete');
+
+// process.exit(0);
+
+
 import { env } from '@metronome/env.server';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { drizzle as Drizzle } from 'drizzle-orm/postgres-js';
@@ -5,15 +28,33 @@ import postgres from 'postgres';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const sql = postgres(env.db().writableUrl, { max: 1 });
+let retries = 10;
 
-export const drizzle = Drizzle(sql);
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const connectAndMigrate = async () => {
+  while (retries !== 0) {
+    try {
+      const sql = postgres(env.db().writableUrl, { max: 1 });
 
-await migrate(drizzle, { migrationsFolder: `${__dirname}/migrations` });
+      const drizzle = Drizzle(sql);
 
-console.log('Migrations complete');
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
 
-process.exit(0);
+      await migrate(drizzle, { migrationsFolder: `${__dirname}/migrations` });
+
+      console.log('Migrations complete');
+      process.exit(0);
+      return;
+    } catch (error) {
+      retries--;
+      console.error(`Failed to connect to the database. Retries left ${retries}`);
+      await sleep(3000); // Wait for 3 seconds before retrying
+    }
+  }
+  console.error('Max retries reached. Exiting.');
+  process.exit(1);
+};
+
+connectAndMigrate();
