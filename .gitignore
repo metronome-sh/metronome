@@ -6,6 +6,7 @@ tmp
 # dependencies
 node_modules
 .env
+.env.backup
 
 # IDEs and editors
 /.idea

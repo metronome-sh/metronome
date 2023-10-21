@@ -1,5 +1,4 @@
 version: "3"
-name: "metronome-test-2"
 services:
   web:
     depends_on:
