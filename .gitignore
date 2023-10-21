@@ -46,3 +46,7 @@ packages/telemetry.server/geoip
 # Remix
 apps/web/build
 apps/web/public/build
+
+#Root dockerfiles
+docker-compose.yml
+Dockerfile

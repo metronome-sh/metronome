@@ -1,5 +1,5 @@
 version: "3"
-name: "metronome-test-1"
+name: "metronome-test-2"
 services:
   web:
     depends_on:
@@ -9,7 +9,7 @@ services:
         condition: service_healthy
     restart: always
     ports:
-      - '8080:8080'
+      - "${APP_PORT}:${APP_PORT}"
     build:
       context: .
       dockerfile: ./Dockerfile
