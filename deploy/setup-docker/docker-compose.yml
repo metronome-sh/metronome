@@ -1,5 +1,13 @@
 version: "3"
 services:
+  caddy:
+    image: caddy:latest
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy:/data
+    ports:
+      - "80:80"
+      - "443:443"
   web:
     depends_on:
       db:
@@ -104,4 +112,6 @@ volumes:
   db:
     driver: local
   redis:
+    driver: local
+  caddy:
     driver: local

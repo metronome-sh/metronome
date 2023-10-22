@@ -12,10 +12,6 @@ while [ "$#" -gt 0 ]; do
       APP_URL="$2"
       shift 2
       ;;
-    --port)
-      APP_PORT="$2"
-      shift 2
-      ;;
     --maxmind-license)
       MAXMIND_LICENSE_KEY="$2"
       shift 2
@@ -64,11 +60,31 @@ awk -v app_url="$APP_URL" \
     /REDIS_UNIQUE_PASSWORD/ {$2="\"" redis_pass "\""}
     { if ($1 != "") print $1 "=" $2; else print "" }' ./.env.example > ./.env
 
+# Caddyfile
+# awk -v app_url="$APP_URL" '{gsub(/metronome.sh/, app_url); print}' ./deploy/setup-docker/Caddyfile > ./Caddyfile
+# Create the Caddyfile content
+# Caddyfile template
+read -r -d '' CADDY_TEMPLATE << EOF
+http://$APP_URL {
+  redir https://{host}{uri}
+}
+
+https://$APP_URL {
+  reverse_proxy web:$APP_PORT
+}
+EOF
+
+# Output to Caddyfile
+echo "$CADDY_TEMPLATE" > ./Caddyfile
+
 #Copy docker-compose.yml and Dockerfile
-cp ./docker/docker-compose.yml ./docker-compose.yml
-cp ./docker/Dockerfile ./Dockerfile
+cp ./deploy/setup-docker/docker-compose.yml ./docker-compose.yml
+cp ./deploy/setup-docker/Dockerfile ./Dockerfile
+cp ./deploy/setup-docker/Dockerfile ./Dockerfile
 
 # Display result message
 echo "✅ .env file created with secrets"
 echo "🐳 docker-compose.yml created"
+echo "🐳 Dockerfile created"
+echo "🔒 Caddyfile created"
 echo "You may now run docker-compose up to start Metronome"
