@@ -109,7 +109,7 @@ export async function createTimeOffsetAggregatedView({
   };
 }) {
   const lock = await cache.lock(
-    [JSON.stringify([from, base, offset, interval])],
+    [from, base, offset, interval],
     20_000,
   );
 
@@ -160,9 +160,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesHourSql);
 
+    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+
     await queues.aggregations.add(
       { aggregation: hourTable, watermark: '1 hour' },
-      { jobId: hourTable },
+      { jobId: hourTable, delay },
     );
   };
 
@@ -200,9 +202,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesDaySql);
 
+    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+
     await queues.aggregations.add(
       { aggregation: dayTable, watermark: '1 day' },
-      { jobId: dayTable },
+      { jobId: dayTable, delay },
     );
   };
 
@@ -241,9 +245,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesWeekSql);
 
+    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+
     await queues.aggregations.add(
       { aggregation: weekTable, watermark: '1 week' },
-      { jobId: weekTable },
+      { jobId: weekTable, delay },
     );
   };
 
@@ -282,9 +288,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesMonthSql);
 
+    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+
     await queues.aggregations.add(
       { aggregation: monthTable, watermark: '1 month' },
-      { jobId: monthTable },
+      { jobId: monthTable, delay },
     );
   };
 

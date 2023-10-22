@@ -4,10 +4,12 @@ services:
     image: caddy:latest
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy:/data
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - metronome-network
+
   web:
     depends_on:
       db:
@@ -20,7 +22,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    # command: pnpm --filter @metronome/db.server migrate:up && pnpm --filter @metronome/web start
     command: /bin/sh -c "pnpm --filter @metronome/db.server migrate:up && pnpm --filter @metronome/web start"
     healthcheck:
       test: "curl --fail http://localhost:${APP_PORT}/healthcheck"
@@ -73,9 +74,6 @@ services:
       POSTGRES_PASSWORD: "${DB_WRITE_PASSWORD}"
       POSTGRES_DB: "${DB_WRITE_DATABASE}"
       TIMESCALEDB_TELEMETRY: "off"
-
-    volumes:
-      - "db:/home/postgres/pgdata/data"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_WRITE_USER} -d ${DB_WRITE_DATABASE}"]
       interval: 10s
@@ -95,8 +93,6 @@ services:
       - "${REDIS_CACHE_PASSWORD}"
     ports:
       - "6379:6379"
-    volumes:
-      - "redis:/data"
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping" ]
       interval: 10s
@@ -108,10 +104,3 @@ services:
 networks:
   metronome-network:
 
-volumes:
-  db:
-    driver: local
-  redis:
-    driver: local
-  caddy:
-    driver: local
