@@ -17,8 +17,6 @@ export const Link: FunctionComponent<LinkProps> = ({
 }) => {
   const isExternal = href.startsWith('http');
 
-  console.log({ children });
-
   // prettier-ignore
   const classNames = cn('w-fit text-teal-600 font-normal underline decoration-teal-500/50 hover:decoration-teal-500 [&>*]:underline [&>*]:decoration-teal-500/50 [&>*]:hover:decoration-teal-500', className)
 
