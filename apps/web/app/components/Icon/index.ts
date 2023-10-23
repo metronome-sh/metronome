@@ -18,6 +18,8 @@ import { BuildingLighthouse } from './BuildingLighthouse';
 import { Calendar } from './Calendar';
 import { CaretDownFilled } from './CaretDownFilled';
 import { ChevronRight } from './ChevronRight';
+import { Clipboard } from './Clipboard';
+import { ClipboardCheck } from './ClipboardCheck';
 import { ClipboardCopy } from './ClipboardCopy';
 import { DeviceDesktop } from './DeviceDesktop';
 import { Eye } from './Eye';
@@ -39,6 +41,7 @@ import { SettingsTwo } from './SettingsTwo';
 import { SquareRoundedPlus } from './SquareRoundedPlus';
 import { SquaresFilled } from './SquaresFilled';
 import { Sun } from './Sun';
+import { TerminalTwo } from './TerminalTwo';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
 import { TriangleInvertedFilled } from './TriangleInvertedFilled';
 import { World } from './World';
@@ -60,6 +63,7 @@ export const Icon = {
   Heartbeat,
   LoaderTwo,
   BrandEdge,
+  Clipboard,
   RotateTwo,
   BrandLinux,
   BrandOpera,
@@ -67,6 +71,7 @@ export const Icon = {
   BrandSafari,
   BrandChrome,
   HeartFilled,
+  TerminalTwo,
   BrandUbuntu,
   SettingsTwo,
   BrandAndroid,
@@ -77,6 +82,7 @@ export const Icon = {
   ClipboardCopy,
   DeviceDesktop,
   SquaresFilled,
+  ClipboardCheck,
   RouteSquareTwo,
   CaretDownFilled,
   ArrowNarrowLeft,

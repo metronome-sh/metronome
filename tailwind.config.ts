@@ -1,4 +1,3 @@
-const { fontFamily } = require('tailwindcss/defaultTheme');
 import type { Config } from 'tailwindcss';
 
 const REM_FACTOR = 0.25;

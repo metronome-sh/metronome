@@ -10,7 +10,7 @@ const spacing = Array.from(Array(1001).keys()).reduce(
 export default {
   darkMode: 'class',
   content: [
-    './app/**/*.{js,jsx,ts,tsx}',
+    './app/**/*.{js,jsx,ts,tsx,mdoc}',
     '../../packages/**/*.{js,jsx,ts,tsx}',
     './.storybook/**/*.{js,jsx,ts,tsx,html}',
   ],

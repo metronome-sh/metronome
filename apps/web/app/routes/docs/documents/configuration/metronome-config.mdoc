@@ -41,7 +41,10 @@ This property controls the routes that will be ignored by the Metronome. Metrono
  * @type {import('@metronome-sh/config').MetronomeConfig}
  */
 module.exports = {
-  ignoredRoutes: ["root"], // Ignores the root route
+  // Ignores the root route
+  ignoredRoutes: ["root"],
+  ignoredPathnames: ["/healthcheck"],
+  ignoreHeadMethod: true,
 };
 ```
 
@@ -56,7 +59,11 @@ This property controls the pathnames that will be ignored. Metronome will ignore
  * @type {import('@metronome-sh/config').MetronomeConfig}
  */
 module.exports = {
+  ignoredRoutes: [],
+  // Ignores the healthcheck and all loaders and actions 
+  // that contains "tasks" in the pathname
   ignoredPathnames: ["/healthcheck", /^\/tasks\/.*/],
+  ignoreHeadMethod: true,
 };
 ```
 
@@ -71,6 +78,9 @@ This property controls if the `HEAD` method will be ignored. Metronome will igno
  * @type {import('@metronome-sh/config').MetronomeConfig}
  */
 module.exports = {
+  ignoredRoutes: [],
+  ignoredPathnames: ["/healthcheck"],
+  // Tracks the HEAD method
   ignoreHeadMethod: true,
 };
 ```

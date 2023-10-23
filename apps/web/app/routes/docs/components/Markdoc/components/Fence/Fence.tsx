@@ -13,6 +13,8 @@ import {
   useState,
 } from 'react';
 
+import { cn, Icon } from '#app/components';
+
 export type FenceProps = PropsWithChildren<{
   language: string;
   content: string;
@@ -39,8 +41,11 @@ export const Fence: FunctionComponent<FenceProps> = ({
   const [copied, setCopied] = useState(false);
 
   const copy = useCallback(async () => {
-    await navigator.clipboard?.writeText(content);
-    document.execCommand('copy', true, content);
+    // Remove comments
+    const clipboardContent = content.replace(/.*\/\/.*\n/g, '');
+
+    await navigator.clipboard?.writeText(clipboardContent);
+    document.execCommand('copy', true, clipboardContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [setCopied, content]);
@@ -55,27 +60,26 @@ export const Fence: FunctionComponent<FenceProps> = ({
       >
         {({ tokens, getLineProps, getTokenProps }) => (
           <>
-            <div className="flex items-center justify-between rounded-t-lg border bg-muted py-2 pl-4 pr-2">
-              <span className="text-sm tracking-wide text-white/80">
+            <div className="flex items-center justify-between rounded-t-lg border bg-muted/50 py-2 pl-4 pr-2">
+              <span className="text-sm tracking-wide text-white/80 flex items-center gap-1">
                 {title?.includes('.') ? (
-                  <>
-                    <div>file</div>
-                    {/* <FontAwesomeIcon className="pr-2" icon={faFile} /> */}
-                  </>
+                  <Icon.FileText />
+                ) : title?.toLowerCase() === 'terminal' ? (
+                  <Icon.TerminalTwo />
                 ) : null}
-                {title}
+                <span>{title}</span>
               </span>
               <div className="flex items-center">
-                {copied ? (
-                  <span className="mt-0.5 text-xs font-normal text-[#b3b5c1]">
-                    Copied!
-                  </span>
-                ) : null}
-                <button className="px-2 text-white" onClick={copy}>
-                  copy
-                  {/* <FontAwesomeIcon
-                    icon={copied ? faClipboardCheck : faClipboard}
-                  /> */}
+                <button
+                  className={cn(
+                    'px-2 text-white text-xs space-x-1 flex items-center py-1 rounded',
+                    { 'hover:bg-muted': !copied },
+                  )}
+                  onClick={copy}
+                  disabled={copied}
+                >
+                  {copied ? <Icon.ClipboardCheck /> : <Icon.Clipboard />}
+                  <span> {copied ? 'Copied!' : 'Copy'}</span>
                 </button>
               </div>
             </div>
