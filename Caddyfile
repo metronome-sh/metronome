@@ -1,7 +1,7 @@
-http://test.metronome.sh {
+http://localhost {
   redir https://{host}{uri}
 }
 
-https://test.metronome.sh {
+https://localhost {
   reverse_proxy web:3000
 }

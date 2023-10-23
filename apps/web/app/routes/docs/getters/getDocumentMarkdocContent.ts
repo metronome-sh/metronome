@@ -12,10 +12,31 @@ import path from 'path';
 import { DOCUMENTS_PATH } from '../constants';
 import { DocumentHeadings } from '../types';
 
+async function checkFileExists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function getDocumentMarkdocContent(
   filename: string,
 ): Promise<{ content: RenderableTreeNode; headings: DocumentHeadings }> {
-  const fullPath = path.resolve(DOCUMENTS_PATH, filename);
+  let fullPath = path.resolve(DOCUMENTS_PATH, filename);
+
+  let exists = await checkFileExists(fullPath);
+
+  if (!exists) {
+    const dir = filename.replace('.mdoc', '');
+    fullPath = path.resolve(DOCUMENTS_PATH, dir, filename);
+    exists = await checkFileExists(fullPath);
+
+    if (!exists) {
+      throw new Error(`Document ${filename} not found`);
+    }
+  }
 
   const source = await fs.readFile(fullPath, 'utf-8');
 
@@ -34,6 +55,15 @@ export async function getDocumentMarkdocContent(
 
   const config: MarkdocConfig = {
     tags: {
+      link: {
+        render: 'Link',
+        attributes: {
+          href: { type: String },
+          title: { type: String },
+          className: { type: String },
+        },
+        children: ['text'],
+      },
       'installation-targets': {
         render: 'InstallationTargets',
         children: ['installation-target'],

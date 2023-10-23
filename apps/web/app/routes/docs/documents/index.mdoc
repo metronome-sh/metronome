@@ -5,6 +5,13 @@ sections:
   - label: 'Overview'
     filename: 'index.mdoc'
     path: ''
+  - label: 'Self-hosted'
+    path: 'self-hosted'
+    filename: 'self-hosted.mdoc'
+    items:
+      - label: 'Guide: Digital Ocean'
+        filename: 'digital-ocean.mdoc'
+        path: 'digital-ocean'
   - label: 'Getting Started'
     path: 'getting-started'
     items:
@@ -14,30 +21,9 @@ sections:
   - label: 'Installation Guides'
     path: 'setup-guides'
     items:
-#      - label: 'Architect'
-#        path: 'remix-architect'
-#        filename: 'remix-architect.mdoc'
-#      - label: 'Cloudflare Pages'
-#        path: 'remix-cloudflare-pages'
-#        filename: 'remix-cloudflare-pages.mdoc'
-#      - label: 'Cloudflare Workers'
-#        path: 'remix-cloudflare-workers'
-#        filename: 'remix-cloudflare-workers.mdoc'
       - label: 'Express'
         path: 'remix-express'
         filename: 'remix-express.mdoc'
-#      - label: 'Netlify'
-#        path: 'remix-netlify'
-#        filename: 'remix-netlify.mdoc'
-#      - label: 'Remix App Server'
-#        path: 'remix-app-server'
-#        filename: 'remix-app-server.mdoc'
-#      - label: 'Vercel'
-#        path: 'remix-vercel'
-#        filename: 'remix-vercel.mdoc'
-#      - label: 'Deno'
-#        path: 'remix-deno'
-#        filename: 'remix-deno.mdoc'
   - label: 'Configuration'
     path: 'configuration'
     items:
@@ -65,9 +51,6 @@ sections:
   - label: 'About'
     path: 'about'
     items:
-#      - label: 'Pricing'
-#        path: 'pricing'
-#        filename: 'pricing.mdoc'
       - label: 'Support'
         path: 'support'
         filename: 'support.mdoc'
@@ -97,4 +80,6 @@ Metronome is a tool that helps you understand how your app is performing. Use it
 
 It is aimed to be set up with minimal configuration and hassle-free.
 
-{% button label="Get Started" to="/docs/getting-started/installing-metronome" rightIcon="faArrowRight" .pt-2 /%}
+{% link href="/docs/getting-started/installing-metronome.mdoc" .block %}
+Get started
+{% /link %}

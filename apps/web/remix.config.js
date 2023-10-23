@@ -33,7 +33,28 @@ module.exports = {
   },
   routes: async () => {
     const appDirectory = path.resolve(__dirname, 'app');
+
+    // const sortRoutes = (routes) => {
+    //   const sortedKeys = Object.keys(routes).sort((a, b) => {
+    //     const isATeamSlug = a.startsWith('$');
+    //     const isBTeamSlug = b.startsWith('$');
+
+    //     if (isATeamSlug && !isBTeamSlug) return 1;
+    //     if (!isATeamSlug && isBTeamSlug) return -1;
+    //     return 0;
+    //   });
+
+    //   const sortedRoutes = {};
+
+    //   for (const key of sortedKeys) {
+    //     sortedRoutes[key] = routes[key];
+    //   }
+
+    //   return sortedRoutes;
+    // };
+
     const routes = routeExtensions(appDirectory);
+
     return routes;
   },
   appDirectory: 'app',

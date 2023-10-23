@@ -17,7 +17,7 @@ export const SidebarItem: FunctionComponent<SidebarItemProps> = ({
 
   const { pathname } = useLocation();
 
-  const fullPath = path ? `/docs/${parentPath}/${path}` : '/docs';
+  const fullPath = path ? `/docs/${parentPath}/${path}.mdoc` : '/docs';
 
   const isActive = pathname === fullPath;
 
@@ -26,7 +26,7 @@ export const SidebarItem: FunctionComponent<SidebarItemProps> = ({
       <Link prefetch="intent" to={fullPath}>
         <span
           className={clsx(
-            'hover:text-primary-6000 tracking-wide md:text-sm hover:underline',
+            'hover:text-primary-6000 tracking-wide hover:underline text-sm',
             isActive ? 'text-teal-500' : 'text-foreground',
           )}
         >

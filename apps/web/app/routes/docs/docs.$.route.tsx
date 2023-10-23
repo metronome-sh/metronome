@@ -14,7 +14,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
   let headings: DocumentHeadings;
 
   try {
-    ({ content, headings } = await getDocumentMarkdocContent(`${path}.mdoc`));
+    ({ content, headings } = await getDocumentMarkdocContent(
+      path.endsWith('.mdoc') ? path : `${path}.mdoc`,
+    ));
   } catch (error) {
     console.log(error);
     throw new Response('Not found', { status: 404 });

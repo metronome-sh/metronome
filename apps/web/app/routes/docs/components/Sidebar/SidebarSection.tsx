@@ -16,7 +16,7 @@ export const SidebarSection: FunctionComponent<SidebarSectionProps> = ({
   const { label, filename, items = [], path } = section;
   const { pathname } = useLocation();
 
-  const fullPath = path ? `/docs/${path}` : '/docs';
+  const fullPath = path ? `/docs/${path}.mdoc` : '/docs';
 
   const isActive = pathname === fullPath;
 
