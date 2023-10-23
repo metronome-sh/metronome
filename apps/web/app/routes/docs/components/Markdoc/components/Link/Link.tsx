@@ -20,7 +20,7 @@ export const Link: FunctionComponent<LinkProps> = ({
   console.log({ children });
 
   // prettier-ignore
-  const classNames = cn('w-fit text-emerald-600 font-normal underline decoration-emerald-600/50 hover:decoration-emerald-600 [&>*]:underline [&>*]:decoration-emerald-600/50 [&>*]:hover:decoration-emerald-600', className)
+  const classNames = cn('w-fit text-teal-600 font-normal underline decoration-teal-500/50 hover:decoration-teal-500 [&>*]:underline [&>*]:decoration-teal-500/50 [&>*]:hover:decoration-teal-500', className)
 
   // If is external link, use a regular anchor tag
   return isExternal ? (
