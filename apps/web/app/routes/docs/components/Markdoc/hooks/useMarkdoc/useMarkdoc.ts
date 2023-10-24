@@ -23,12 +23,14 @@ import {
   THead,
   Tr,
 } from '../../components';
+import { Alert } from '../../components/Alert/Alert';
 
 export function useMarkdoc(renderableTreeNodes: RenderableTreeNodes) {
   const rendered = useMemo(
     () =>
       renderers.react(renderableTreeNodes, React, {
         components: {
+          Alert,
           Heading,
           Paragraph,
           Button,

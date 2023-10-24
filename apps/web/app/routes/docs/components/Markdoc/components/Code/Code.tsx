@@ -9,7 +9,7 @@ export type CodeProps = {
 export const Code: FunctionComponent<CodeProps> = ({ content, className }) => {
   return (
     <div className={clsx('inline-block', className)}>
-      <pre className="rounded-md border bg-background px-1 text-sm leading-5">
+      <pre className="rounded-md border bg-background px-1 text-sm leading-5 text-teal-300">
         {content}
       </pre>
     </div>

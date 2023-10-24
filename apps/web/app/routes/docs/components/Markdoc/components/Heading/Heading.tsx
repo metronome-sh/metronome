@@ -1,5 +1,6 @@
-import clsx from 'clsx';
 import { type FunctionComponent, type PropsWithChildren } from 'react';
+
+import { cn } from '#app/components';
 
 import { toSlug } from '../../../../helpers';
 
@@ -19,9 +20,9 @@ export const Heading: FunctionComponent<HeadingProps> = ({
   return (
     <Component
       id={toSlug(children as string)}
-      className={clsx(
+      className={cn(
         className,
-        'pt-6 pb-2 font-medium',
+        'pt-6 pb-2 font-semibold',
         level === 1 && 'text-3xl',
         level === 2 && 'text-2xl',
         level === 3 && 'text-xl',

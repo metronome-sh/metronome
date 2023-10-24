@@ -1,0 +1,16 @@
+<svg width="660" height="660" viewBox="0 0 660 660" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>
+  .favicon-stroke {
+    stroke: #111827;
+
+  }
+  @media(prefers-color-scheme: dark) {
+    .favicon-stroke {
+      stroke: #ffffff;
+    }
+  }
+</style>
+<path class="favicon-stroke" d="M446.698 140L424.199 64.1554C408.73 18.6149 263.607 18.6148 248.138 64.1554L72.9831 559.092C61.4507 593.042 84.7878 629 118.355 629H525.645C559.212 629 582.549 593.042 571.017 559.092L501.724 325.5" stroke-width="60" stroke-linecap="round"/>
+<line class="favicon-stroke" x1="548" y1="473" x2="105" y2="473" stroke-width="60"/>
+<line class="favicon-stroke" x1="317.295" y1="473.058" x2="549.476" y2="117.705" stroke-width="60" stroke-linecap="round"/>
+</svg>

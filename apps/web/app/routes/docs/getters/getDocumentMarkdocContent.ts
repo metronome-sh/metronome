@@ -55,6 +55,13 @@ export async function getDocumentMarkdocContent(
 
   const config: MarkdocConfig = {
     tags: {
+      alert: {
+        render: 'Alert',
+        attributes: {
+          title: { type: String },
+        },
+        children: ['text'],
+      },
       link: {
         render: 'Link',
         attributes: {
