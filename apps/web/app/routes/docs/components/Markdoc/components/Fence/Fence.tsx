@@ -97,6 +97,9 @@ export const Fence: FunctionComponent<FenceProps> = ({
                     {...lineProps}
                     className={clsx(lineProps.className, 'whitespace-nowrap')}
                   >
+                    {title?.toLowerCase() === 'terminal' ? (
+                      <span className="pr-1 opacity-50 select-none">$</span>
+                    ) : null}
                     {line.map((token, key) => {
                       const tokenProps = getTokenProps({ token, key });
 

@@ -24,6 +24,7 @@ import {
   Tr,
 } from '../../components';
 import { Alert } from '../../components/Alert/Alert';
+import { HorizontalRule } from '../../components/HorizontalRule/HorizontalRule';
 
 export function useMarkdoc(renderableTreeNodes: RenderableTreeNodes) {
   const rendered = useMemo(
@@ -32,6 +33,7 @@ export function useMarkdoc(renderableTreeNodes: RenderableTreeNodes) {
         components: {
           Alert,
           Heading,
+          HorizontalRule,
           Paragraph,
           Button,
           Image,

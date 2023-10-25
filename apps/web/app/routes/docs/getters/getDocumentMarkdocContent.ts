@@ -112,6 +112,9 @@ export async function getDocumentMarkdocContent(
       },
     },
     nodes: {
+      hr: {
+        render: 'HorizontalRule',
+      },
       heading: {
         render: 'Heading',
         attributes: { level: { type: String }, className: { type: String } },

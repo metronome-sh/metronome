@@ -23,6 +23,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 
   const sections = await getDocumentationSections();
+
   return json({ sections, content, headings });
 }
 
