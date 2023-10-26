@@ -2,6 +2,7 @@
 
 # Initialize default values
 APP_URL="http://localhost"
+APP_URL=$(echo $APP_URL | sed 's~https\?://~~')
 APP_PORT="3000"
 MAXMIND_LICENSE_KEY=""
 
@@ -33,7 +34,7 @@ envExample=$(cat ./.env.example)
 
 # Replace the values
 # Read .env.example and replace values line by line
-awk -v app_url="$APP_URL" \
+awk -v app_url="https://$APP_URL" \
     -v app_port="$APP_PORT" \
     -v maxmind="$MAXMIND_LICENSE_KEY" \
     -v db_pass="$DB_PASSWORD" \

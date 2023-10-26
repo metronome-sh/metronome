@@ -51,3 +51,5 @@ apps/web/public/build
 #Root dockerfiles
 /docker-compose.yml
 /Dockerfile
+/Caddyfile
+
