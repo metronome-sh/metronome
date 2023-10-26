@@ -14,4 +14,6 @@ RUN pnpm i
 
 RUN pnpm build
 
+RUN pnpm geoip:download
+
 CMD ["pnpm", "--filter", "@metronome/web", "start"]

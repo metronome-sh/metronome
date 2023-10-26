@@ -10,7 +10,6 @@ services:
       POSTGRES_USER: "${DB_READ_USER}"
       POSTGRES_PASSWORD: "${DB_READ_PASSWORD}"
       POSTGRES_DB: "${DB_READ_DATABASE}"
-
     volumes:
       - "db:/home/postgres/pgdata/data"
     healthcheck:

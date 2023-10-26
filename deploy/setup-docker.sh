@@ -80,7 +80,8 @@ echo "$CADDY_TEMPLATE" > ./Caddyfile
 #Copy docker-compose.yml and Dockerfile
 cp ./deploy/setup-docker/docker-compose.yml ./docker-compose.yml
 cp ./deploy/setup-docker/Dockerfile ./Dockerfile
-cp ./deploy/setup-docker/Dockerfile ./Dockerfile
+cp ./deploy/setup-docker/Dockerfile.workers ./Dockerfile.workers
+
 
 # Display result message
 echo "✅ .env file created with secrets"
