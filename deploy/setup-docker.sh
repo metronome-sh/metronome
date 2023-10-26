@@ -2,7 +2,6 @@
 
 # Initialize default values
 APP_URL="http://localhost"
-APP_URL=$(echo $APP_URL | sed 's~https\?://~~')
 APP_PORT="3000"
 MAXMIND_LICENSE_KEY=""
 
@@ -11,6 +10,10 @@ while [ "$#" -gt 0 ]; do
   case "$1" in
     --url)
       APP_URL="$2"
+      # Strip 'https://' and 'http://'
+      APP_URL="${APP_URL#https://}"
+      APP_URL="${APP_URL#http://}"
+
       shift 2
       ;;
     --maxmind-license)
