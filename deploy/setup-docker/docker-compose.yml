@@ -83,7 +83,7 @@ services:
     networks:
       - metronome-network
     volumes:
-      - "./volumes/db:/home/postgres/pgdata/data"
+      - "db:/home/postgres/pgdata/data"
 
   redis:
     restart: always
@@ -96,7 +96,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - "./volumes/redis:/data"
+      - "redis:/data"
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping" ]
       interval: 10s
@@ -107,3 +107,9 @@ services:
 
 networks:
   metronome-network:
+
+volumes:
+  db:
+    driver: local
+  redis:
+    driver: local
