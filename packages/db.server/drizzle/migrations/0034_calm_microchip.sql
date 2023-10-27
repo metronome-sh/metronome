@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ALTER COLUMN "is_new" SET DEFAULT true;

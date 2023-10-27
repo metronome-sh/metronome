@@ -71,23 +71,41 @@ export const Navigation: FunctionComponent = () => {
               </>
             );
 
-            return item.commingSoon ? (
-              <Tooltip key={item.name} delayDuration={0}>
-                <Tooltip.Trigger asChild>
-                  <div
-                    className={cn(
-                      buttonVariants({ variant: 'ghost' }),
-                      'group relative px-2 opacity-50 cursor-default',
-                    )}
-                  >
-                    {markup}
-                  </div>
-                </Tooltip.Trigger>
-                <Tooltip.Content>
-                  <p>Coming Soon! 🚀</p>
-                </Tooltip.Content>
-              </Tooltip>
-            ) : (
+            if (item.commingSoon) {
+              return (
+                <Tooltip key={item.name} delayDuration={0}>
+                  <Tooltip.Trigger asChild>
+                    <div
+                      className={cn(
+                        buttonVariants({ variant: 'ghost' }),
+                        'group relative px-2 opacity-50 cursor-default',
+                      )}
+                    >
+                      {markup}
+                    </div>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>
+                    <p>Coming Soon! 🚀</p>
+                  </Tooltip.Content>
+                </Tooltip>
+              );
+            }
+
+            if (project.isNew && item.name !== 'Overview') {
+              return (
+                <div
+                  key={item.name}
+                  className={cn(
+                    buttonVariants({ variant: 'ghost' }),
+                    'group relative px-2 opacity-50 cursor-default',
+                  )}
+                >
+                  {markup}
+                </div>
+              );
+            }
+
+            return (
               <NavLink
                 key={item.name}
                 to={item.to}

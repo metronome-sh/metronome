@@ -30,9 +30,11 @@ import { Heartbeat } from './Heartbeat';
 import { HeartFilled } from './HeartFilled';
 import { Home } from './Home';
 import { InfoSquareRounded } from './InfoSquareRounded';
+import { Key } from './Key';
 import { LoaderTwo } from './LoaderTwo';
 import { MoodSadDizzy } from './MoodSadDizzy';
 import { Refresh } from './Refresh';
+import { Rocket } from './Rocket';
 import { RotateTwo } from './RotateTwo';
 import { RouteSquareTwo } from './RouteSquareTwo';
 import { Search } from './Search';
@@ -50,10 +52,12 @@ export const Icon = {
   Bug,
   Eye,
   Sun,
+  Key,
   Home,
   Alarm,
   World,
   Filter,
+  Rocket,
   Search,
   Refresh,
   Calendar,

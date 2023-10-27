@@ -38,8 +38,6 @@ export const BrowsersTabContent: FunctionComponent = () => {
             errorElement={<TableWithBarChart.Error />}
           >
             {(resolvedDevicesByBrowser) => {
-              console.log({ resolvedDevicesByBrowser });
-
               return (
                 <TableWithBarChart<
                   keyof Awaited<typeof resolvedDevicesByBrowser>[number]

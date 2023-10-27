@@ -4,12 +4,6 @@ import { Button, Form, Icon, Input, Label, Tooltip } from '#app/components';
 import { useTinyKeys } from '#app/hooks/useTinyKeys';
 
 import { useTeamProjectLoaderData } from '../../../../hooks';
-// import { Loadable } from '#app/components/Loadable';
-// import { Button } from '#app/components/ui/button';
-// import { FormSection } from '#app/components/ui/form';
-// import { Input } from '#app/components/ui/input';
-// import { Label } from '#app/components/ui/label';
-// import { useProject } from '#app/routes/teams/routes/projects/hooks';
 import { RotateApiKey } from './components/RotateApiKey';
 import { Usage } from './components/Usage';
 
@@ -88,9 +82,11 @@ export const InformationForm: FunctionComponent = () => {
                       setCopied(true);
                     }}
                   >
-                    {/* <Loadable state={copied ? 'success' : null}> */}
-                    <Icon.ClipboardCopy className="w-5 h-5" />
-                    {/* </Loadable> */}
+                    {copied ? (
+                      <Icon.ClipboardCheck className="w-5 h-5" />
+                    ) : (
+                      <Icon.Clipboard className="w-5 h-5" />
+                    )}
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content>

@@ -8,6 +8,8 @@ import {
   webVitals,
 } from '@metronome/db.server';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
+import { useRevalidator } from '@remix-run/react';
+import { useEffect } from 'react';
 
 import { Heading } from '#app/components';
 import { Filters, filters } from '#app/filters';
@@ -21,6 +23,8 @@ import {
   WebAnalyticsSection,
   WebVitalsSection,
 } from './components';
+import { EmptyState } from './components/EmptyState/EmptyState';
+import { useOverviewEventData, useOverviewLoaderData } from './hooks';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
@@ -92,6 +96,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
+  const isNewProject = project.isNew;
+
   return defer({
     requestsOverview,
     requestsCountSeries,
@@ -104,10 +110,28 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     sessionsOverview,
     pageviewsOverview,
     bounceRate,
+    isNewProject,
   });
 }
 
 export default function Component() {
+  const revalidator = useRevalidator();
+
+  const { isNewProject } = useOverviewLoaderData();
+  const { isNewProject: isNewProjectFromEvent } = useOverviewEventData();
+
+  useEffect(() => {
+    if (!isNewProject) return;
+
+    if (isNewProjectFromEvent === false && revalidator.state === 'idle') {
+      revalidator.revalidate();
+    }
+  }, [isNewProjectFromEvent, isNewProject, revalidator]);
+
+  if (isNewProject) {
+    return <EmptyState />;
+  }
+
   return (
     <div className="w-full flex-grow h-full">
       <div className="mx-auto w-full rounded-lg">

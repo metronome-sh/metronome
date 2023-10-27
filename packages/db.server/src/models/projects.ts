@@ -4,6 +4,7 @@ import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
+import { observable, operators, throttleTime } from '../utils/events';
 import { generateSlug } from '../utils/slugs';
 
 export async function insert(newProject: NewProject) {
@@ -46,6 +47,16 @@ export async function destroy({ id }: { id: string }) {
     .update(projects)
     .set({ deleted: true, updatedAt: new Date() })
     .where(eq(projects.id, id));
+}
+
+export async function find(id: string) {
+  const project = await db().query.projects.findFirst({
+    where: (projects, { eq, and }) => {
+      return and(eq(projects.id, id), eq(projects.deleted, false));
+    },
+  });
+
+  return project;
 }
 
 export async function findByApiKey({
@@ -104,4 +115,23 @@ export async function rotateSalts() {
       updatedAt: new Date(),
     })
     .where(and(eq(projects.deleted, false)));
+}
+
+export async function watch(
+  project: Project,
+  callback: (event: { ts: number }) => Promise<void>,
+): Promise<() => void> {
+  await callback({ ts: Date.now() });
+
+  const subscription = observable
+    .pipe(
+      operators.project(project),
+      operators.events(['first-event']),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    )
+    .subscribe(async ([e]) => {
+      await callback({ ts: e.returnvalue.ts });
+    });
+
+  return () => subscription.unsubscribe();
 }

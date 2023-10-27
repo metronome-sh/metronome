@@ -45,6 +45,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         return () => {};
       }
 
+      const cleanupProjectWatch = await projects.watch(
+        project,
+        async ({ ts }) => {
+          const updatedProject = await projects.find(project.id);
+
+          if (!updatedProject) return;
+
+          send({ isNewProject: updatedProject.isNew }, ts);
+        },
+      );
+
       const cleanupRequestsWatch = await requests.watch(
         project,
         async ({ ts }) => {
@@ -124,6 +135,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       );
 
       return async function cleanup() {
+        cleanupProjectWatch();
         cleanupRequestsWatch();
         cleanupLoadersWatch();
         cleanupActionsWatch();

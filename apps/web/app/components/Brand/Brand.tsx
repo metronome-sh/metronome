@@ -1,8 +1,6 @@
-import { Link } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 
 import { cn } from '../utils.ts';
-
 import { BrandLogo } from './Brand.Logo';
 
 export type BrandProps = {
@@ -63,7 +61,13 @@ export const Brand: FunctionComponent<BrandProps> & {
 
   return (
     <div className={containerClassName}>
-      {noLink ? imgMarkup : <Link to="/">{imgMarkup}</Link>}
+      {noLink ? (
+        imgMarkup
+      ) : (
+        <a href="https://metronome.sh" target="_blank" rel="noreferrer">
+          {imgMarkup}
+        </a>
+      )}
     </div>
   );
 };

@@ -102,7 +102,7 @@ export const projects = pgTable('projects', {
   deleted: boolean('deleted').default(false),
   clientVersion: text('client_version'),
   isPublic: boolean('isPublic').default(false),
-  isNew: boolean('is_new'),
+  isNew: boolean('is_new').notNull().default(true),
   salt: text('salt'),
   runtime: text('runtime'),
   previousSalt: text('previous_salt'),

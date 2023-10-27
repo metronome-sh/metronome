@@ -39,10 +39,8 @@ export default function Component() {
   return (
     <div className="flex flex-col flex-grow">
       <Navigation />
-      <div className="w-full flex-grow h-full">
-        <div className="mx-auto w-full max-w-screen-xl rounded-lg">
-          <Outlet />
-        </div>
+      <div className="mx-auto w-full h-full flex-grow flex flex-col max-w-screen-xl">
+        <Outlet />
       </div>
     </div>
   );
