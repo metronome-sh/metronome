@@ -1,11 +1,14 @@
-import { Link } from '@remix-run/react';
-import { type FunctionComponent } from 'react';
+import { Await, Link } from '@remix-run/react';
+import { type FunctionComponent, Suspense } from 'react';
 
-import { Brand, Button, UserMenu } from '#app/components';
+import { Avatar, Brand, Button, UserMenu } from '#app/components';
 import { useRootLoaderData } from '#app/hooks';
+
+import { useDocsLoaderData } from '../../hooks/useDocsLoaderData';
 
 export const DocsHeader: FunctionComponent = () => {
   const { user } = useRootLoaderData();
+  const { lastViewedProject } = useDocsLoaderData();
 
   return (
     <div className="fixed top-0 inset-x-0 flex w-screen h-15 border-b bg-black z-50">
@@ -22,14 +25,48 @@ export const DocsHeader: FunctionComponent = () => {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Button asChild variant="outline">
-                  <Link
-                    to={`/${user.usersToTeams[0].team.slug}`}
-                    className="text-sm transition-colors hover:text-primary hover:bg-muted px-3 py-2 rounded-md"
-                  >
-                    Dashboard
-                  </Link>
-                </Button>
+                <Suspense>
+                  <Await resolve={lastViewedProject}>
+                    {(resolvedLastViewedProject) => (
+                      <Button asChild variant="outline">
+                        <Link
+                          to={
+                            resolvedLastViewedProject
+                              ? `/${user.usersToTeams[0].team.slug}/${resolvedLastViewedProject.slug}`
+                              : `/${user.usersToTeams[0].team.slug}`
+                          }
+                          className="text-sm transition-colors hover:text-primary hover:bg-muted px-3 py-2 rounded-md"
+                        >
+                          {resolvedLastViewedProject ? (
+                            <>
+                              <span>Return to </span>
+                              <span className="px-1">
+                                <Avatar className="w-4 h-4 rounded-none">
+                                  <Avatar.Image
+                                    src={`/resources/favicon?url=${
+                                      resolvedLastViewedProject.url ??
+                                      'https://remix.run'
+                                    }`}
+                                    alt={
+                                      resolvedLastViewedProject.name ??
+                                      'Project avatar'
+                                    }
+                                  />
+                                  <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">
+                                    {resolvedLastViewedProject.name?.at(0)}
+                                  </Avatar.Fallback>
+                                </Avatar>
+                              </span>
+                              <span>{resolvedLastViewedProject?.name}</span>
+                            </>
+                          ) : (
+                            'Dashboard'
+                          )}
+                        </Link>
+                      </Button>
+                    )}
+                  </Await>
+                </Suspense>
                 <UserMenu />
               </>
             ) : (

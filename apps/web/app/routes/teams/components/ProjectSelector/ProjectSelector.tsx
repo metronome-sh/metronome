@@ -64,9 +64,9 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
             <span className="pr-2">
               <Avatar className="w-4 h-4 rounded-none">
                 <Avatar.Image
-                  src={
-                    project.url ? `/resources/favicon?url=${project.url}` : '#'
-                  }
+                  src={`/resources/favicon?url=${
+                    project.url ?? 'https://remix.run'
+                  }`}
                   alt={project.name ?? 'Project avatar'}
                 />
                 <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">
@@ -98,12 +98,12 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
                   >
                     <span className="pr-2">
                       <Avatar className="w-4 h-4 rounded-none">
-                        {p.url ? (
-                          <Avatar.Image
-                            src={`/resources/favicon?url=${p.url}`}
-                            alt={p.name ?? 'Project avatar'}
-                          />
-                        ) : null}
+                        <Avatar.Image
+                          src={`/resources/favicon?url=${
+                            p.url ?? 'https://remix.run'
+                          }`}
+                          alt={p.name ?? 'Project avatar'}
+                        />
                         <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">
                           {p.name?.at(0)}
                         </Avatar.Fallback>

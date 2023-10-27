@@ -59,6 +59,26 @@ export async function find(id: string) {
   return project;
 }
 
+export async function findBySlug({
+  projectSlug,
+  userId,
+}: {
+  projectSlug: string;
+  userId: string;
+}) {
+  const [entry] = await db()
+    .select()
+    .from(projects)
+    .leftJoin(teams, eq(teams.id, projects.teamId))
+    .leftJoin(
+      usersToTeams,
+      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
+    )
+    .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
+
+  return entry?.projects;
+}
+
 export async function findByApiKey({
   apiKey,
 }: {
@@ -82,7 +102,7 @@ export async function findBySlugs({
   teamSlug: string;
   userId: string;
 }): Promise<Project | undefined> {
-  const [project] = await db()
+  const [entry] = await db()
     .select()
     .from(projects)
     .leftJoin(teams, eq(teams.id, projects.teamId))
@@ -96,7 +116,7 @@ export async function findBySlugs({
     )
     .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
 
-  return project?.projects;
+  return entry?.projects;
 }
 
 export async function rotateApiKey({ id }: { id: string }) {

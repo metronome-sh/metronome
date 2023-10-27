@@ -63,7 +63,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const timeZone = getTimeZoneFromRequest(request);
 
-  return json({ user, observableRoutes, timeZoneId: timeZone.id });
+  return json({
+    user,
+    observableRoutes,
+    timeZoneId: timeZone.id,
+  });
 }
 
 function App() {

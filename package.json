@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
     "dev": "pnpm -r --parallel dev",
-    "dev:web": "pnpm -r --parallel --filter web... dev",
+    "dev:web": "pnpm -r --parallel --filter \"@metronome/web...\" dev",
     "build": "pnpm -r build",
     "docker:up": "docker-compose --env-file .env -f docker/docker-compose.dev.yml up -d",
     "docker:stop": "docker-compose --env-file .env -f docker/docker-compose.dev.yml stop",

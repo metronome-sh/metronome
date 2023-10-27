@@ -1,13 +1,19 @@
 import { type RenderableTreeNode } from '@markdoc/markdoc';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { projects } from '@metronome/db.server';
+import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+
+import { handle } from '#app/handlers';
 
 import { DocsHeader, Sidebar, TableOfContents } from './components';
 import { useMarkdoc } from './components/Markdoc';
 import { getDocumentationSections, getDocumentMarkdocContent } from './getters';
 import { type DocumentHeadings } from './types';
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { auth } = await handle(request);
+  const user = await auth.user({ required: false });
+
   const path = params['*'] || 'index';
 
   let content: RenderableTreeNode;
@@ -24,7 +30,15 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   const sections = await getDocumentationSections();
 
-  return json({ sections, content, headings });
+  const lastViewedProject =
+    user && user.settings?.lastSelectedProjectSlug
+      ? projects.findBySlug({
+          projectSlug: user.settings.lastSelectedProjectSlug,
+          userId: user.id,
+        })
+      : null;
+
+  return defer({ sections, content, headings, lastViewedProject });
 }
 
 export default function Doc() {
