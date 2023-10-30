@@ -4,20 +4,20 @@ import { resolve } from 'path';
 
 let observableRoutes: string[] = [];
 
-export function getObservableRoutes() {
+export function getObservableRoutes(
+  paths: string[] = [resolve(__dirname, '../app/routes')],
+) {
   if (observableRoutes.length === 0 || env.dev) {
-    const routesPath = resolve(__dirname, '../app/routes');
     // prettier-ignore
-    const routesWithEvents = globSync(`${routesPath}/**/*.{events.route.tsx, events.route.ts}`);
+    const routesWithEvents = globSync(paths.map((p) => `${p}/**/*.{events.route.tsx, events.route.ts}`));
 
     // Strip the routesPath from the route and the extension
     observableRoutes = routesWithEvents.map((route) => {
       const routePath = route
-        .replace(routesPath, '')
-        .replace('.events.route.tsx', '')
-        .replace('.events.route.ts', '')
         .split('/')
         .at(-1)!
+        .replace('.events.route.tsx', '')
+        .replace('.events.route.ts', '')
         .replace(/\$/g, ':')
         .replace(/\./g, '/');
 

@@ -1,14 +1,20 @@
 import { config } from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { invariant } from 'ts-invariant';
 
-const envPath = path.resolve(process.cwd(), '../../.env');
+let envPath = path.resolve(process.cwd(), '../../.env');
+
+if (!fs.existsSync(envPath)) {
+  envPath = path.resolve(process.cwd(), '../../../.env');
+}
+
 config({ path: envPath });
 
-export function optional(
+export function optional<T = string>(
   envVarName: string,
-  defaultValue?: string,
-): string | undefined {
+  defaultValue?: T,
+): T | string | undefined {
   const envVar = process.env[envVarName];
   if (!envVar) {
     console.warn(`Warning: environment ${envVarName} variable is not defined`);
