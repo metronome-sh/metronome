@@ -48,8 +48,3 @@ packages/telemetry.server/geoip
 apps/web/build
 apps/web/public/build
 
-#Root dockerfiles
-/docker-compose.yml
-/Dockerfile
-/Caddyfile
-

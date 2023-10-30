@@ -14,7 +14,8 @@
     "dk": "drizzle-kit",
     "migrate:up": "tsx ./drizzle/migrate.mts",
     "geoip:download": "tsx ./cli/geoip.mts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "configure": "pnpm migrate:up && pnpm geoip:download"
   },
   "keywords": [],
   "author": "",

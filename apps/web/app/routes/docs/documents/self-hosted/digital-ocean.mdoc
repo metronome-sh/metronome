@@ -53,7 +53,7 @@ Add an `A` record to your domain name to point to your droplet IP address. Such 
 SSH into your droplet and clone the Metronome repository.
 
 ```bash {% title="Terminal" %}
-git clone https://github.com/metronome-sh/metronome-oss.git
+git clone https://github.com/metronome-sh/docker.git
 ```
 
 ---
@@ -69,8 +69,8 @@ If you don't provide a license key, Metronome will still work, but it will not g
 {% /alert %}
 
 ```bash {% title="Terminal" %}
-cd metronome-oss
-./deploy/setup-docker.sh --maxmind-license MAXMIND_LICENSE --url DOMAIN_NAME
+cd docker
+./setup.sh --maxmind-license MAXMIND_LICENSE --url DOMAIN_NAME
 ```
 
 This will create a `.env` file with the necessary configuration and start Metronome.
@@ -86,3 +86,15 @@ docker-compose up -d; docker-compose logs --tail="all" -f
 After the migrations are set up and the server is running, you can access Metronome at `https://metronome.yourdomain.com`.
 
 You will be able to create the admin user when you access Metronome for the first time.
+
+## Updating Metronome self hosted
+
+To update Metronome, you need to pull the updated docker images and restart the containers.
+
+```bash {% title="Terminal" %}
+docker pull metronomedotsh/metronome:latest
+```
+
+```bash {% title="Terminal" %}
+docker-compose down && docker-compose up -d
+```
