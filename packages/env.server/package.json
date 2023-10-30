@@ -17,9 +17,9 @@
   "author": "",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@types/node": "^20.8.3",
-    "concurrently": "^8.2.1",
-    "esbuild": "^0.19.4",
+    "@types/node": "^20.8.9",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.5",
     "typescript": "^5.2.2",
     "vitest": "^0.34.6"
   },

@@ -41,10 +41,11 @@ Thumbs.db
 # Misc
 .remix
 storybook-static
-packages/telemetry.server/geoip
 .cache
 
 # Remix
 apps/web/build
 apps/web/public/build
 
+# GeoIp
+/packages/db.server/geoip
