@@ -1,203 +1,211 @@
 import { config } from 'dotenv';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import { invariant } from 'ts-invariant';
 
-let envPath = path.resolve(process.cwd(), '../../.env');
+export class Environment {
+  /**
+   * Determines if the current environment is production.
+   */
+  public dev: boolean = true;
 
-if (!fs.existsSync(envPath)) {
-  envPath = path.resolve(process.cwd(), '../../../.env');
-}
+  /**
+   * Determines if the current environment is test.
+   */
+  public production: boolean = false;
 
-config({ path: envPath });
+  /**
+   * Determines if the current environment is test.
+   */
+  public test: boolean = false;
 
-export function optional<T = string>(
-  envVarName: string,
-  defaultValue?: T,
-): T | string | undefined {
-  const envVar = process.env[envVarName];
-  if (!envVar) {
-    console.warn(`Warning: environment ${envVarName} variable is not defined`);
-  }
-  return envVar ?? defaultValue;
-}
+  constructor() {
+    let envPath = path.resolve(process.cwd(), '../../.env');
 
-export function defined(envVarName: string): string {
-  const envVar = process.env[envVarName];
-  invariant(envVar, `Environment ${envVarName} variable is not defined`);
-  return envVar;
-}
+    if (!fs.existsSync(envPath)) {
+      envPath = path.resolve(process.cwd(), '../../../.env');
+    }
 
-/**
- * Determines if the current environment is development.
- */
-export const dev = defined('NODE_ENV') === 'development';
+    config({ path: envPath });
 
-/**
- * Determines if the current environment is production.
- */
-export const production = defined('NODE_ENV') === 'production';
+    this.dev = this.defined('NODE_ENV') === 'development';
 
-/**
- * Determines if the current environment is test.
- */
-export const test = defined('NODE_ENV') === 'test';
+    this.production = this.defined('NODE_ENV') === 'production';
 
-/**
- * DB Connection URLs.
- * @returns Object with readable and writable database URLs.
- */
-export function db() {
-  const user = defined('DB_READ_USER');
-  const password = defined('DB_READ_PASSWORD');
-  const host = defined('DB_READ_HOST');
-  const database = defined('DB_READ_DATABASE');
-  const port = defined('DB_READ_PORT');
-
-  const readableUrl = `postgres://${user}:${password}@${host}:${port}/${database}`;
-
-  const writeUser = optional('DB_WRITE_USER');
-  const writePassword = optional('DB_WRITE_PASSWORD');
-  const writeHost = optional('DB_WRITE_HOST');
-  const writeDatabase = optional('DB_WRITE_DATABASE');
-  const writePort = optional('DB_WRITE_PORT');
-
-  // prettier-ignore
-  const writeUrlCanBeUsed = writeUser && writePassword && writeHost && writeDatabase && writePort;
-
-  if (production && !writeUrlCanBeUsed) {
-    console.warn(
-      'Writable database URL is not defined. Using read-only database URL.',
-    );
+    this.test = this.defined('NODE_ENV') === 'test';
   }
 
-  const writableUrl = writeUrlCanBeUsed
-    ? `postgres://${writeUser}:${writePassword}@${writeHost}/${writeDatabase}`
-    : readableUrl;
+  protected optional<T = string>(
+    envVarName: string,
+    defaultValue?: T,
+  ): T | string | undefined {
+    const envVar = process.env[envVarName];
+    if (!envVar) {
+      console.warn(
+        `Warning: environment ${envVarName} variable is not defined`,
+      );
+    }
+    return envVar ?? defaultValue;
+  }
 
-  return { readableUrl, writableUrl };
-}
+  protected defined(envVarName: string): string {
+    const envVar = process.env[envVarName];
+    invariant(envVar, `Environment ${envVarName} variable is not defined`);
+    return envVar;
+  }
 
-export function session() {
-  const sessionSecret = defined('SESSION_SECRET');
+  /**
+   * DB Connection URLs.
+   * @returns Object with readable and writable database URLs.
+   */
+  public db() {
+    const user = this.defined('DB_READ_USER');
+    const password = this.defined('DB_READ_PASSWORD');
+    const host = this.defined('DB_READ_HOST');
+    const database = this.defined('DB_READ_DATABASE');
+    const port = this.defined('DB_READ_PORT');
 
-  return {
-    sessionName: process.env.SESSION_NAME ?? 'metronome',
-    sessionSecret,
-  };
-}
+    const readableUrl = `postgres://${user}:${password}@${host}:${port}/${database}`;
 
-export function app() {
-  const appUrl = defined('APP_URL');
-  const port = Number(defined('APP_PORT'));
+    const writeUser = this.optional('DB_WRITE_USER');
+    const writePassword = this.optional('DB_WRITE_PASSWORD');
+    const writeHost = this.optional('DB_WRITE_HOST');
+    const writeDatabase = this.optional('DB_WRITE_DATABASE');
+    const writePort = this.optional('DB_WRITE_PORT');
 
-  return { url: appUrl, port };
-}
+    // prettier-ignore
+    const writeUrlCanBeUsed = writeUser && writePassword && writeHost && writeDatabase && writePort;
 
-export function url(pathname: string) {
-  const { url: appUrl, port } = app();
-  return `${appUrl}${pathname}:${port}`;
-}
+    if (this.production && !writeUrlCanBeUsed) {
+      console.warn(
+        'Writable database URL is not defined. Using read-only database URL.',
+      );
+    }
 
-export function producer() {
-  return {
-    apiKey: optional('PRODUCER_PROJECT_API_KEY'),
-  };
-}
+    const writableUrl = writeUrlCanBeUsed
+      ? `postgres://${writeUser}:${writePassword}@${writeHost}/${writeDatabase}`
+      : readableUrl;
 
-/**
- * Redis queue configuration
- * @returns {Object}
- */
-export function queues() {
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const url = defined('REDIS_QUEUE_URL');
+    return { readableUrl, writableUrl };
+  }
 
-  const password = production
-    ? defined('REDIS_QUEUE_PASSWORD')
-    : optional('REDIS_QUEUE_PASSWORD');
+  public session() {
+    const sessionSecret = this.defined('SESSION_SECRET');
 
-  const family = Number(optional('REDIS_QUEUE_FAMILY', '4'));
+    return {
+      sessionName: process.env.SESSION_NAME ?? 'metronome',
+      sessionSecret,
+    };
+  }
 
-  return { url, password, family };
-}
+  public app() {
+    const appUrl = this.defined('APP_URL');
+    const port = Number(this.defined('APP_PORT'));
 
-/**
- * Redis cache configuration
- * @returns {Object}
- */
-export const cache = Object.assign(
-  function cache() {
+    return { url: appUrl, port };
+  }
+
+  public url(pathname: string) {
+    const { url: appUrl, port } = this.app();
+    return `${appUrl}${pathname}:${port}`;
+  }
+
+  public producer() {
+    return {
+      apiKey: this.optional('PRODUCER_PROJECT_API_KEY'),
+    };
+  }
+
+  /**
+   * Redis queue configuration
+   * @returns {Object}
+   */
+  public queues() {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const url = defined('REDIS_CACHE_URL');
+    const url = this.defined('REDIS_QUEUE_URL');
 
-    const password = production
-      ? defined('REDIS_CACHE_PASSWORD')
-      : optional('REDIS_CACHE_PASSWORD');
+    const password = this.production
+      ? this.defined('REDIS_QUEUE_PASSWORD')
+      : this.optional('REDIS_QUEUE_PASSWORD');
 
-    const family = Number(optional('REDIS_CACHE_FAMILY', '4'));
+    const family = Number(this.optional('REDIS_QUEUE_FAMILY', '4'));
 
     return { url, password, family };
-  },
-  {
-    unique() {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const url = defined('REDIS_UNIQUE_URL');
+  }
 
-      const password = production
-        ? defined('REDIS_UNIQUE_PASSWORD')
-        : optional('REDIS_UNIQUE_PASSWORD');
+  public cache(
+    { unique }: { unique: boolean } | undefined = { unique: false },
+  ) {
+    if (unique) {
+      const url = this.defined('REDIS_UNIQUE_URL');
 
-      const family = Number(optional('REDIS_UNIQUE_FAMILY', '4'));
+      const password = this.production
+        ? this.defined('REDIS_UNIQUE_PASSWORD')
+        : this.optional('REDIS_UNIQUE_PASSWORD');
+
+      const family = Number(this.optional('REDIS_UNIQUE_FAMILY', '4'));
 
       return { url, password, family };
-    },
-  },
-);
+    }
 
-/**
- * Returns the value of the environment variable based on the current environment.
- * @param environment
- * @returns
- */
-export function when<T>(environment: {
-  production: T | (() => T);
-  development?: T | (() => T);
-  test?: T | (() => T);
-}): T {
-  function castProduction() {
-    return typeof environment.production === 'function'
-      ? (environment.production as () => T)()
-      : environment.production;
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const url = this.defined('REDIS_CACHE_URL');
+
+    const password = this.production
+      ? this.defined('REDIS_CACHE_PASSWORD')
+      : this.optional('REDIS_CACHE_PASSWORD');
+
+    const family = Number(this.optional('REDIS_CACHE_FAMILY', '4'));
+
+    return { url, password, family };
   }
 
-  function castDevelopment() {
-    return typeof environment.development === 'function'
-      ? (environment.development as () => T)()
-      : environment.development;
+  /**
+   * Returns the value of the environment variable based on the current environment.
+   * @param environment
+   * @returns
+   */
+  public when<T>(environment: {
+    production: T | (() => T);
+    development?: T | (() => T);
+    test?: T | (() => T);
+  }): T {
+    function castProduction() {
+      return typeof environment.production === 'function'
+        ? (environment.production as () => T)()
+        : environment.production;
+    }
+
+    function castDevelopment() {
+      return typeof environment.development === 'function'
+        ? (environment.development as () => T)()
+        : environment.development;
+    }
+
+    function castTest() {
+      return typeof environment.test === 'function'
+        ? (environment.test as () => T)()
+        : environment.test;
+    }
+
+    if (this.production) {
+      return castProduction();
+    }
+
+    if (this.test) {
+      return castTest() || castProduction();
+    }
+
+    return typeof environment.development !== undefined
+      ? castDevelopment()!
+      : castProduction();
   }
 
-  function castTest() {
-    return typeof environment.test === 'function'
-      ? (environment.test as () => T)()
-      : environment.test;
-  }
+  public geoip() {
+    const licenseKey = this.optional('MAXMIND_LICENSE_KEY');
 
-  if (production) {
-    return castProduction();
+    return { licenseKey };
   }
-
-  if (test) {
-    return castTest() || castProduction();
-  }
-
-  return typeof environment.development !== undefined
-    ? castDevelopment()!
-    : castProduction();
 }
 
-export function geoip() {
-  const licenseKey = optional('MAXMIND_LICENSE_KEY');
-
-  return { licenseKey };
-}
+export const env = new Environment();

@@ -14,10 +14,6 @@ export const Image: FunctionComponent<ImageProps> = ({
   src,
   alt,
   className,
-  // byUrl,
-  // byLabel,
-  // fromUrl,
-  // fromLabel,
 }) => {
   return (
     <img

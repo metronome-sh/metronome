@@ -1,4 +1,4 @@
-import { teams } from '@metronome/db.server';
+import { teams, users } from '@metronome/db.server';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
@@ -18,6 +18,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const team = await teams.findBySlug({ teamSlug, userId: user.id });
 
   if (!team) throw notFound();
+
+  if (user.settings?.lastSelectedTeamSlug !== team.slug) {
+    await users.lastSelectedTeamSlug({ teamSlug: team.slug!, userId: user.id });
+  }
 
   const pathname = new URL(request.url).pathname;
 

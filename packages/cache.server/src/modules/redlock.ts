@@ -3,7 +3,7 @@ import { env } from '@metronome/env.server';
 import { Redis } from 'ioredis';
 import Redlock from 'redlock';
 
-const { url, password, family } = env.cache.unique();
+const { url, password, family } = env.cache({ unique: true });
 
 export const redlock = remember('redlock', () => {
   const redis = new Redis(url, {

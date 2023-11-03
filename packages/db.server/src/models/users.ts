@@ -1,5 +1,6 @@
 import { compare, hash } from 'bcryptjs';
 import { eq, sql } from 'drizzle-orm';
+import { buildJsonbObject } from 'src/utils/buildJsonObject';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
@@ -82,13 +83,26 @@ export async function upsert({
   });
 
   if (user) {
-    await db().update(users).set(update).where(eq(users.id, user.id));
+    const { settings, ...rest } = update;
+    await db()
+      .update(users)
+      .set({
+        settings: sql`settings::jsonb || ${buildJsonbObject(settings)}`,
+        ...rest,
+      })
+      .where(eq(users.id, user.id));
     return { ...user, ...update };
   }
 
+  const { settings, ...rest } = create;
+
   const [createdUser] = await db({ write: true })
     .insert(users)
-    .values({ ...create, id: nanoid.id('user') })
+    .values({
+      ...rest,
+      settings: sql`${buildJsonbObject(settings)}`,
+      id: nanoid.id('user'),
+    })
     .returning();
 
   return { ...createdUser, usersToTeams: [] };
@@ -109,7 +123,7 @@ export async function addToTeam({
 
 export async function lastSelectedProjectSlug({
   userId,
-  projectSlug,
+  projectSlug: lastSelectedProjectSlug,
 }: {
   userId: string;
   projectSlug: string;
@@ -117,7 +131,35 @@ export async function lastSelectedProjectSlug({
   await db({ write: true })
     .update(users)
     .set({
-      settings: sql`jsonb_set(settings, array['lastSelectedProjectSlug'], to_jsonb(${projectSlug}::text))`,
+      settings: sql`settings::jsonb || ${buildJsonbObject({
+        lastSelectedProjectSlug,
+      })}`,
     })
     .where(eq(users.id, userId));
+}
+
+export async function lastSelectedTeamSlug({
+  userId,
+  teamSlug: lastSelectedTeamSlug,
+}: {
+  userId: string;
+  teamSlug: string;
+}) {
+  await db({ write: true })
+    .update(users)
+    .set({
+      settings: sql`settings::jsonb || ${buildJsonbObject({
+        lastSelectedTeamSlug,
+      })}`,
+    })
+    .where(eq(users.id, userId));
+}
+
+export async function getTeams({ userId }: { userId: string }) {
+  const teams = await db().query.usersToTeams.findMany({
+    where: (usersToTeams, { eq }) => eq(usersToTeams.userId, userId),
+    with: { team: true },
+  });
+
+  return teams.map(({ team }) => team);
 }

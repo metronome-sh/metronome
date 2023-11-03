@@ -8,6 +8,6 @@ export const ioredis = remember('cache.ioredis', () => {
 });
 
 export const ioredisUnique = remember('cache.ioredisUnique', () => {
-  const { url, password, family } = env.cache.unique();
+  const { url, password, family } = env.cache({ unique: true });
   return new IOredis(url, { maxRetriesPerRequest: null, password, family });
 });

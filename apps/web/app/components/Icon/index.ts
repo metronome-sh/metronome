@@ -26,6 +26,7 @@ import { Eye } from './Eye';
 import { EyeClosed } from './EyeClosed';
 import { FileText } from './FileText';
 import { Filter } from './Filter';
+import { Github } from './Github';
 import { Heartbeat } from './Heartbeat';
 import { HeartFilled } from './HeartFilled';
 import { Home } from './Home';
@@ -59,6 +60,7 @@ export const Icon = {
   Filter,
   Rocket,
   Search,
+  Github,
   Refresh,
   Calendar,
   Settings,
