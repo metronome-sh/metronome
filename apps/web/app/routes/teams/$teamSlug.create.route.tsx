@@ -20,8 +20,8 @@ export const CreateProjectSchema = z.object({
   name: z
     .string()
     .min(3)
-    .refine((value) => !value.includes('create'), {
-      message: 'The string should not contain the word "create"',
+    .refine((value) => !['create', 'billing'].includes(value), {
+      message: 'The string should not contain the words "create" or "billing"',
     }),
   url: z.union([z.string().url(), z.literal('')]),
 });
@@ -53,7 +53,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   await auth.user();
 
-  return null;
+  return {};
 }
 
 export default function Component() {

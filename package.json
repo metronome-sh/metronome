@@ -14,7 +14,7 @@
     "docker:restart": "docker-compose --env-file .env -f docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
     "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix",
-    "setup:docker": "node ./scripts/setup-docker.mjs"
+    "db": "pnpm --dir packages/db.server"
   },
   "keywords": [],
   "author": "",

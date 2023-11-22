@@ -8,9 +8,13 @@ import { Icon } from '../Icon';
 
 export type HeaderProps = {
   breadcrumb?: ReactNode[];
+  userMenu?: ReturnType<typeof UserMenu>;
 };
 
-export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
+export const Header: FunctionComponent<HeaderProps> = ({
+  breadcrumb,
+  userMenu,
+}) => {
   return (
     <div className="flex w-full py-3 px-4 dark:bg-black">
       <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4">
@@ -79,10 +83,7 @@ export const Header: FunctionComponent<HeaderProps> = ({ breadcrumb }) => {
                 <span>Documentation</span>
               </Link>
             </Button>
-            {/* <UserMenu /> */}
-            <div>
-              <UserMenu />
-            </div>
+            <div>{userMenu ? userMenu : <UserMenu />}</div>
           </div>
         </div>
       </div>

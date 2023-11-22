@@ -1,11 +1,13 @@
 import { useSubmit } from '@remix-run/react';
-import { type FunctionComponent } from 'react';
+import { type FunctionComponent, PropsWithChildren } from 'react';
 
 import { useRootLoaderData } from '#app/hooks';
 
 import { Avatar, Button, DropdownMenu } from '..';
 
-export const UserMenu: FunctionComponent = () => {
+export const UserMenu: FunctionComponent<PropsWithChildren> = ({
+  children,
+}) => {
   const { user } = useRootLoaderData();
   const submit = useSubmit();
 
@@ -32,7 +34,12 @@ export const UserMenu: FunctionComponent = () => {
             </p>
           </div>
         </DropdownMenu.Label>
-
+        {children ? (
+          <>
+            <DropdownMenu.Separator />
+            {children}
+          </>
+        ) : null}
         <DropdownMenu.Separator />
         <DropdownMenu.Item
           onClick={() => {

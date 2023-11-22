@@ -5,6 +5,7 @@ import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewTeam, Team } from '../types';
 import { generateSlug } from '../utils/slugs';
+import { buildJsonbObject } from '../utils/buildJsonObject';
 
 export async function insert(newTeam: NewTeam): Promise<Team> {
   const slug = await generateSlug({
@@ -41,10 +42,7 @@ export async function findBySlug({
   const [team] = await db()
     .select()
     .from(teams)
-    .leftJoin(
-      usersToTeams,
-      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
-    )
+    .leftJoin(usersToTeams, and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)))
     .where(eq(teams.slug, teamSlug));
 
   return team?.teams;
@@ -58,4 +56,21 @@ export async function getProjects({ teamId }: { teamId: string }) {
     .where(eq(projects.deleted, false));
 
   return foundProjects.map((project) => project.projects);
+}
+
+export async function updateSettings(
+  teamId: string,
+  settings: Partial<Team['settings']>,
+): Promise<Team> {
+  const [team] = await db({ write: true })
+    .update(teams)
+    .set({
+      settings: sql`settings::jsonb || ${buildJsonbObject({
+        ...settings,
+      })}`,
+    })
+    .where(eq(teams.id, teamId))
+    .returning();
+
+  return team;
 }

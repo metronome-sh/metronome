@@ -25,6 +25,7 @@ export { Spinner } from './Spinner';
 export { Switch } from './Switch';
 export { TableWithBarChart } from './TableWithBarChart';
 export { Tabs } from './Tabs';
+export { Select } from './Select';
 export { Tooltip } from './Tooltip';
 export { UrlRouteDisplay } from './UrlRouteDisplay';
 export { UserMenu } from './UserMenu';

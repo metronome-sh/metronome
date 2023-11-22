@@ -44,9 +44,8 @@ export function createAuthHandler({
     'form',
   );
 
-  async function user(options?: { required: true }): Promise<User>;
-  async function user(options?: { required: never }): Promise<User>;
-  async function user(options?: { required: false }): Promise<User | null>;
+  async function user(options: { required: false }): Promise<User | null>;
+  async function user(options?: { required?: boolean }): Promise<User>;
   async function user(options?: { required?: boolean }): Promise<User | null> {
     const { id = null } = (await authenticator.isAuthenticated(request)) || {};
 

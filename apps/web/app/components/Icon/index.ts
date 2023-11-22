@@ -17,6 +17,7 @@ import { Bug } from './Bug';
 import { BuildingLighthouse } from './BuildingLighthouse';
 import { Calendar } from './Calendar';
 import { CaretDownFilled } from './CaretDownFilled';
+import { Check } from './Check';
 import { ChevronRight } from './ChevronRight';
 import { Clipboard } from './Clipboard';
 import { ClipboardCheck } from './ClipboardCheck';
@@ -34,6 +35,7 @@ import { InfoSquareRounded } from './InfoSquareRounded';
 import { Key } from './Key';
 import { LoaderTwo } from './LoaderTwo';
 import { MoodSadDizzy } from './MoodSadDizzy';
+import { Quote } from './Quote';
 import { Refresh } from './Refresh';
 import { Rocket } from './Rocket';
 import { RotateTwo } from './RotateTwo';
@@ -57,6 +59,8 @@ export const Icon = {
   Home,
   Alarm,
   World,
+  Check,
+  Quote,
   Filter,
   Rocket,
   Search,

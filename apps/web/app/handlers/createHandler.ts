@@ -7,7 +7,9 @@ import { createQueryHandler } from './createQueryHandler';
 import { createSessionHandler } from './createSessionHandler';
 
 export function createHandler(options?: {
-  auth?: { strategies: Record<string, Strategy<User, never>> };
+  auth?: {
+    strategies: Record<string, Strategy<User, never>>;
+  };
 }) {
   return async function handle(request: Request) {
     const session = createSessionHandler({ request });
@@ -21,6 +23,8 @@ export function createHandler(options?: {
 
     const query = await createQueryHandler({ request });
 
-    return { form, auth, session, query };
+    const search = new URL(request.url).searchParams;
+
+    return { form, auth, session, query, search };
   };
 }

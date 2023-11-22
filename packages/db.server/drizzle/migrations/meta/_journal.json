@@ -253,6 +253,20 @@
       "when": 1698390153963,
       "tag": "0035_yummy_ben_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "5",
+      "when": 1700518603188,
+      "tag": "0036_sturdy_eddie_brock",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "5",
+      "when": 1700629462033,
+      "tag": "0037_dazzling_mikhail_rasputin",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,24 @@
+---
+title: "What is a data point?"
+description: "Data point reference"
+---
+
+# What is a Data Point?
+
+In Metronome, a **data point** represents any significant event that occurs on your app. This includes:
+
+- **Requests**: Requests made to your app.
+- **Loader or Action Calls**: Depending on the request method, a loader or action call.
+- **Page Views**: When a webpage is viewed or refreshed.
+- **Web Vitals**: Metrics indicating website health and performance.
+- **Errors**: JavaScript errors or failed requests.
+
+### Clarification on Data Point Generation
+
+Each initial user visit typically generates multiple data points:
+
+- One Request
+- One Loader/Action Call
+- Four Web Vitals Events
+
+Subsequent visits may generate fewer data points, as some web vitals events might not be repeated.

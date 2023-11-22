@@ -1,14 +1,6 @@
-import { type Schema, z, type ZodError } from 'zod';
+import { type Schema, z } from 'zod';
 
-function formatZodError(error: ZodError): string {
-  return error.errors
-    .map((err) => {
-      const field = err.path.join('.');
-      const message = err.message;
-      return `${field ? field + ': ' : ''}${message}`;
-    })
-    .join(', ');
-}
+import { formatZodError } from './helpers';
 
 export async function createFormHandler({ request }: { request: Request }) {
   let formData: FormData = new FormData();

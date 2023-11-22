@@ -1,6 +1,6 @@
 import { compare, hash } from 'bcryptjs';
 import { eq, sql } from 'drizzle-orm';
-import { buildJsonbObject } from 'src/utils/buildJsonObject';
+import { buildJsonbObject } from '../utils/buildJsonObject';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
@@ -8,9 +8,7 @@ import { users, usersToTeams } from '../schema';
 import { type NewUser, type User } from '../types';
 
 export async function insert(newUser: NewUser): Promise<User> {
-  const hashedPassword = newUser.password
-    ? await hash(newUser.password, 10)
-    : null;
+  const hashedPassword = newUser.password ? await hash(newUser.password, 10) : null;
 
   const [createdUser] = await db({ write: true })
     .insert(users)
@@ -75,10 +73,7 @@ export async function upsert({
   const user = await db().query.users.findFirst({
     columns: { password: false },
     where: (users, { and, eq }) =>
-      and(
-        eq(users.strategyUserId, getter.strategyUserId),
-        eq(users.strategy, getter.strategy),
-      ),
+      and(eq(users.strategyUserId, getter.strategyUserId), eq(users.strategy, getter.strategy)),
     with: { usersToTeams: { with: { team: true } } },
   });
 
@@ -108,13 +103,7 @@ export async function upsert({
   return { ...createdUser, usersToTeams: [] };
 }
 
-export async function addToTeam({
-  userId,
-  teamId,
-}: {
-  userId: string;
-  teamId: string;
-}) {
+export async function addToTeam({ userId, teamId }: { userId: string; teamId: string }) {
   await db({ write: true }).insert(usersToTeams).values({
     userId,
     teamId,

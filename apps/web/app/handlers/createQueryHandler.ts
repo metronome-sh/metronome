@@ -1,14 +1,35 @@
+import { Schema, z } from 'zod';
+
 import {
   FilterObject,
   mergeFilterOptionsWithSearch,
   toMap,
 } from '#app/filters';
 
+import { formatZodError } from './helpers';
+
 export async function createQueryHandler({ request }: { request: Request }) {
   const searchParams = new URL(request.url).searchParams;
+  const searchParamsObject = Object.fromEntries(searchParams.entries());
 
   function get<T extends string>(key: string) {
     return searchParams.get(key) as T | null;
+  }
+
+  function validate<T, S extends Schema<T>>(schema: S): z.infer<S> {
+    const result = schema.safeParse(searchParamsObject);
+
+    if (!result.success) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw new Response(
+        `Invalid query data: ${JSON.stringify(formatZodError(result.error))}`,
+        {
+          status: 400,
+        },
+      );
+    }
+
+    return result.data;
   }
 
   async function filters<
@@ -53,5 +74,5 @@ export async function createQueryHandler({ request }: { request: Request }) {
       [RK in keyof R]: Awaited<ReturnType<R[RK]['server']['parse']>>;
     };
   }
-  return { get, filters };
+  return { get, filters, validate };
 }

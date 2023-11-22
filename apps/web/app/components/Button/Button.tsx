@@ -22,6 +22,7 @@ const buttonVariants = cva(
         link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50',
         'outline-dashed':
           'border border-input shadow-sm hover:bg-accent hover:text-accent-foreground border-dashed',
+        cta: 'text-white bg-teal-700 hover:bg-teal-600 shadow-sm',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -13,13 +13,7 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
-export const Method = pgEnum('http_method', [
-  'GET',
-  'POST',
-  'PUT',
-  'DELETE',
-  'PATCH',
-]);
+export const Method = pgEnum('http_method', ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']);
 
 export const RequestType = pgEnum('request_type', ['document', 'data']);
 
@@ -57,6 +51,19 @@ export const teams = pgTable('teams', {
   slug: text('slug').unique(),
   name: text('name'),
   description: text('description'),
+  settings: jsonb('settings')
+    .$type<{
+      subscription: {
+        subscriptionId: string;
+        status: 'active' | 'cancelled' | 'past_due' | 'unpaid' | string;
+        currentPeriodEnd: string; // 'YYYY-MM-DD'
+        cancellationDate: string | null; // 'YYYY-MM-DD'
+        planId: string;
+      } | null;
+    }>()
+    .default({
+      subscription: null,
+    }),
   createdBy: text('created_by').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -139,14 +146,8 @@ export const requests = pgTable(
   },
   (table) => {
     return {
-      teamTimestampIdx: index('team_timestamp_idx').on(
-        table.teamId,
-        table.timestamp,
-      ),
-      projectTimestampIdx: index('project_timestamp_idx').on(
-        table.projectId,
-        table.timestamp,
-      ),
+      teamTimestampIdx: index('team_timestamp_idx').on(table.teamId, table.timestamp),
+      projectTimestampIdx: index('project_timestamp_idx').on(table.projectId, table.timestamp),
     };
   },
 );
@@ -156,17 +157,12 @@ export const usages = pgTable(
   {
     teamId: text('team_id').notNull(),
     projectId: text('project_id').notNull(),
-    timestamp: timestamp('timestamp', { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull().defaultNow(),
     events: bigint('events', { mode: 'bigint' }).notNull(),
   },
   (table) => {
     return {
-      teamTimestampIdx: index('usage_team_timestamp_idx').on(
-        table.teamId,
-        table.timestamp,
-      ),
+      teamTimestampIdx: index('usage_team_timestamp_idx').on(table.teamId, table.timestamp),
       projectTimestampIdx: index('usage_project_timestamp_idx').on(
         table.projectId,
         table.timestamp,
@@ -193,10 +189,7 @@ const remixFunctionSchema = {
 
 export const loaders = pgTable('loaders', remixFunctionSchema, (table) => {
   return {
-    teampTimestampIdx: index('loaders_team_timestamp_idx').on(
-      table.teamId,
-      table.timestamp,
-    ),
+    teampTimestampIdx: index('loaders_team_timestamp_idx').on(table.teamId, table.timestamp),
     projectTimestampIdx: index('loaders_project_timestamp_idx').on(
       table.projectId,
       table.timestamp,
@@ -206,10 +199,7 @@ export const loaders = pgTable('loaders', remixFunctionSchema, (table) => {
 
 export const actions = pgTable('actions', remixFunctionSchema, (table) => {
   return {
-    teampTimestampIdx: index('actions_team_timestamp_idx').on(
-      table.teamId,
-      table.timestamp,
-    ),
+    teampTimestampIdx: index('actions_team_timestamp_idx').on(table.teamId, table.timestamp),
     projectTimestampIdx: index('actions_project_timestamp_idx').on(
       table.projectId,
       table.timestamp,
@@ -217,14 +207,7 @@ export const actions = pgTable('actions', remixFunctionSchema, (table) => {
   };
 });
 
-export const webVitalName = pgEnum('web_vital_name', [
-  'LCP',
-  'FCP',
-  'FID',
-  'CLS',
-  'TTFB',
-  'INP',
-]);
+export const webVitalName = pgEnum('web_vital_name', ['LCP', 'FCP', 'FID', 'CLS', 'TTFB', 'INP']);
 
 export const webVitals = pgTable(
   'web_vitals',
@@ -243,18 +226,12 @@ export const webVitals = pgTable(
   },
   (table) => {
     return {
-      teampTimestampIdx: index('web_vitals_team_timestamp_idx').on(
-        table.teamId,
-        table.timestamp,
-      ),
+      teampTimestampIdx: index('web_vitals_team_timestamp_idx').on(table.teamId, table.timestamp),
       projectTimestampIdx: index('web_vitals_project_timestamp_idx').on(
         table.projectId,
         table.timestamp,
       ),
-      nameTimestampIdx: index('web_vitals_name_timestamp_idx').on(
-        table.name,
-        table.timestamp,
-      ),
+      nameTimestampIdx: index('web_vitals_name_timestamp_idx').on(table.name, table.timestamp),
     };
   },
 );
@@ -280,10 +257,7 @@ export const sessions = pgTable(
   },
   (table) => {
     return {
-      teamTimestampIdx: index('session_team_timestamp_idx').on(
-        table.teamId,
-        table.timestamp,
-      ),
+      teamTimestampIdx: index('session_team_timestamp_idx').on(table.teamId, table.timestamp),
       projectTimestampIdx: index('session_project_timestamp_idx').on(
         table.projectId,
         table.timestamp,
@@ -292,10 +266,7 @@ export const sessions = pgTable(
         table.sessionId,
         table.timestamp,
       ),
-      userTimestampIdx: index('session_user_timestamp_idx').on(
-        table.userId,
-        table.timestamp,
-      ),
+      userTimestampIdx: index('session_user_timestamp_idx').on(table.userId, table.timestamp),
     };
   },
 );
@@ -319,10 +290,7 @@ export const pageviews = pgTable(
   },
   (table) => {
     return {
-      teamTimestampIdx: index('pageview_team_timestamp_idx').on(
-        table.teamId,
-        table.timestamp,
-      ),
+      teamTimestampIdx: index('pageview_team_timestamp_idx').on(table.teamId, table.timestamp),
       projectTimestampIdx: index('pageview_project_timestamp_idx').on(
         table.projectId,
         table.timestamp,
@@ -331,10 +299,7 @@ export const pageviews = pgTable(
         table.sessionId,
         table.timestamp,
       ),
-      userIdTimestampIdx: index('pageview_team_user_idx').on(
-        table.userId,
-        table.timestamp,
-      ),
+      userIdTimestampIdx: index('pageview_team_user_idx').on(table.userId, table.timestamp),
       referrerDomainTimestampIdx: index('pageview_team_referrer_domain_idx').on(
         table.referrerDomain,
         table.timestamp,

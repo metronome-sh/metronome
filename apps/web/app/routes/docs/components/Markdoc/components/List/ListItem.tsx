@@ -1,10 +1,10 @@
 import { FunctionComponent, PropsWithChildren } from 'react';
 
-export type ListItem = PropsWithChildren;
+export type ListItemProps = PropsWithChildren;
 
-export const ListItem: FunctionComponent<ListItem> = ({ children }) => {
+export const ListItem: FunctionComponent<ListItemProps> = ({ children }) => {
   return (
-    <li className="text-slate-400 dark:text-slate-600">
+    <li className="text-muted-foreground">
       <span>{children}</span>
     </li>
   );
