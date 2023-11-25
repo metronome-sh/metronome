@@ -35,12 +35,7 @@ export async function projectUsage({
       usage: sql<bigint>`sum(${usages.events})`,
     })
     .from(usages)
-    .where(
-      and(
-        between(usages.timestamp, fromDate, toDate),
-        eq(usages.projectId, project.id),
-      ),
-    )
+    .where(and(between(usages.timestamp, fromDate, toDate), eq(usages.projectId, project.id)))
     .groupBy(usages.projectId);
 
   return result.usage.toString();
@@ -63,4 +58,30 @@ export function watch(
     });
 
   return () => subscription.unsubscribe();
+}
+
+export async function teamUsage({
+  teamId,
+  range: { from, to },
+}: {
+  teamId: string;
+  range: {
+    from: Temporal.ZonedDateTime;
+    to: Temporal.ZonedDateTime;
+  };
+}) {
+  const fromDate = new Date(from.toInstant().epochMilliseconds);
+  const toDate = new Date(to.toInstant().epochMilliseconds);
+
+  const usages = getUsagesAggregatedView({ interval: 'day' });
+
+  const [result = { usage: 0n }] = await db()
+    .select({
+      usage: sql<bigint>`sum(${usages.events})`,
+    })
+    .from(usages)
+    .where(and(between(usages.timestamp, fromDate, toDate), eq(usages.teamId, teamId)))
+    .groupBy(usages.teamId);
+
+  return result.usage.toString();
 }

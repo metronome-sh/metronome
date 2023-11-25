@@ -1,15 +1,15 @@
 import { ioredis, ioredisUnique } from './modules/ioredis';
 import { redlock } from './modules/redlock';
+import { env } from '@metronome/env.server';
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 type OtherString = string & {};
 type Key = 'session' | OtherString;
 
+let cacheRememberWarningLogged = false;
+
 function createSetFunction(connection: typeof ioredis) {
-  return async function set<Data>(
-    key: Key | Key[],
-    value: Data,
-    seconds?: number,
-  ) {
+  return async function set<Data>(key: Key | Key[], value: Data, seconds?: number) {
     const stringifiedKey = JSON.stringify(key);
     const stringifiedValue = JSON.stringify(value);
 
@@ -39,16 +39,17 @@ function createRememberFunction(connection: typeof ioredis) {
     const stringifiedKey = JSON.stringify(key);
 
     const value = await connection.get(stringifiedKey);
-    if (value) return JSON.parse(value) as Data;
+
+    if (value && !env.dev) return JSON.parse(value) as Data;
+
+    if (env.dev && !cacheRememberWarningLogged) {
+      console.warn('cache.remember will always miss in development');
+      cacheRememberWarningLogged = true;
+    }
 
     const newValue = await callback();
 
-    await connection.set(
-      stringifiedKey,
-      JSON.stringify(await callback()),
-      'EX',
-      ttl,
-    );
+    await connection.set(stringifiedKey, JSON.stringify(await callback()), 'EX', ttl);
 
     return newValue as Data;
   };
@@ -56,7 +57,8 @@ function createRememberFunction(connection: typeof ioredis) {
 
 function createForgetFunction(connection: typeof ioredis) {
   return async function forget<T extends Key>(key: T) {
-    await connection.del(key);
+    const stringifiedKey = JSON.stringify(key);
+    await connection.del(stringifiedKey);
   };
 }
 
