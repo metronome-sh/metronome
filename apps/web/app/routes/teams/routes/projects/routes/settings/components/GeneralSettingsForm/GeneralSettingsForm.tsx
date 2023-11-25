@@ -50,10 +50,7 @@ export const GeneralSettingsForm: FunctionComponent = () => {
   return (
     <div>
       <Form.Provider {...form}>
-        <Form.Section
-          title="General"
-          description="Basic project information."
-        />
+        <Form.Section title="General" description="Basic project information." />
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Form.Field
             control={form.control}
@@ -62,11 +59,7 @@ export const GeneralSettingsForm: FunctionComponent = () => {
               <Form.Item>
                 <Form.Label>Project Name</Form.Label>
                 <Form.Control>
-                  <Input
-                    {...field}
-                    autoComplete="off"
-                    placeholder="Awesome Project"
-                  />
+                  <Input {...field} autoComplete="off" placeholder="Awesome Project" />
                 </Form.Control>
                 <Form.Message />
               </Form.Item>
@@ -79,11 +72,7 @@ export const GeneralSettingsForm: FunctionComponent = () => {
               <Form.Item>
                 <Form.Label>Project URL</Form.Label>
                 <Form.Control>
-                  <Input
-                    {...field}
-                    autoComplete="off"
-                    placeholder="https://metronome.sh"
-                  />
+                  <Input {...field} autoComplete="off" placeholder="https://metronome.sh" />
                 </Form.Control>
                 <Form.Message />
               </Form.Item>
@@ -92,7 +81,6 @@ export const GeneralSettingsForm: FunctionComponent = () => {
           <div className="text-right">
             <Button className="w-20" type="submit" disabled={!isDirty}>
               Update
-              {/* <Loadable state={state}>Update</Loadable> */}
             </Button>
           </div>
         </form>

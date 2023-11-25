@@ -30,10 +30,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (typeof teamSlug === 'string' && pathname.endsWith(teamSlug)) {
     const lastSelectedProjectSlug = user.settings?.lastSelectedProjectSlug;
 
-    if (
-      typeof lastSelectedProjectSlug === 'string' &&
-      lastSelectedProjectSlug !== ''
-    ) {
+    if (typeof lastSelectedProjectSlug === 'string' && lastSelectedProjectSlug !== '') {
       throw redirect(`/${teamSlug}/${lastSelectedProjectSlug}/overview`);
     }
 
@@ -42,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw redirect(`/${teamSlug}/${projects.at(0)!.slug}/overview`);
   }
 
-  return json({ team, projects });
+  return json({ team, projects, lastSelectedProjectSlug: user.settings?.lastSelectedProjectSlug });
 }
 
 export default function Component() {

@@ -61,6 +61,16 @@ export async function findFirst({ id }: { id: string }): Promise<User | null> {
   return user ?? null;
 }
 
+export async function findByEmail(email: string): Promise<User | null> {
+  const user = await db().query.users.findFirst({
+    columns: { password: false },
+    where: (users, { eq }) => eq(users.email, email),
+    with: { usersToTeams: { with: { team: true } } },
+  });
+
+  return user ?? null;
+}
+
 export async function upsert({
   getter,
   create,
@@ -151,4 +161,16 @@ export async function getTeams({ userId }: { userId: string }) {
   });
 
   return teams.map(({ team }) => team);
+}
+
+export async function updateSettings(userId: string, settings: Partial<User['settings']>) {
+  const [user] = await db({ write: true })
+    .update(users)
+    .set({
+      settings: sql`settings::jsonb || ${buildJsonbObject({ ...settings })}`,
+    })
+    .where(eq(users.id, userId))
+    .returning();
+
+  return user;
 }

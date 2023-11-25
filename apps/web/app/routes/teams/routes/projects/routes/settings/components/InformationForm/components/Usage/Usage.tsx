@@ -5,13 +5,7 @@ import { Icon, Label, Ping } from '#app/components';
 
 import { useSettingsEventData, useSettingsLoaderData } from '../../../../hooks';
 
-// import { useSettingsLoaderData } from '../../../../hooks';
-
 export const Usage: FunctionComponent = () => {
-  // const { usage } = useSettingsLoaderData();
-  // TODO fix bigints that are being passed in as strings to the client
-  // const { usage: usageEvent } = useSettingsEventData();
-
   const { usage } = useSettingsLoaderData();
   const { usage: usageEvent } = useSettingsEventData();
 
@@ -43,18 +37,14 @@ export const Usage: FunctionComponent = () => {
 
             return (
               <div className="text-sm py-1">
-                <span className="tabular-nums font-semibold">
-                  {usageBigInt.toLocaleString()}
-                </span>{' '}
-                events
+                <span className="tabular-nums font-semibold">{usageBigInt.toLocaleString()}</span>{' '}
+                data points
               </div>
             );
           }}
         </Await>
       </Suspense>
-      <p className="text-[0.8rem] text-muted-foreground">
-        Your project usage during this month.
-      </p>
+      <p className="text-[0.8rem] text-muted-foreground">Your project usage during this month.</p>
     </div>
   );
 };

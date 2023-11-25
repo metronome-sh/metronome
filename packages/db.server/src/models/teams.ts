@@ -9,7 +9,7 @@ import { buildJsonbObject } from '../utils/buildJsonObject';
 
 export async function insert(newTeam: NewTeam): Promise<Team> {
   const slug = await generateSlug({
-    text: newTeam.name || 'projects',
+    text: newTeam.name ?? newTeam.slug ?? 'projects',
     table: teams,
   });
 
@@ -73,4 +73,9 @@ export async function updateSettings(
     .returning();
 
   return team;
+}
+
+export async function findFirst({ id }: { id: string }): Promise<Team | null> {
+  const [team] = await db().select().from(teams).where(eq(teams.id, id));
+  return team ?? null;
 }

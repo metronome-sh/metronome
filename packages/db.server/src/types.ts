@@ -22,16 +22,13 @@ export type NewUser = Omit<typeof users.$inferInsert, 'id'>;
 
 export type Team = typeof teams.$inferSelect;
 
-export type NewTeam = Omit<typeof teams.$inferInsert, 'id' | 'slug'>;
+export type NewTeam = Omit<typeof teams.$inferInsert, 'id'> & { slug?: string };
 
 export type UsersToTeams = typeof usersToTeams.$inferSelect;
 
 export type Project = typeof projects.$inferSelect;
 
-export type NewProject = Pick<
-  typeof projects.$inferInsert,
-  'name' | 'url' | 'teamId'
->;
+export type NewProject = Pick<typeof projects.$inferInsert, 'name' | 'url' | 'teamId'>;
 
 export type UpdateProjectAttributes = Partial<
   Pick<Project, 'name' | 'url' | 'description' | 'isPublic' | 'isNew'>

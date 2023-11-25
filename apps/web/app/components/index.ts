@@ -30,3 +30,4 @@ export { Tooltip } from './Tooltip';
 export { UrlRouteDisplay } from './UrlRouteDisplay';
 export { UserMenu } from './UserMenu';
 export { cn } from './utils';
+export { Breadcrumb } from './Breadcrumb';

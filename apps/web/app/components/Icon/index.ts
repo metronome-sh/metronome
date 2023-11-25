@@ -49,6 +49,7 @@ import { Sun } from './Sun';
 import { TerminalTwo } from './TerminalTwo';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
 import { TriangleInvertedFilled } from './TriangleInvertedFilled';
+import { UserScan } from './UserScan';
 import { World } from './World';
 
 export const Icon = {
@@ -67,6 +68,7 @@ export const Icon = {
   Github,
   Refresh,
   Calendar,
+  UserScan,
   Settings,
   FileText,
   EyeClosed,

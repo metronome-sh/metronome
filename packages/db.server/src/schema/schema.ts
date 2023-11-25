@@ -31,12 +31,14 @@ export const users = pgTable('users', {
       selectedEmail?: string | null;
       lastSelectedProjectSlug?: string | null;
       lastSelectedTeamSlug?: string | null;
+      customerId: string | null;
     }>()
     .default({
       emails: [],
       selectedEmail: null,
       lastSelectedProjectSlug: null,
       lastSelectedTeamSlug: null,
+      customerId: null,
     }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -56,9 +58,9 @@ export const teams = pgTable('teams', {
       subscription: {
         subscriptionId: string;
         status: 'active' | 'cancelled' | 'past_due' | 'unpaid' | string;
-        currentPeriodEnd: string; // 'YYYY-MM-DD'
-        cancellationDate: string | null; // 'YYYY-MM-DD'
-        planId: string;
+        currentPeriodEnd: number;
+        cancellationDate: number | null;
+        trialEnd: number | null;
       } | null;
     }>()
     .default({

@@ -6,6 +6,8 @@ import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
 import { Navigation } from './components';
+import { Breadcrumb } from '#app/components';
+import { ProjectSelector } from '../../components';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
@@ -38,6 +40,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Component() {
   return (
     <div className="flex flex-col flex-grow">
+      <Breadcrumb>
+        <ProjectSelector />
+      </Breadcrumb>
       <Navigation />
       <div className="mx-auto w-full h-full flex-grow flex flex-col max-w-screen-xl">
         <Outlet />

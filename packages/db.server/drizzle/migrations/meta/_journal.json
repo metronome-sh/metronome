@@ -267,6 +267,20 @@
       "when": 1700629462033,
       "tag": "0037_dazzling_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "5",
+      "when": 1700797918104,
+      "tag": "0038_chilly_ultragirl",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "5",
+      "when": 1700799991737,
+      "tag": "0039_purple_iron_monger",
+      "breakpoints": true
     }
   ]
 }

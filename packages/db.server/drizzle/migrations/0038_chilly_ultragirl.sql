@@ -1,0 +1,1 @@
+ALTER TABLE "teams" ALTER COLUMN "settings" SET DEFAULT '{"customerId":null,"subscription":null}'::jsonb;

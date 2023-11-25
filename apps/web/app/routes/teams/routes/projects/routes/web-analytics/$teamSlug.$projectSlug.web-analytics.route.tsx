@@ -1,7 +1,7 @@
 import { pageviews, projects, sessions } from '@metronome/db.server';
 import { defer, LoaderFunctionArgs } from '@remix-run/node';
 
-import { Heading } from '#app/components';
+import { Breadcrumb, Heading } from '#app/components';
 import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
@@ -105,6 +105,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Component() {
   return (
     <div className="w-full flex-grow h-full">
+      <Breadcrumb>Web Analytics</Breadcrumb>
       <div className="mx-auto w-full rounded-lg">
         <Heading
           title="Web Analytics"

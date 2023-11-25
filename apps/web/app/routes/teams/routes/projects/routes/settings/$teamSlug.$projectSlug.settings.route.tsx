@@ -9,17 +9,11 @@ import {
 } from '@remix-run/node';
 import { z } from 'zod';
 
-import { Heading } from '#app/components';
+import { Breadcrumb, Heading } from '#app/components';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 import { namedAction } from '#app/utils';
 
-// import { handlers } from '#app/handlers';
-// import { failed } from '#app/modules/assertions';
-// import { nanoid } from '#app/modules/nanoid';
-// import { notFound } from '#app/responses';
-// import { CreateProjectSchema, ProjectVisibilitySchema } from '#app/schemas';
-// import { Page } from '../../components/Page';
 import { DangerZoneForm } from './components/DangerZoneForm';
 import { GeneralSettingsForm } from './components/GeneralSettingsForm';
 import { InformationForm } from './components/InformationForm';
@@ -34,17 +28,13 @@ export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;
 export const ProjectVisibilitySchema = z.object({
   visible: z
     .union([z.boolean(), z.literal('true'), z.literal('false')])
-    .transform((value) =>
-      typeof value === 'boolean' ? value : value === 'true',
-    )
+    .transform((value) => (typeof value === 'boolean' ? value : value === 'true'))
     .refine((value) => typeof value === 'boolean', {
       message: 'Visible must be a boolean',
     }),
 });
 
-export type ProjectVisibilitySchemaType = z.infer<
-  typeof ProjectVisibilitySchema
->;
+export type ProjectVisibilitySchemaType = z.infer<typeof ProjectVisibilitySchema>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { auth, form } = await handle(request);
@@ -65,22 +55,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
     async general() {
       const { name, url } = await form.validate(CreateProjectSchema);
 
-      await projects
-        .update({ id: project.id, attributes: { name, url } })
-        .catch(() => {
-          throw json({ success: false });
-        });
+      await projects.update({ id: project.id, attributes: { name, url } }).catch(() => {
+        throw json({ success: false });
+      });
 
       return json({ success: true });
     },
     async visibility() {
       const { visible } = await form.validate(ProjectVisibilitySchema);
 
-      await projects
-        .update({ id: project.id, attributes: { isPublic: visible } })
-        .catch(() => {
-          throw json({ success: false });
-        });
+      await projects.update({ id: project.id, attributes: { isPublic: visible } }).catch(() => {
+        throw json({ success: false });
+      });
 
       return json({ success: true });
     },
@@ -137,9 +123,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       .add({
         days: -(Temporal.Now.instant().toZonedDateTimeISO('UTC').day - 1),
       }),
-    to: Temporal.Now.instant()
-      .toZonedDateTimeISO('UTC')
-      .withPlainTime('23:59:59'),
+    to: Temporal.Now.instant().toZonedDateTimeISO('UTC').withPlainTime('23:59:59'),
   };
 
   const usage = usages.projectUsage({ project, range });
@@ -150,10 +134,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Route() {
   return (
     <div>
-      <Heading
-        title="Settings"
-        description="Manage your project configuration."
-      />
+      <Breadcrumb>Settings</Breadcrumb>
+      <Heading title="Settings" description="Manage your project configuration." />
       <div className="max-w-screen-sm mx-auto space-y-12">
         <GeneralSettingsForm />
         {/* <VisibilityForm /> */}

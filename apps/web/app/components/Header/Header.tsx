@@ -1,20 +1,16 @@
 import { Link } from '@remix-run/react';
 import { Fragment, type FunctionComponent, ReactNode } from 'react';
 
-import { UserMenu } from '..';
+import { Breadcrumb, UserMenu } from '..';
 import { Brand } from '../Brand';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
 
 export type HeaderProps = {
-  breadcrumb?: ReactNode[];
   userMenu?: ReturnType<typeof UserMenu>;
 };
 
-export const Header: FunctionComponent<HeaderProps> = ({
-  breadcrumb,
-  userMenu,
-}) => {
+export const Header: FunctionComponent<HeaderProps> = ({ userMenu }) => {
   return (
     <div className="flex w-full py-3 px-4 dark:bg-black">
       <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4">
@@ -23,8 +19,9 @@ export const Header: FunctionComponent<HeaderProps> = ({
             <Brand.Logo />
           </div>
 
+          <Breadcrumb.Outlet />
           <div className="flex gap-2 items-center text-sm">
-            {breadcrumb?.map((section, index) => {
+            {/* {breadcrumb?.map((section, index) => {
               return (
                 <Fragment key={index}>
                   <Icon.ChevronRight
@@ -34,7 +31,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
                   {section}
                 </Fragment>
               );
-            })}
+            })} */}
           </div>
         </div>
         <div className="flex justify-between gap-4 border-b md:border-none pb-2 md:pb-0">
