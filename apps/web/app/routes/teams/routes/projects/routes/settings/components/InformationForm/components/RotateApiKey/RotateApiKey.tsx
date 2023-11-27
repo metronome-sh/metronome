@@ -3,9 +3,6 @@ import { type FunctionComponent, useState } from 'react';
 
 import { Button, Dialog, Icon, Tooltip } from '#app/components';
 
-// import { Loadable } from '#app/components/Loadable';
-// import { useFetcherState } from '#app/hooks/useFetcherState';
-
 export const RotateApiKey: FunctionComponent<{
   initialDialogOpen?: boolean;
 }> = ({ initialDialogOpen = false }) => {
@@ -13,8 +10,7 @@ export const RotateApiKey: FunctionComponent<{
 
   const fetcher = useFetcher();
 
-  const [showRotateApiKeyDialog, setShowRotateApiKeyDialog] =
-    useState(initialDialogOpen);
+  const [showRotateApiKeyDialog, setShowRotateApiKeyDialog] = useState(initialDialogOpen);
 
   // const state = useFetcherState(fetcher);
 
@@ -48,8 +44,8 @@ export const RotateApiKey: FunctionComponent<{
           <Dialog.Header>
             <Dialog.Title>Rotate API Key</Dialog.Title>
             <Dialog.Description>
-              Please confirm you want to rotate the API key for this project.
-              You will need to update your{' '}
+              Please confirm you want to rotate the API key for this project. You will need to
+              update your{' '}
               <span className="inline mx-0.5 font-mono bg-muted rounded px-1">
                 METRONOME_API_KEY
               </span>{' '}

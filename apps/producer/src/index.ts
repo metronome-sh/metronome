@@ -2,11 +2,7 @@ import { faker } from '@faker-js/faker';
 import { env } from '@metronome/env.server';
 import fetch from 'node-fetch';
 
-import {
-  generateRemixFunction,
-  generateRequest,
-  generateWebVital,
-} from './mocks';
+import { generateRemixFunction, generateRequest, generateWebVital } from './mocks';
 import { generatePageview } from './mocks/pageviews';
 
 const postData = async () => {

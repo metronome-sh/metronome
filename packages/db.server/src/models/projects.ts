@@ -6,6 +6,8 @@ import { projects, teams, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
 import { observable, operators, throttleTime } from '../utils/events';
 import { generateSlug } from '../utils/slugs';
+import invariant from 'ts-invariant';
+import { cache } from '@metronome/cache.server';
 
 export async function insert(newProject: NewProject) {
   const slug = await generateSlug({
@@ -17,7 +19,7 @@ export async function insert(newProject: NewProject) {
     .insert(projects)
     .values({
       id: nanoid.id('project'),
-      apiKey: nanoid.id('apiKey', 30),
+      apiKey: nanoid.id('apiKey', 40),
       slug,
       ...newProject,
     })
@@ -59,31 +61,18 @@ export async function find(id: string) {
   return project;
 }
 
-export async function findBySlug({
-  projectSlug,
-  userId,
-}: {
-  projectSlug: string;
-  userId: string;
-}) {
+export async function findBySlug({ projectSlug, userId }: { projectSlug: string; userId: string }) {
   const [entry] = await db()
     .select()
     .from(projects)
     .leftJoin(teams, eq(teams.id, projects.teamId))
-    .leftJoin(
-      usersToTeams,
-      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
-    )
+    .leftJoin(usersToTeams, and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)))
     .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
 
   return entry?.projects;
 }
 
-export async function findByApiKey({
-  apiKey,
-}: {
-  apiKey: string;
-}): Promise<Project | undefined> {
+export async function findByApiKey({ apiKey }: { apiKey: string }): Promise<Project | undefined> {
   const [project] = await db()
     .select()
     .from(projects)
@@ -120,10 +109,16 @@ export async function findBySlugs({
 }
 
 export async function rotateApiKey({ id }: { id: string }) {
+  const project = await findByApiKey({ apiKey: id });
+
+  invariant(project, `Cannot find project with apiKey ${id}`);
+
   await db({ write: true })
     .update(projects)
-    .set({ apiKey: nanoid.id('apiKey', 30), updatedAt: new Date() })
+    .set({ apiKey: nanoid.id('apiKey', 40), updatedAt: new Date() })
     .where(and(eq(projects.id, id), eq(projects.deleted, false)));
+
+  await cache.forget(id);
 }
 
 export async function rotateSalts() {
