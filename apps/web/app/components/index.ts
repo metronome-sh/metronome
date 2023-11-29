@@ -31,3 +31,5 @@ export { UrlRouteDisplay } from './UrlRouteDisplay';
 export { UserMenu } from './UserMenu';
 export { cn } from './utils';
 export { Breadcrumb } from './Breadcrumb';
+export { Sheet } from './Sheet';
+export { ScrollArea } from './ScrollArea';

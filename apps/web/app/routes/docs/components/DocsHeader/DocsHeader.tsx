@@ -1,10 +1,11 @@
 import { Await, Link } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
 
-import { Avatar, Brand, Button, UserMenu } from '#app/components';
+import { Avatar, Brand, Button, Icon, ScrollArea, Sheet, UserMenu } from '#app/components';
 import { useRootLoaderData } from '#app/hooks';
 
 import { useDocsLoaderData } from '../../hooks/useDocsLoaderData';
+import { Sidebar } from '..';
 
 export const DocsHeader: FunctionComponent = () => {
   const { user } = useRootLoaderData();
@@ -12,16 +13,24 @@ export const DocsHeader: FunctionComponent = () => {
 
   return (
     <div className="fixed top-0 inset-x-0 flex w-screen h-15 border-b bg-black z-50">
-      <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4 pr-4 pl-8 bg-background/60">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-1">
-          <div className="hidden md:block">
-            <Brand />
-          </div>
+      <div className="flex justify-between w-full gap-4 pr-4 pl-1 lg:pl-8 bg-background/60">
+        <div className="flex items-center">
+          <Sheet defaultOpen>
+            <Sheet.Trigger asChild>
+              <Button variant="outline" size="icon" className="mx-2 lg:hidden">
+                <Icon.Menu className="h-6 w-6" />
+              </Button>
+            </Sheet.Trigger>
+            <Sheet.Content side="left">
+              <ScrollArea className="h-screen pb-8">
+                <Sidebar />
+              </ScrollArea>
+            </Sheet.Content>
+          </Sheet>
+          <Brand.Logo className="md:hidden h-12" />
+          <Brand className="hidden md:block" />
         </div>
-        <div className="flex justify-between gap-4 border-b md:border-none pb-2 md:pb-0">
-          <div className="md:hidden">
-            <Brand.Logo />
-          </div>
+        <div className="flex justify-between gap-4">
           <div className="flex items-center gap-4">
             {user ? (
               <>
@@ -44,13 +53,9 @@ export const DocsHeader: FunctionComponent = () => {
                                 <Avatar className="w-4 h-4 rounded-none">
                                   <Avatar.Image
                                     src={`/resources/favicon?url=${
-                                      resolvedLastViewedProject.url ??
-                                      'https://remix.run'
+                                      resolvedLastViewedProject.url ?? 'https://remix.run'
                                     }`}
-                                    alt={
-                                      resolvedLastViewedProject.name ??
-                                      'Project avatar'
-                                    }
+                                    alt={resolvedLastViewedProject.name ?? 'Project avatar'}
                                   />
                                   <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">
                                     {resolvedLastViewedProject.name?.at(0)}
@@ -83,13 +88,3 @@ export const DocsHeader: FunctionComponent = () => {
     </div>
   );
 };
-
-// <>
-//   <Link
-//     to={`/${user.organizations[0].organizationId}`}
-//     className="text-sm transition-colors hover:text-primary hover:bg-muted px-3 py-2 rounded-md"
-//   >
-//     Dashboard
-//   </Link>
-//   <UserMenu />
-// </>

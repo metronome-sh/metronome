@@ -34,6 +34,7 @@ import { Home } from './Home';
 import { InfoSquareRounded } from './InfoSquareRounded';
 import { Key } from './Key';
 import { LoaderTwo } from './LoaderTwo';
+import { Menu } from './Menu';
 import { MoodSadDizzy } from './MoodSadDizzy';
 import { Quote } from './Quote';
 import { Refresh } from './Refresh';
@@ -58,6 +59,7 @@ export const Icon = {
   Sun,
   Key,
   Home,
+  Menu,
   Alarm,
   World,
   Check,

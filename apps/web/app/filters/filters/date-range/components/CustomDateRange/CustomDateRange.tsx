@@ -42,7 +42,7 @@ export const CustomDateRange: FunctionComponent<CustomComponentProps> = ({
 
   const [numberOfMonths, setNumberOfMonths] = useState(2);
 
-  useMediaQuery('sm', (matches) => {
+  useMediaQuery({ size: 'sm' }, (matches) => {
     setNumberOfMonths(matches ? 2 : 1);
   });
 
@@ -62,8 +62,7 @@ export const CustomDateRange: FunctionComponent<CustomComponentProps> = ({
         })}
       >
         <span>
-          Selecting this date range will update{' '}
-          {updates.length > 1 ? 'some filters' : 'a filter'}
+          Selecting this date range will update {updates.length > 1 ? 'some filters' : 'a filter'}
         </span>
         <Updates
           updates={updates}

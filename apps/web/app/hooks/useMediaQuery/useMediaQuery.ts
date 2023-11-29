@@ -6,31 +6,33 @@ const breakpoints = {
   lg: '(min-width: 1024px)',
   xl: '(min-width: 1280px)',
   '2xl': '(min-width: 1536px)',
-};
+} as const;
+
+type Breakpoint = keyof typeof breakpoints;
 
 export function useMediaQuery(
-  mediaQuery: string | keyof typeof breakpoints,
-  callback: (matches: boolean) => void
+  mediaQuery: string | { size: Breakpoint },
+  callback: (matches: boolean) => void,
 ): boolean {
-  const query = breakpoints[mediaQuery as keyof typeof breakpoints] ?? mediaQuery;
+  const query = typeof mediaQuery === 'string' ? mediaQuery : breakpoints[mediaQuery.size];
 
   const mediaQueryList = useRef<MediaQueryList | null>(
-    typeof window !== 'undefined' ? window.matchMedia(query) : null
+    typeof window !== 'undefined' ? window.matchMedia(query) : null,
   );
 
   useEffect(() => {
-    const mediaQueryList = window.matchMedia(query);
+    const mqList = window.matchMedia(query);
 
     const handleChange = (event: MediaQueryListEvent) => {
       callback(event.matches);
     };
 
-    callback(mediaQueryList.matches);
+    callback(mqList.matches);
 
-    mediaQueryList.addEventListener('change', handleChange);
+    mqList.addEventListener('change', handleChange);
 
     return () => {
-      mediaQueryList.removeEventListener('change', handleChange);
+      mqList.removeEventListener('change', handleChange);
     };
   }, [query, callback]);
 

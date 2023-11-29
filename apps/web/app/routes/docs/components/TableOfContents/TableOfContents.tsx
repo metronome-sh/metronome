@@ -17,11 +17,7 @@ export const TableOfContents: FunctionComponent = () => {
           .map((heading) => (
             <li key={heading.title}>
               <Link to={{ hash: toSlug(heading.title) }}>
-                <span
-                  className={cn(
-                    heading.level === 1 ? '' : 'text-sm tracking-wide',
-                  )}
-                >
+                <span className={cn(heading.level === 1 ? '' : 'text-sm tracking-wide')}>
                   {heading.title}
                 </span>
               </Link>

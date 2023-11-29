@@ -5,7 +5,7 @@ import { useLoaderData } from '@remix-run/react';
 
 import { handle } from '#app/handlers';
 
-import { DocsHeader, Sidebar, TableOfContents } from './components';
+import { DocsHeader, Sidebar, SidebarContainer, TableOfContents } from './components';
 import { useMarkdoc } from './components/Markdoc';
 import { getDocumentationSections, getDocumentMarkdocContent } from './getters';
 import { type DocumentHeadings } from './types';
@@ -49,7 +49,7 @@ export default function Doc() {
   return (
     <div className="flex min-h-screen flex-col dark:black">
       <DocsHeader />
-      <Sidebar />
+      <SidebarContainer />
       <div className="xl:px-90 pt-15 max-w-400 mx-auto w-full pb-10 leading-relaxed lg:pl-80">
         <div className="pt-8">
           <div className="px-3">{children}</div>

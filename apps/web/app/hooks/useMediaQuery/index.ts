@@ -1,1 +1,1 @@
-export { useMediaQuery } from "./useMediaQuery";
+export { useMediaQuery } from './useMediaQuery';
