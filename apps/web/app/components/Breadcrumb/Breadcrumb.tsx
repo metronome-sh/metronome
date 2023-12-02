@@ -1,14 +1,17 @@
-import { useState, useEffect, FunctionComponent, PropsWithChildren } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useLocation } from '@remix-run/react';
-import { Icon } from '..';
+import { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+
+import { cn, Icon } from '..';
 
 type BreadcrumbProps = PropsWithChildren<{
+  chevronClassName?: string;
   breadcrumbOutletId?: string;
   link?: string;
 }>;
 
 export const Breadcrumb: FunctionComponent<BreadcrumbProps> = ({
+  chevronClassName,
   breadcrumbOutletId = 'default-breadcrumb',
   link,
   children,
@@ -26,7 +29,10 @@ export const Breadcrumb: FunctionComponent<BreadcrumbProps> = ({
 
   return createPortal(
     <li className="flex gap-2 items-center text-sm">
-      <Icon.ChevronRight strokeWidth={2} className="stroke-muted-foreground" />
+      <Icon.ChevronRight
+        strokeWidth={2}
+        className={cn('stroke-muted-foreground', chevronClassName)}
+      />
       {link ? <Link to={link}>{children}</Link> : <>{children}</>}
     </li>,
     breadcrumbOutlet,

@@ -18,13 +18,13 @@ export const Heading: FunctionComponent<PageHeaderProps> = ({
 }) => {
   return (
     <div>
-      <div className={cn('space-y-0.5 px-4 pt-6 pb-6', className)}>
+      <div className={cn('space-y-0.5 md:px-4 pt-6 pb-6', className)}>
         <h1 className="text-2xl font-medium">{title}</h1>
         <p className="text-muted-foreground">{description}</p>
       </div>
-      <Separator
-        className={cn('opacity-50 mx-4 md:mb-10', separatorClassName)}
-      />
+      <div className="md:px-4 pb-4 md:mb-10">
+        <Separator className={cn('opacity-50', separatorClassName)} />
+      </div>
     </div>
   );
 };

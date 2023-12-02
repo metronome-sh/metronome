@@ -1,8 +1,10 @@
 import { Link, useLocation } from '@remix-run/react';
-import clsx from 'clsx';
 import { type FunctionComponent } from 'react';
 
+import { cn } from '#app/components';
+
 import { type DocumentSection } from '../../types';
+import { SheetCloseContainer } from './SheetCloseContainer';
 import { SidebarItem } from './SidebarItem';
 
 export type SidebarSectionProps = {
@@ -10,9 +12,7 @@ export type SidebarSectionProps = {
   section: DocumentSection;
 };
 
-export const SidebarSection: FunctionComponent<SidebarSectionProps> = ({
-  section,
-}) => {
+export const SidebarSection: FunctionComponent<SidebarSectionProps> = ({ section }) => {
   const { label, filename, items = [], path } = section;
   const { pathname } = useLocation();
 
@@ -23,16 +23,18 @@ export const SidebarSection: FunctionComponent<SidebarSectionProps> = ({
   return (
     <div>
       {filename ? (
-        <Link prefetch="intent" to={fullPath}>
-          <span
-            className={clsx(
-              'hover:text-primary-600 text-md font-semibold uppercase tracking-wider md:text-[0.70rem] hover:underline',
-              isActive ? 'text-teal-500' : '',
-            )}
-          >
-            {label}
-          </span>
-        </Link>
+        <SheetCloseContainer>
+          <Link prefetch="intent" to={fullPath}>
+            <span
+              className={cn(
+                'hover:text-primary-600 text-md font-semibold uppercase tracking-wider md:text-[0.70rem] hover:underline',
+                isActive ? 'text-teal-500' : '',
+              )}
+            >
+              {label}
+            </span>
+          </Link>
+        </SheetCloseContainer>
       ) : (
         <span className="text-md font-semibold uppercase tracking-wider md:text-[0.70rem] text-muted-foreground/70">
           {label}

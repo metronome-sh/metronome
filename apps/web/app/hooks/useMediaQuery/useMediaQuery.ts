@@ -12,7 +12,7 @@ type Breakpoint = keyof typeof breakpoints;
 
 export function useMediaQuery(
   mediaQuery: string | { size: Breakpoint },
-  callback: (matches: boolean) => void,
+  callback?: (matches: boolean) => void,
 ): boolean {
   const query = typeof mediaQuery === 'string' ? mediaQuery : breakpoints[mediaQuery.size];
 
@@ -24,10 +24,10 @@ export function useMediaQuery(
     const mqList = window.matchMedia(query);
 
     const handleChange = (event: MediaQueryListEvent) => {
-      callback(event.matches);
+      callback?.(event.matches);
     };
 
-    callback(mqList.matches);
+    callback?.(mqList.matches);
 
     mqList.addEventListener('change', handleChange);
 

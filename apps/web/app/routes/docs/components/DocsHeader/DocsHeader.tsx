@@ -1,5 +1,5 @@
 import { Await, Link } from '@remix-run/react';
-import { type FunctionComponent, Suspense } from 'react';
+import { type FunctionComponent, Suspense, useRef } from 'react';
 
 import { Avatar, Brand, Button, Icon, ScrollArea, Sheet, UserMenu } from '#app/components';
 import { useRootLoaderData } from '#app/hooks';
@@ -15,7 +15,7 @@ export const DocsHeader: FunctionComponent = () => {
     <div className="fixed top-0 inset-x-0 flex w-screen h-15 border-b bg-black z-50">
       <div className="flex justify-between w-full gap-4 pr-4 pl-1 lg:pl-8 bg-background/60">
         <div className="flex items-center">
-          <Sheet defaultOpen>
+          <Sheet>
             <Sheet.Trigger asChild>
               <Button variant="outline" size="icon" className="mx-2 lg:hidden">
                 <Icon.Menu className="h-6 w-6" />
@@ -23,7 +23,7 @@ export const DocsHeader: FunctionComponent = () => {
             </Sheet.Trigger>
             <Sheet.Content side="left">
               <ScrollArea className="h-screen pb-8">
-                <Sidebar />
+                <Sidebar inSheet />
               </ScrollArea>
             </Sheet.Content>
           </Sheet>
@@ -39,16 +39,16 @@ export const DocsHeader: FunctionComponent = () => {
                     {(resolvedLastViewedProject) => (
                       <Button asChild variant="outline">
                         <Link
+                          className="text-sm transition-colors hover:text-primary hover:bg-muted px-3 py-2 rounded-md max-w-50 sm:max-w-max"
                           to={
                             resolvedLastViewedProject
                               ? `/${user.usersToTeams[0].team.slug}/${resolvedLastViewedProject.slug}`
                               : `/${user.usersToTeams[0].team.slug}`
                           }
-                          className="text-sm transition-colors hover:text-primary hover:bg-muted px-3 py-2 rounded-md"
                         >
                           {resolvedLastViewedProject ? (
                             <>
-                              <span>Return to </span>
+                              <span className="whitespace-nowrap">Return to </span>
                               <span className="px-1">
                                 <Avatar className="w-4 h-4 rounded-none">
                                   <Avatar.Image
@@ -62,7 +62,7 @@ export const DocsHeader: FunctionComponent = () => {
                                   </Avatar.Fallback>
                                 </Avatar>
                               </span>
-                              <span>{resolvedLastViewedProject?.name}</span>
+                              <span className="truncate">{resolvedLastViewedProject?.name}</span>
                             </>
                           ) : (
                             'Dashboard'

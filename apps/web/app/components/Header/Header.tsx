@@ -46,6 +46,7 @@ export const Header: FunctionComponent<HeaderProps> = ({ userMenu }) => {
               asChild
             >
               <a
+                className="hidden lg:block"
                 href="https://github.com/metronome-sh/metronome-sh/issues/new?assignees=ErickTamayo&labels=feature-request&projects=&template=feature_request.md&title=%5BFEATURE+REQUEST%5D"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -61,6 +62,7 @@ export const Header: FunctionComponent<HeaderProps> = ({ userMenu }) => {
               asChild
             >
               <a
+                className="hidden lg:block"
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://github.com/metronome-sh/metronome-sh/issues/new?assignees=ErickTamayo&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D"

@@ -5,14 +5,7 @@ import { SerializeFrom } from '@remix-run/node';
 import { useNavigate } from '@remix-run/react';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 
-import {
-  Avatar,
-  Button,
-  Command,
-  Dialog,
-  Icon,
-  Popover,
-} from '#app/components';
+import { Avatar, Button, Command, Dialog, Icon, Popover } from '#app/components';
 import { cn } from '#app/components/utils';
 
 import { useTeamLoaderData } from '../../hooks';
@@ -48,10 +41,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
   const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
 
   return (
-    <NewProjectDialog
-      open={showNewProjectDialog}
-      onOpenChange={setShowNewProjectDialog}
-    >
+    <NewProjectDialog open={showNewProjectDialog} onOpenChange={setShowNewProjectDialog}>
       <Popover open={open} onOpenChange={setOpen} {...props}>
         <Popover.Trigger asChild>
           <Button
@@ -59,14 +49,12 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
             role="combobox"
             aria-label="Select project..."
             aria-expanded={open}
-            className="flex-1 justify-between md:max-w-[200px] lg:max-w-[300px] px-2"
+            className="flex-1 justify-between max-w-64 sm:max-w-[200px] lg:max-w-[300px] px-2"
           >
             <span className="pr-2">
               <Avatar className="w-4 h-4 rounded-none">
                 <Avatar.Image
-                  src={`/resources/favicon?url=${
-                    project.url ?? 'https://remix.run'
-                  }`}
+                  src={`/resources/favicon?url=${project.url ?? 'https://remix.run'}`}
                   alt={project.name ?? 'Project avatar'}
                 />
                 <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">
@@ -74,8 +62,8 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
                 </Avatar.Fallback>
               </Avatar>
             </span>
-            <span>{project.name}</span>
-            <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <span className="truncate">{project.name}</span>
+            <CaretSortIcon className="md:ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </Popover.Trigger>
         <Popover.Content className="w-[300px] p-0 ml-21">
@@ -99,9 +87,7 @@ export const ProjectSelector: FunctionComponent<PopoverProps> = (props) => {
                     <span className="pr-2">
                       <Avatar className="w-4 h-4 rounded-none">
                         <Avatar.Image
-                          src={`/resources/favicon?url=${
-                            p.url ?? 'https://remix.run'
-                          }`}
+                          src={`/resources/favicon?url=${p.url ?? 'https://remix.run'}`}
                           alt={p.name ?? 'Project avatar'}
                         />
                         <Avatar.Fallback className="uppercase text-[10px] font-semibold group-hover:bg-muted-foreground/40">

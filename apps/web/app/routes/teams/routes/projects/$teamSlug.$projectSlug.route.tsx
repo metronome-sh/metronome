@@ -2,12 +2,12 @@ import { projects, users } from '@metronome/db.server';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
+import { Breadcrumb } from '#app/components';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
-import { Navigation } from './components';
-import { Breadcrumb } from '#app/components';
 import { ProjectSelector } from '../../components';
+import { Navigation } from './components';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;
@@ -44,7 +44,7 @@ export default function Component() {
         <ProjectSelector />
       </Breadcrumb>
       <Navigation />
-      <div className="mx-auto w-full h-full flex-grow flex flex-col max-w-screen-xl">
+      <div className="mx-auto w-full h-full flex-grow flex flex-col max-w-screen-xl px-4">
         <Outlet />
       </div>
     </div>
