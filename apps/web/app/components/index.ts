@@ -33,3 +33,4 @@ export { cn } from './utils';
 export { Breadcrumb } from './Breadcrumb';
 export { Sheet } from './Sheet';
 export { ScrollArea } from './ScrollArea';
+export { AspectRatio } from './AspectRatio';
