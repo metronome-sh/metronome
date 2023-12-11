@@ -28,6 +28,7 @@ const connectAndMigrate = async () => {
     } catch (error) {
       retries--;
       // prettier-ignore
+      console.error(error.message);
       console.error(`Failed to connect to the database. Retries left ${retries}`);
       await sleep(3000); // Wait for 3 seconds before retrying
     }

@@ -3,21 +3,17 @@ import EventEmitter from 'events';
 
 EventEmitter.defaultMaxListeners = 1_000;
 
-
 import { createQueue } from './createQueue';
 
-export const metrics = createQueue<{ apiKey: string; data: unknown }>(
-  'metrics',
-  {
-    removeOnComplete: true,
-    removeOnFail: true,
-    attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
-    backoff: {
-      type: 'fixed',
-      delay: 1000 * 60 * 5, // 5 minutes
-    },
+export const metrics = createQueue<{ apiKey: string; data: unknown }>('metrics', {
+  removeOnComplete: true,
+  removeOnFail: true,
+  attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
+  backoff: {
+    type: 'fixed',
+    delay: 1000 * 60 * 5, // 5 minutes
   },
-);
+});
 
 export const events = createQueue<
   {

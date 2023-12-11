@@ -1,12 +1,4 @@
-import {
-  BaseJobOptions,
-  Job,
-  Processor,
-  Queue,
-  QueueEvents,
-  QueueScheduler,
-  Worker,
-} from 'bullmq';
+import { BaseJobOptions, Job, Processor, Queue, QueueEvents, QueueScheduler, Worker } from 'bullmq';
 
 import { ioredis as connection } from './ioredis';
 
@@ -23,10 +15,7 @@ export function createQueue<T extends object, R = unknown>(
     new QueueScheduler(name, { connection });
 
     workerInstance.on('completed', ({ id, returnvalue }) => {
-      console.log(
-        `[${name}:${id}] completed`,
-        typeof returnvalue == 'string' ? returnvalue : '',
-      );
+      console.log(`[${name}:${id}] completed`, typeof returnvalue == 'string' ? returnvalue : '');
     });
 
     workerInstance.on('failed', ({ id, failedReason }) => {
@@ -41,10 +30,7 @@ export function createQueue<T extends object, R = unknown>(
 
   const events = new QueueEvents(name, { connection });
 
-  function add(
-    data: Parameters<typeof queue.add>[1],
-    opts?: Parameters<typeof queue.add>[2],
-  ) {
+  function add(data: Parameters<typeof queue.add>[1], opts?: Parameters<typeof queue.add>[2]) {
     return queue.add(name, data, opts);
   }
 

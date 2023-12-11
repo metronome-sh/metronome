@@ -4,14 +4,7 @@ import { throttleTime } from 'rxjs';
 import { db } from '../../db';
 import { getWebVitalsOverviewAggregatedView, webVitals } from '../../schema';
 import { WebVitalEventSchema } from '../../schemaValidation';
-import {
-  Interval,
-  Project,
-  Range,
-  ScoredWebVital,
-  WebVitalEvent,
-  WebVitalName,
-} from '../../types';
+import { Interval, Project, Range, ScoredWebVital, WebVitalEvent, WebVitalName } from '../../types';
 import { getDeviceProps } from '../../utils/device';
 import { observable, operators } from '../../utils/events';
 import { resolveIp } from '../../utils/ip';
@@ -39,7 +32,7 @@ export async function insert(project: Project, webVitalEvent: WebVitalEvent) {
 
   const { type } = getDeviceProps(ua);
 
-  const geo = resolveIp(ip);
+  const geo = await resolveIp(ip);
 
   await db({ write: true })
     .insert(webVitals)
@@ -81,12 +74,7 @@ export async function overview({
       valueP75: sql<number>`approx_percentile(0.75, rollup(${webVitals.valuePctAgg}))`,
     })
     .from(webVitals)
-    .where(
-      and(
-        eq(webVitals.projectId, project.id),
-        between(webVitals.timestamp, fromDate, toDate),
-      ),
-    )
+    .where(and(eq(webVitals.projectId, project.id), between(webVitals.timestamp, fromDate, toDate)))
     .groupBy(webVitals.name);
 
   const vitals = EMPTY_SCORED_WEB_VITALS.reduce((acc, filler) => {

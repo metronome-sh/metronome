@@ -12,10 +12,6 @@ const bree = new Bree({
       name: 'rotate-salt',
       interval: env.when({ production: 'at 12:00 am', development: '5m' }),
     },
-    {
-      name: 'geoip',
-      interval: 'at 02:00 am',
-    },
   ],
 });
 

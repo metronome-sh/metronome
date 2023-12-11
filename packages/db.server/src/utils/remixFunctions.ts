@@ -3,23 +3,14 @@ import { and, between, eq, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/pg-core';
 
 import { db } from '../db';
-import {
-  actions,
-  getRemixFunctionOverviewAggregatedView,
-  loaders,
-} from '../schema';
+import { actions, getRemixFunctionOverviewAggregatedView, loaders } from '../schema';
 import { ActionEvent, LoaderEvent, Project } from '../types';
 import { toPostgresTzName } from './aggregations';
 import { observable, operators, throttleTime } from './events';
 import { resolveIp } from './ip';
 
-export function createRemixFunctionInsert(
-  schema: typeof loaders | typeof actions,
-) {
-  return async function create(
-    project: Project,
-    event: ActionEvent | LoaderEvent,
-  ) {
+export function createRemixFunctionInsert(schema: typeof loaders | typeof actions) {
+  return async function create(project: Project, event: ActionEvent | LoaderEvent) {
     const { details } = event;
     const {
       timestamp,
@@ -35,7 +26,7 @@ export function createRemixFunctionInsert(
       ip,
     } = details;
 
-    const geo = resolveIp(ip);
+    const geo = await resolveIp(ip);
 
     await db({ write: true })
       .insert(schema)
@@ -57,9 +48,7 @@ export function createRemixFunctionInsert(
   };
 }
 
-export function createRemixFunctionOverview(
-  schema: typeof loaders | typeof actions,
-) {
+export function createRemixFunctionOverview(schema: typeof loaders | typeof actions) {
   return async function overview({
     project,
     range: { from, to },
@@ -116,9 +105,7 @@ export function createRemixFunctionOverview(
   };
 }
 
-export function createRemixFunctionOverviewSeries(
-  schema: typeof loaders | typeof actions,
-) {
+export function createRemixFunctionOverviewSeries(schema: typeof loaders | typeof actions) {
   return async function series({
     project,
     range: { from, to },
@@ -157,9 +144,7 @@ export function createRemixFunctionOverviewSeries(
         timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${table.timestamp}, ${sql.raw(pgTz)})`,
         count: sql<number | null>`sum(${table.count})::integer`,
         erroredCount: sql<number | null>`sum(${table.erroredCount})::integer`,
-        okCount: sql<
-          number | null
-        >`sum(${table.count} - ${table.erroredCount})::integer`,
+        okCount: sql<number | null>`sum(${table.count} - ${table.erroredCount})::integer`,
       })
       .from(table)
       .where(
@@ -171,22 +156,18 @@ export function createRemixFunctionOverviewSeries(
       )
       .groupBy(sql`1`);
 
-    const series = result.map(
-      ({ timestamp, count, erroredCount, okCount }) => ({
-        timestamp: timestamp.valueOf(),
-        count,
-        erroredCount,
-        okCount,
-      }),
-    );
+    const series = result.map(({ timestamp, count, erroredCount, okCount }) => ({
+      timestamp: timestamp.valueOf(),
+      count,
+      erroredCount,
+      okCount,
+    }));
 
     return { series };
   };
 }
 
-export function createRemixFunctionWatch(
-  schema: typeof loaders | typeof actions,
-) {
+export function createRemixFunctionWatch(schema: typeof loaders | typeof actions) {
   const schemaEvents: ('loader' | 'action')[] =
     getTableConfig(schema).name === 'loaders' ? ['loader'] : ['action'];
 

@@ -27,11 +27,9 @@ export async function insert(project: Project, pageviewEvent: PageviewEvent) {
     details: { timestamp, routeId, routePath = '', hash, pathname, query, ip },
   } = pageviewEvent;
 
-  const { referrer, referrerDomain } = resolveReferrer(
-    pageviewEvent.details.referrer,
-  );
+  const { referrer, referrerDomain } = resolveReferrer(pageviewEvent.details.referrer);
 
-  const geo = resolveIp(ip);
+  const geo = await resolveIp(ip);
 
   await db({ write: true })
     .insert(pageviews)

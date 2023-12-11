@@ -35,15 +35,10 @@ export class Environment {
     this.test = this.defined('NODE_ENV') === 'test';
   }
 
-  protected optional<T = string>(
-    envVarName: string,
-    defaultValue?: T,
-  ): T | string | undefined {
+  protected optional<T = string>(envVarName: string, defaultValue?: T): T | string | undefined {
     const envVar = process.env[envVarName];
     if (!envVar) {
-      console.warn(
-        `Warning: environment ${envVarName} variable is not defined`,
-      );
+      console.warn(`Warning: environment ${envVarName} variable is not defined`);
     }
     return envVar ?? defaultValue;
   }
@@ -77,9 +72,7 @@ export class Environment {
     const writeUrlCanBeUsed = writeUser && writePassword && writeHost && writeDatabase && writePort;
 
     if (this.production && !writeUrlCanBeUsed) {
-      console.warn(
-        'Writable database URL is not defined. Using read-only database URL.',
-      );
+      console.warn('Writable database URL is not defined. Using read-only database URL.');
     }
 
     const writableUrl = writeUrlCanBeUsed
@@ -107,7 +100,14 @@ export class Environment {
 
   public url(pathname: string) {
     const { url: appUrl, port } = this.app();
-    return `${appUrl}${pathname}:${port}`;
+
+    const normalizedAppUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
+    const normalizedPathname = pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+    return this.when({
+      production: () => `${normalizedAppUrl}${normalizedPathname}`,
+      development: () => `${normalizedAppUrl}:${port}${normalizedPathname}`,
+    });
   }
 
   public producer() {
@@ -133,9 +133,7 @@ export class Environment {
     return { url, password, family };
   }
 
-  public cache(
-    { unique }: { unique: boolean } | undefined = { unique: false },
-  ) {
+  public cache({ unique }: { unique: boolean } | undefined = { unique: false }) {
     if (unique) {
       const url = this.defined('REDIS_UNIQUE_URL');
 
@@ -196,9 +194,7 @@ export class Environment {
       return castTest() || castProduction();
     }
 
-    return typeof environment.development !== undefined
-      ? castDevelopment()!
-      : castProduction();
+    return typeof environment.development !== undefined ? castDevelopment()! : castProduction();
   }
 
   public geoip() {

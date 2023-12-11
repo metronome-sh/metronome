@@ -18,7 +18,7 @@ export async function insert(project: Project, requestEvent: RequestEvent) {
     details: { timestamp, duration, method, statusCode, pathname, type, ip },
   } = requestEvent;
 
-  const geo = resolveIp(ip);
+  const geo = await resolveIp(ip);
 
   await db({ write: true })
     .insert(requests)
@@ -44,10 +44,7 @@ export async function overview({
   range: Range;
   interval: Interval;
 }) {
-  const requests = await getRequestsOverviewAggregatedView(
-    from.timeZoneId,
-    interval,
-  );
+  const requests = await getRequestsOverviewAggregatedView(from.timeZoneId, interval);
 
   const fromDate = new Date(from.toInstant().epochMilliseconds);
   const toDate = new Date(to.toInstant().epochMilliseconds);
@@ -96,10 +93,7 @@ export async function countSeries({
   range: Range;
   interval: Interval;
 }) {
-  const requests = await getRequestsOverviewAggregatedView(
-    from.timeZoneId,
-    interval,
-  );
+  const requests = await getRequestsOverviewAggregatedView(from.timeZoneId, interval);
 
   const fromDate = new Date(from.toInstant().epochMilliseconds);
   const toDate = new Date(to.toInstant().epochMilliseconds);
@@ -110,9 +104,7 @@ export async function countSeries({
     .select({
       // prettier-ignore
       timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
-      documentCount: sql<
-        number | null
-      >`sum(${requests.documentCount})::integer`,
+      documentCount: sql<number | null>`sum(${requests.documentCount})::integer`,
       dataCount: sql<number | null>`sum(${requests.dataCount})::integer`,
     })
     .from(requests)
