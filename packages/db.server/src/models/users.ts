@@ -1,11 +1,11 @@
 import { compare, hash } from 'bcryptjs';
 import { eq, sql } from 'drizzle-orm';
-import { buildJsonbObject } from '../utils/buildJsonObject';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import { users, usersToTeams } from '../schema';
-import { type NewUser, type User } from '../types';
+import { type NewUser, type UpdateUser, type User } from '../types';
+import { buildJsonbObject } from '../utils/buildJsonObject';
 
 export async function insert(newUser: NewUser): Promise<User> {
   const hashedPassword = newUser.password ? await hash(newUser.password, 10) : null;
@@ -169,6 +169,18 @@ export async function updateSettings(userId: string, settings: Partial<User['set
     .set({
       settings: sql`settings::jsonb || ${buildJsonbObject({ ...settings })}`,
     })
+    .where(eq(users.id, userId))
+    .returning();
+
+  return user;
+}
+
+export async function update(userId: string, update: UpdateUser) {
+  const { settings, ...rest } = update;
+
+  const [user] = await db({ write: true })
+    .update(users)
+    .set({ ...rest, settings: sql`settings::jsonb || ${buildJsonbObject(settings)}` })
     .where(eq(users.id, userId))
     .returning();
 

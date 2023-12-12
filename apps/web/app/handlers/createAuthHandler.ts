@@ -66,10 +66,7 @@ export function createAuthHandler({
     return userObject;
   }
 
-  async function attempt(
-    strategy: string,
-    options?: { success?: string; failure?: string },
-  ) {
+  async function attempt(strategy: string, options?: { success?: string; failure?: string }) {
     await authenticator.authenticate(strategy, request, {
       successRedirect: options?.success,
       failureRedirect: options?.failure,

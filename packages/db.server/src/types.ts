@@ -20,6 +20,10 @@ export type User = Omit<typeof users.$inferSelect, 'password'> & {
 
 export type NewUser = Omit<typeof users.$inferInsert, 'id'>;
 
+export type UpdateUser = Partial<Omit<typeof users.$inferInsert, 'id' | 'settings'>> & {
+  settings?: Partial<(typeof users.$inferInsert)['settings']>;
+};
+
 export type Team = typeof teams.$inferSelect;
 
 export type NewTeam = Omit<typeof teams.$inferInsert, 'id'> & { slug?: string };
