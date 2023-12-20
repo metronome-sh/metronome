@@ -1,10 +1,10 @@
 import { compare, hash } from 'bcryptjs';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, and } from 'drizzle-orm';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
-import { users, usersToTeams } from '../schema';
-import { type NewUser, type UpdateUser, type User } from '../types';
+import { projects, teams, users, usersToTeams } from '../schema';
+import { Project, type NewUser, type UpdateUser, type User } from '../types';
 import { buildJsonbObject } from '../utils/buildJsonObject';
 
 export async function insert(newUser: NewUser): Promise<User> {
@@ -114,10 +114,13 @@ export async function upsert({
 }
 
 export async function addToTeam({ userId, teamId }: { userId: string; teamId: string }) {
-  await db({ write: true }).insert(usersToTeams).values({
-    userId,
-    teamId,
-  });
+  await db({ write: true })
+    .insert(usersToTeams)
+    .values({
+      userId,
+      teamId,
+    })
+    .onConflictDoNothing();
 }
 
 export async function lastSelectedProjectSlug({

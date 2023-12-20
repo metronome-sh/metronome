@@ -2,12 +2,13 @@ import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
-import { projects, teams, usersToTeams } from '../schema';
+import { projects, teams, users, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
 import { observable, operators, throttleTime } from '../utils/events';
 import { generateSlug } from '../utils/slugs';
 import invariant from 'ts-invariant';
 import { cache } from '@metronome/cache.server';
+import { buildJsonbObject } from 'src/utils/buildJsonObject';
 
 export async function insert(newProject: NewProject) {
   const slug = await generateSlug({
@@ -65,19 +66,25 @@ export async function findBySlug({ projectSlug, userId }: { projectSlug: string;
   const [entry] = await db()
     .select()
     .from(projects)
-    .leftJoin(teams, eq(teams.id, projects.teamId))
-    .leftJoin(usersToTeams, and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)))
+    .innerJoin(teams, eq(teams.id, projects.teamId))
+    .innerJoin(
+      usersToTeams,
+      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
+    )
     .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
 
   return entry?.projects;
 }
 
-export async function findByApiKey({ apiKey }: { apiKey: string }): Promise<Project | undefined> {
-  const [project] = await db()
-    .select()
-    .from(projects)
-    .where(and(eq(projects.apiKey, apiKey), eq(projects.deleted, false)))
-    .limit(1);
+export async function findByApiKey({ apiKey }: { apiKey: string }) {
+  const project = await db().query.projects.findFirst({
+    where: (projects, { eq }) => {
+      return eq(projects.apiKey, apiKey);
+    },
+    with: {
+      team: true,
+    },
+  });
 
   return project;
 }
@@ -94,8 +101,8 @@ export async function findBySlugs({
   const [entry] = await db()
     .select()
     .from(projects)
-    .leftJoin(teams, eq(teams.id, projects.teamId))
-    .leftJoin(
+    .innerJoin(teams, eq(teams.id, projects.teamId))
+    .innerJoin(
       usersToTeams,
       and(
         eq(usersToTeams.teamId, teams.id),
@@ -106,6 +113,15 @@ export async function findBySlugs({
     .where(and(eq(projects.slug, projectSlug), eq(projects.deleted, false)));
 
   return entry?.projects;
+}
+
+export async function findByTeamId({ teamId }: { teamId: string }) {
+  const foundProjects = await db()
+    .select()
+    .from(projects)
+    .where(and(eq(projects.deleted, false), eq(projects.teamId, teamId)));
+
+  return foundProjects;
 }
 
 export async function rotateApiKey({ id }: { id: string }) {
@@ -149,4 +165,55 @@ export async function watch(
     });
 
   return () => subscription.unsubscribe();
+}
+
+export async function getLastViewedProject(userId: string): Promise<Project | null> {
+  async function clearSlugs() {
+    await db()
+      .update(users)
+      .set({
+        settings: sql`settings::jsonb || ${buildJsonbObject({
+          lastSelectedProjectSlug: null,
+          lastSelectedTeamSlug: null,
+        })}`,
+      })
+      .where(eq(users.id, userId));
+  }
+
+  const [result] = await db()
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .innerJoin(usersToTeams, eq(usersToTeams.userId, userId));
+
+  const projectSlug = result?.users?.settings?.lastSelectedProjectSlug;
+
+  const teamSlug = result?.users?.settings?.lastSelectedTeamSlug;
+
+  if (!projectSlug || !teamSlug) {
+    if (Boolean(projectSlug) !== Boolean(teamSlug)) {
+      await clearSlugs();
+    }
+    return null;
+  }
+
+  // Check if user hass access to the team by slug, project bg slug, and the project is not deleted
+  const [project] = await db()
+    .select()
+    .from(projects)
+    .innerJoin(teams, eq(teams.id, projects.teamId))
+    .innerJoin(
+      usersToTeams,
+      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
+    )
+    .where(
+      and(eq(projects.slug, projectSlug), eq(teams.slug, teamSlug), eq(projects.deleted, false)),
+    );
+
+  if (!project) {
+    await clearSlugs();
+    return null;
+  }
+
+  return project.projects;
 }

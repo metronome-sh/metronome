@@ -22,6 +22,8 @@ export function createQueue<T extends object, R = unknown>(
       console.log(`[${name}:${id}] Failed with reason ${failedReason}`);
     });
 
+    console.log(`[${name}] Worker started with concurrency ${concurrency}`);
+
     // TODO use https://github.com/winstonjs/winston
     return workerInstance;
   };

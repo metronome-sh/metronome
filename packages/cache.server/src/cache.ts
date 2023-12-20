@@ -8,9 +8,11 @@ type Key = 'session' | OtherString;
 
 let cacheRememberWarningLogged = false;
 
+const PREFIX = 'metronome_cache:';
+
 function createSetFunction(connection: typeof ioredis) {
   return async function set<Data>(key: Key | Key[], value: Data, seconds?: number) {
-    const stringifiedKey = JSON.stringify(key);
+    const stringifiedKey = PREFIX + JSON.stringify(key);
     const stringifiedValue = JSON.stringify(value);
 
     if (seconds) {
@@ -25,7 +27,8 @@ function createSetFunction(connection: typeof ioredis) {
 
 function createGetFunction(connection: typeof ioredis) {
   return async function get<Data>(key: Key | Key[]) {
-    const value = await connection.get(JSON.stringify(key));
+    const stringifiedKey = PREFIX + JSON.stringify(key);
+    const value = await connection.get(stringifiedKey);
     return value ? (JSON.parse(value) as Data) : null;
   };
 }
@@ -36,7 +39,7 @@ function createRememberFunction(connection: typeof ioredis) {
     callback: () => Promise<Data> | Data,
     ttl: number,
   ) {
-    const stringifiedKey = JSON.stringify(key);
+    const stringifiedKey = PREFIX + JSON.stringify(key);
 
     const value = await connection.get(stringifiedKey);
 
@@ -57,7 +60,7 @@ function createRememberFunction(connection: typeof ioredis) {
 
 function createForgetFunction(connection: typeof ioredis) {
   return async function forget<T extends Key>(key: T) {
-    const stringifiedKey = JSON.stringify(key);
+    const stringifiedKey = PREFIX + JSON.stringify(key);
     await connection.del(stringifiedKey);
   };
 }

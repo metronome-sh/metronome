@@ -30,13 +30,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const sections = await getDocumentationSections();
 
-  const lastViewedProject =
-    user && user.settings?.lastSelectedProjectSlug
-      ? projects.findBySlug({
-          projectSlug: user.settings.lastSelectedProjectSlug,
-          userId: user.id,
-        })
-      : null;
+  const lastViewedProject = user ? projects.getLastViewedProject(user.id) : null;
 
   return defer({ sections, content, headings, lastViewedProject });
 }

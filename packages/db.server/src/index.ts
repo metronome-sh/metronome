@@ -9,6 +9,7 @@ import * as usages from './models/usages';
 import * as users from './models/users';
 
 export { insertMetrics } from './insertMetrics';
+export { insertLegacyMetrics } from './legacy/insertLegacyMetrics';
 
 export { actions, loaders, pageviews, projects, requests, sessions, teams, usages, users };
 export { webVitals } from './models/webVitals';

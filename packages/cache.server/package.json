@@ -11,7 +11,8 @@
     "dev": "concurrently --raw pnpm:dev:*",
     "dev:typings": "tsc --pretty --declaration --emitDeclarationOnly --outDir dist/ --watch",
     "dev:esbuild": "node --experimental-import-meta-resolve scripts/esbuild.watch.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "cache:clear": "NODE_ENV=production tsx ./scripts/cache-clear.mts"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,7 @@
     "@epic-web/remember": "^1.0.2",
     "@metronome/env.server": "workspace:*",
     "ioredis": "^5.3.2",
-    "redlock": "5.0.0-beta.2"
+    "redlock": "5.0.0-beta.2",
+    "tsx": "^3.14.0"
   }
 }

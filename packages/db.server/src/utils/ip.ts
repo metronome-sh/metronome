@@ -1,13 +1,7 @@
 import { Reader, ReaderModel } from '@maxmind/geoip2-node';
 import { env } from '@metronome/env.server';
-import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
-
-const DB_CHECK_INTERVAL = env.when({
-  production: 86_400_000, // 1 day
-  development: 60_000, // 1 minute
-});
 
 const resolvedUnknown = {
   countryCode: 'unknown',
@@ -17,10 +11,9 @@ const resolvedUnknown = {
 };
 
 let readerInstance: ReaderModel;
-let dbLastChecked = 0;
 let noMaxmindEnvMessageShown = false;
 
-async function getReader(): Promise<ReaderModel> {
+function getReader(): ReaderModel {
   if (env.geoip().licenseKey === undefined) {
     if (!noMaxmindEnvMessageShown) {
       console.warn(
@@ -32,17 +25,9 @@ async function getReader(): Promise<ReaderModel> {
     throw new Error('MAXMIND_LICENSE_KEY');
   }
 
-  const now = new Date().getTime();
-
-  if (readerInstance && now - dbLastChecked < DB_CHECK_INTERVAL) {
+  if (readerInstance) {
     return readerInstance;
   }
-
-  const { stdout } = await execa('pnpm', ['run', 'geoip:download'], {
-    cwd: path.join(__dirname, '../../'),
-  });
-
-  console.log(stdout);
 
   // prettier-ignore
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -53,21 +38,19 @@ async function getReader(): Promise<ReaderModel> {
   const dbBuffer = fs.readFileSync(databaseDir);
   readerInstance = Reader.openBuffer(dbBuffer);
 
-  dbLastChecked = now;
-
   return readerInstance;
 }
 
-export async function resolveIp(ip: string): Promise<{
+export function resolveIp(ip: string): {
   countryCode: string;
   country: string;
   region: string;
   city: string;
-}> {
+} {
   let reader: ReaderModel;
 
   try {
-    reader = await getReader();
+    reader = getReader();
   } catch (error) {
     if ((error as Error).message !== 'MAXMIND_LICENSE_KEY') {
       console.warn('Could not find GeoIP database: ', (error as Error).message);

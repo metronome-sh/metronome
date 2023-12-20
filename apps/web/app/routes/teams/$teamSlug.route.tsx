@@ -1,4 +1,4 @@
-import { teams, users } from '@metronome/db.server';
+import { projects, teams, users } from '@metronome/db.server';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
@@ -25,7 +25,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const pathname = new URL(request.url).pathname;
 
-  const projects = await teams.getProjects({ teamId: team.id });
+  const teamProjects = await projects.findByTeamId({ teamId: team.id });
 
   if (typeof teamSlug === 'string' && pathname.endsWith(teamSlug)) {
     const lastSelectedProjectSlug = user.settings?.lastSelectedProjectSlug;
@@ -34,12 +34,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       throw redirect(`/${teamSlug}/${lastSelectedProjectSlug}/overview`);
     }
 
-    if (projects.length === 0) throw redirect(`/${teamSlug}/create`);
+    if (teamProjects.length === 0) throw redirect(`/${teamSlug}/create`);
 
-    throw redirect(`/${teamSlug}/${projects.at(0)!.slug}/overview`);
+    throw redirect(`/${teamSlug}/${teamProjects.at(0)!.slug}/overview`);
   }
 
-  return json({ team, projects, lastSelectedProjectSlug: user.settings?.lastSelectedProjectSlug });
+  return json({
+    team,
+    projects: teamProjects,
+    lastSelectedProjectSlug: user.settings?.lastSelectedProjectSlug,
+  });
 }
 
 export default function Component() {

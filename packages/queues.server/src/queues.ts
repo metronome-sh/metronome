@@ -15,6 +15,16 @@ export const metrics = createQueue<{ apiKey: string; data: unknown }>('metrics',
   },
 });
 
+export const legacyMetrics = createQueue<{ apiKey: string; data: unknown }>('legacy-metrics', {
+  removeOnComplete: true,
+  removeOnFail: true,
+  attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
+  backoff: {
+    type: 'fixed',
+    delay: 1000 * 60 * 5, // 5 minutes
+  },
+});
+
 export const events = createQueue<
   {
     projectId: string;

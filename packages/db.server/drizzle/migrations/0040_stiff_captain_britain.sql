@@ -1,0 +1,3 @@
+ALTER TABLE "teams" ALTER COLUMN "settings" SET DEFAULT '{"subscription":null}'::jsonb;--> statement-breakpoint
+ALTER TABLE "users" ALTER COLUMN "settings" SET DEFAULT '{"emails":[],"selectedEmail":null,"lastSelectedProjectSlug":null,"lastSelectedTeamSlug":null,"customerId":null}'::jsonb;--> statement-breakpoint
+ALTER TABLE "users_to_teams" ADD CONSTRAINT "users_to_teams_user_id_team_id" PRIMARY KEY("user_id","team_id");

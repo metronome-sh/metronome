@@ -42,20 +42,13 @@ export async function findBySlug({
   const [team] = await db()
     .select()
     .from(teams)
-    .leftJoin(usersToTeams, and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)))
+    .innerJoin(
+      usersToTeams,
+      and(eq(usersToTeams.teamId, teams.id), eq(usersToTeams.userId, userId)),
+    )
     .where(eq(teams.slug, teamSlug));
 
   return team?.teams;
-}
-
-export async function getProjects({ teamId }: { teamId: string }) {
-  const foundProjects = await db()
-    .select()
-    .from(projects)
-    .leftJoin(teams, eq(teams.id, teamId))
-    .where(eq(projects.deleted, false));
-
-  return foundProjects.map((project) => project.projects);
 }
 
 export async function updateSettings(

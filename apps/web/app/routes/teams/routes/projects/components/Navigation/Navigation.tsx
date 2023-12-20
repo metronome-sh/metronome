@@ -112,6 +112,7 @@ export const Navigation: FunctionComponent = () => {
               return (
                 <NavLink
                   key={item.name}
+                  prefetch="intent"
                   to={item.to}
                   className={({ isActive, isPending }) => {
                     return cn(buttonVariants({ variant: 'ghost' }), 'group relative px-2', {

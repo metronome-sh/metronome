@@ -9,6 +9,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';
@@ -55,6 +56,7 @@ export const teams = pgTable('teams', {
   description: text('description'),
   settings: jsonb('settings')
     .$type<{
+      isLegacyFreeUser?: boolean;
       subscription: {
         subscriptionId: string;
         status: 'active' | 'cancelled' | 'past_due' | 'unpaid' | string;
@@ -76,14 +78,22 @@ export const teamsRelations = relations(teams, ({ many }) => ({
   projects: many(projects),
 }));
 
-export const usersToTeams = pgTable('users_to_teams', {
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id),
-  teamId: text('team_id')
-    .notNull()
-    .references(() => teams.id),
-});
+export const usersToTeams = pgTable(
+  'users_to_teams',
+  {
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => teams.id),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.teamId] }),
+    };
+  },
+);
 
 export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
   team: one(teams, {

@@ -281,6 +281,13 @@
       "when": 1700799991737,
       "tag": "0039_purple_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "5",
+      "when": 1702620880437,
+      "tag": "0040_stiff_captain_britain",
+      "breakpoints": true
     }
   ]
 }
