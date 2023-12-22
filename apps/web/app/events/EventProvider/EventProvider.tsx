@@ -1,5 +1,4 @@
-import { useLocation, useNavigation } from '@remix-run/react';
-import { pathToRegexp } from 'path-to-regexp';
+import { useLocation, useMatches, useNavigation, useRouteLoaderData } from '@remix-run/react';
 import { type FunctionComponent, type PropsWithChildren } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -7,34 +6,25 @@ import { useRootLoaderData, useWindowVisibility } from '#app/hooks';
 
 import { EventContext } from './EventContext';
 
-export const EventProvider: FunctionComponent<PropsWithChildren> = ({
-  children,
-}) => {
+export const EventProvider: FunctionComponent<PropsWithChildren> = ({ children }) => {
   const { observableRoutes } = useRootLoaderData();
+  const matches = useMatches();
 
-  const observableRouteRegexes = useMemo(() => {
-    return (observableRoutes ?? []).map((route) => pathToRegexp(route));
-  }, [observableRoutes]);
+  const routesToObserve = useMemo(() => {
+    return matches.filter((match) => observableRoutes.includes(match.id));
+  }, [observableRoutes, matches]);
 
   const navigation = useNavigation();
 
   const location = useLocation();
 
-  const isObservable = useMemo(() => {
-    return observableRouteRegexes.some((r) => r.test(location.pathname));
-  }, [observableRouteRegexes, location.pathname]);
-
   const isWindowVisible = useWindowVisibility(0);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
 
-  const [reconnectAttempts, setReconnectAttempts] = useState(
-    Number.MAX_SAFE_INTEGER,
-  );
+  const [reconnectAttempts, setReconnectAttempts] = useState(Number.MAX_SAFE_INTEGER);
 
-  const [eventTarget, setEventTarget] = useState<EventTarget>(
-    new EventTarget(),
-  );
+  const [eventTarget, setEventTarget] = useState<EventTarget>(new EventTarget());
 
   useEffect(() => {
     if (navigation.state === 'idle') {
@@ -43,38 +33,42 @@ export const EventProvider: FunctionComponent<PropsWithChildren> = ({
   }, [navigation.state]);
 
   useEffect(() => {
-    if (!isObservable || !isWindowVisible) return;
+    if (!isWindowVisible) return;
 
-    const url = `${location.pathname}/events${location.search}`;
+    const eventSources = routesToObserve.map((route) => {
+      const url = `${route.pathname}/events${location.search}`;
+      const eventSource = new EventSource(url);
 
-    const eventSource = new EventSource(url);
+      eventSource.addEventListener('message', (event) => {
+        const data = JSON.parse(event.data);
 
-    eventSource.addEventListener('message', (event) => {
-      const data = JSON.parse(event.data);
+        eventTarget.dispatchEvent(new CustomEvent(data.routeId, { detail: data.detail }));
+      });
 
-      eventTarget.dispatchEvent(
-        new CustomEvent(data.routeId, { detail: data.detail }),
-      );
-    });
+      eventSource.addEventListener('error', () => {
+        clearTimeout(timeoutRef.current);
 
-    eventSource.addEventListener('error', () => {
-      clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+          setReconnectAttempts((value) => value - 1);
+        }, 5000);
+      });
 
-      timeoutRef.current = setTimeout(() => {
-        setReconnectAttempts((value) => value - 1);
-      }, 5000);
+      return eventSource;
     });
 
     return () => {
       clearTimeout(timeoutRef.current);
-      eventSource.close();
+
+      eventSources.forEach((eventSource) => {
+        eventSource.close();
+      });
     };
-  }, [reconnectAttempts, eventTarget, isObservable, location, isWindowVisible]);
+  }, [reconnectAttempts, eventTarget, location, isWindowVisible]);
 
   const autoRefreshTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if (!isObservable || !isWindowVisible) return;
+    if (!isWindowVisible) return;
 
     autoRefreshTimeoutRef.current = setInterval(() => {
       setReconnectAttempts((attempts) => attempts - 1);
@@ -83,11 +77,7 @@ export const EventProvider: FunctionComponent<PropsWithChildren> = ({
     return () => {
       clearTimeout(autoRefreshTimeoutRef.current);
     };
-  }, [isObservable, isWindowVisible]);
+  }, [isWindowVisible]);
 
-  return (
-    <EventContext.Provider value={{ eventTarget }}>
-      {children}
-    </EventContext.Provider>
-  );
+  return <EventContext.Provider value={{ eventTarget }}>{children}</EventContext.Provider>;
 };

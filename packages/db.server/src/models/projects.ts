@@ -157,7 +157,7 @@ export async function watch(
   const subscription = observable
     .pipe(
       operators.project(project),
-      operators.events(['first-event']),
+      operators.events(['first-event', 'project-client-updated']),
       throttleTime(1000, undefined, { leading: true, trailing: true }),
     )
     .subscribe(async ([e]) => {

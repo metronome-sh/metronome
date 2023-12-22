@@ -1,4 +1,4 @@
-import { actions, loaders, pageviews, requests, usages, webVitals } from './';
+import { actions, loaders, pageviews, projects, requests, usages, webVitals } from './';
 import { type Project } from './types';
 
 export async function insertMetrics({
@@ -16,7 +16,7 @@ export async function insertMetrics({
   const eventNames = new Set<string>();
 
   const settled = await Promise.allSettled(
-    unverifiedEvents.map((event) => {
+    unverifiedEvents.map(async (event) => {
       if (pageviews.isPageviewEvent(event)) {
         eventNames.add(event.name);
         return pageviews.insert(project, event);
@@ -24,6 +24,14 @@ export async function insertMetrics({
 
       if (requests.isRequestEvent(event)) {
         eventNames.add(event.name);
+        if (project.clientVersion !== event.details.version) {
+          await projects.update({
+            id: project.id,
+            attributes: { clientVersion: event.details.version },
+          });
+
+          eventNames.add('project-client-updated');
+        }
         return requests.insert(project, event);
       }
 

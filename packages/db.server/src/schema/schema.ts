@@ -33,9 +33,11 @@ export const users = pgTable('users', {
       lastSelectedProjectSlug?: string | null;
       lastSelectedTeamSlug?: string | null;
       customerId: string | null;
+      seenNotifications?: string[];
     }>()
     .default({
       emails: [],
+      seenNotifications: [],
       selectedEmail: null,
       lastSelectedProjectSlug: null,
       lastSelectedTeamSlug: null,
@@ -119,7 +121,7 @@ export const projects = pgTable('projects', {
     .notNull(),
   createdBy: text('created_by'),
   deleted: boolean('deleted').default(false),
-  clientVersion: text('client_version'),
+  clientVersion: text('client_version').default('0.0.0'),
   isPublic: boolean('isPublic').default(false),
   isNew: boolean('is_new').notNull().default(true),
   salt: text('salt'),

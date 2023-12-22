@@ -51,7 +51,5 @@ export async function metrics(job: typeof queues.metrics.$inferJob) {
     });
   }
 
-  return `processed [${eventsNames.join(', ')}] events for project ${
-    project.id
-  }`;
+  return `processed [${eventsNames.join(', ')}] events for project ${project.id}`;
 }

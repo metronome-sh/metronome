@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 

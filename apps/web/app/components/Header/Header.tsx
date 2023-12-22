@@ -1,16 +1,16 @@
 import { Link } from '@remix-run/react';
-import { Fragment, type FunctionComponent, ReactNode } from 'react';
+import { type FunctionComponent, PropsWithChildren } from 'react';
 
 import { Breadcrumb, UserMenu } from '..';
 import { Brand } from '../Brand';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
 
-export type HeaderProps = {
+export type HeaderProps = PropsWithChildren<{
   userMenu?: ReturnType<typeof UserMenu>;
-};
+}>;
 
-export const Header: FunctionComponent<HeaderProps> = ({ userMenu }) => {
+export const Header: FunctionComponent<HeaderProps> = ({ children, userMenu }) => {
   return (
     <div className="flex w-full py-3 px-4 dark:bg-black">
       <div className="flex flex-col-reverse md:flex-row justify-between w-full gap-4">
@@ -18,26 +18,13 @@ export const Header: FunctionComponent<HeaderProps> = ({ userMenu }) => {
           <div className="hidden md:block">
             <Brand.Logo />
           </div>
-
           <Breadcrumb.Outlet />
-          <div className="flex gap-2 items-center text-sm">
-            {/* {breadcrumb?.map((section, index) => {
-              return (
-                <Fragment key={index}>
-                  <Icon.ChevronRight
-                    strokeWidth={2}
-                    className="stroke-muted-foreground"
-                  />
-                  {section}
-                </Fragment>
-              );
-            })} */}
-          </div>
         </div>
         <div className="flex justify-between gap-4 border-b md:border-none pb-2 md:pb-0">
           <div className="md:hidden">
             <Brand.Logo />
           </div>
+          <div>{children}</div>
           <div className="flex items-center gap-2">
             <Button
               size="sm"

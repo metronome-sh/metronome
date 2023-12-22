@@ -1,0 +1,1 @@
+export { VersionNotification } from './VersionNotification';

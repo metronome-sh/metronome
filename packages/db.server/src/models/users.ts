@@ -1,10 +1,11 @@
 import { compare, hash } from 'bcryptjs';
-import { eq, sql, and } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
+import { invariant } from 'ts-invariant';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
-import { projects, teams, users, usersToTeams } from '../schema';
-import { Project, type NewUser, type UpdateUser, type User } from '../types';
+import { users, usersToTeams } from '../schema';
+import { type NewUser, type UpdateUser, type User } from '../types';
 import { buildJsonbObject } from '../utils/buildJsonObject';
 
 export async function insert(newUser: NewUser): Promise<User> {
@@ -188,4 +189,25 @@ export async function update(userId: string, update: UpdateUser) {
     .returning();
 
   return user;
+}
+
+export async function markNotificationAsSeen(userId: string, notificationId: string) {
+  const user = await findFirst({ id: userId });
+
+  invariant(user, 'User not found');
+
+  const seenNotifications = user.settings?.seenNotifications ?? [];
+
+  if (seenNotifications.includes(notificationId)) {
+    return;
+  }
+
+  await db({ write: true })
+    .update(users)
+    .set({
+      settings: sql`settings::jsonb || ${buildJsonbObject({
+        seenNotifications: [...seenNotifications, notificationId],
+      })}`,
+    })
+    .where(eq(users.id, userId));
 }

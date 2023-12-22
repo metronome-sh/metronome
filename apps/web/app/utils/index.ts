@@ -1,3 +1,4 @@
+export { checkForProjectClientUpdates } from './checkForProjectClientUpdates';
 export { countryFlag } from './countryFlag';
 export { formatDuration } from './formatDuration';
 export { formatNumber } from './formatNumber';

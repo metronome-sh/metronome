@@ -1,17 +1,5 @@
-import {
-  json,
-  type LinksFunction,
-  type LoaderFunctionArgs,
-  MetaFunction,
-} from '@remix-run/node';
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from '@remix-run/react';
+import { json, type LinksFunction, type LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 
 import favicon from '#app/../public/images/favicon.svg';
 import faviconAlt from '#app/../public/images/favicon-alternate.png';
@@ -23,7 +11,6 @@ import { handle } from '#app/handlers';
 import { useTimeZoneSync } from './hooks';
 import styles from './tailwind.css';
 import { getTimeZoneFromRequest } from './utils/timeZone';
-
 const title = 'Metronome';
 const metronomeUrl = 'https://metronome.sh';
 // prettier-ignore

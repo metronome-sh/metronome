@@ -1,6 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
+import { Icon } from '../Icon/index.ts';
+import { Button } from '../index.ts';
 import { cn } from '../utils.ts';
 
 const alertVariants = cva(
@@ -21,14 +23,24 @@ const alertVariants = cva(
 
 export const Alert = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> &
+    VariantProps<typeof alertVariants> & { onClose?: () => void }
+>(({ className, variant, children, onClose, ...props }, ref) => (
   <div
     ref={ref}
     role="alert"
-    className={cn(alertVariants({ variant }), className)}
+    className={cn(alertVariants({ variant }), onClose && 'pr-12', className)}
     {...props}
-  />
+  >
+    <div className="absolute flex items-center justify-center inset-y-0 right-0 mr-2">
+      {onClose ? (
+        <Button size="icon" variant="ghost" onClick={onClose}>
+          <Icon.X />
+        </Button>
+      ) : null}
+    </div>
+    {children}
+  </div>
 ));
 
 Alert.displayName = 'Alert';
@@ -52,10 +64,6 @@ export const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('text-sm [&_p]:leading-relaxed', className)}
-    {...props}
-  />
+  <div ref={ref} className={cn('text-sm [&_p]:leading-relaxed', className)} {...props} />
 ));
 AlertDescription.displayName = 'AlertDescription';

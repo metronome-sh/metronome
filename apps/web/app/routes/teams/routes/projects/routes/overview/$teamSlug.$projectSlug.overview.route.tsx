@@ -11,7 +11,7 @@ import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { useRevalidator } from '@remix-run/react';
 import { useEffect } from 'react';
 
-import { Breadcrumb, Heading } from '#app/components';
+import { Breadcrumb, Heading, NotificationsOutlet } from '#app/components';
 import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
@@ -131,6 +131,7 @@ export default function Component() {
   if (isNewProject) {
     return (
       <>
+        <NotificationsOutlet />
         <Breadcrumb>Overview</Breadcrumb>
         <EmptyState />
       </>
@@ -140,6 +141,7 @@ export default function Component() {
   return (
     <div className="w-full flex-grow h-full">
       <Breadcrumb>Overview</Breadcrumb>
+      <NotificationsOutlet />
       <div className="mx-auto w-full rounded-lg">
         <Heading
           title="Overview"

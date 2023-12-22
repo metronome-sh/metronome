@@ -35,7 +35,7 @@ export type Project = typeof projects.$inferSelect;
 export type NewProject = Pick<typeof projects.$inferInsert, 'name' | 'url' | 'teamId'>;
 
 export type UpdateProjectAttributes = Partial<
-  Pick<Project, 'name' | 'url' | 'description' | 'isPublic' | 'isNew'>
+  Pick<Project, 'name' | 'url' | 'description' | 'isPublic' | 'isNew' | 'clientVersion'>
 >;
 
 export type Usage = typeof usages.$inferInsert;

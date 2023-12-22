@@ -9,7 +9,7 @@ import {
 } from '@remix-run/node';
 import { z } from 'zod';
 
-import { Breadcrumb, Heading } from '#app/components';
+import { Breadcrumb, Heading, NotificationsOutlet } from '#app/components';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 import { namedAction } from '#app/utils';
@@ -135,6 +135,7 @@ export default function Route() {
   return (
     <div>
       <Breadcrumb>Settings</Breadcrumb>
+      <NotificationsOutlet />
       <Heading title="Settings" description="Manage your project configuration." />
       <div className="max-w-screen-sm mx-auto space-y-12">
         <GeneralSettingsForm />

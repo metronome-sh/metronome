@@ -52,8 +52,10 @@ import { TimelineEventExclamation } from './TimelineEventExclamation';
 import { TriangleInvertedFilled } from './TriangleInvertedFilled';
 import { UserScan } from './UserScan';
 import { World } from './World';
+import { X } from './X';
 
 export const Icon = {
+  X,
   Bug,
   Eye,
   Sun,
