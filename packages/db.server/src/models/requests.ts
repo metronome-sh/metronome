@@ -103,7 +103,7 @@ export async function countSeries({
   const result = await db()
     .select({
       // prettier-ignore
-      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
+      timestamp: sql<string>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${requests.timestamp}, ${sql.raw(pgTz)})`,
       documentCount: sql<number | null>`sum(${requests.documentCount})::integer`,
       dataCount: sql<number | null>`sum(${requests.dataCount})::integer`,
     })
@@ -117,11 +117,14 @@ export async function countSeries({
     )
     .groupBy(sql.raw('1'));
 
-  const series = result.map(({ timestamp, dataCount, documentCount }) => ({
-    timestamp: timestamp.valueOf(),
-    dataCount,
-    documentCount,
-  }));
+  const series = result.map(({ timestamp, dataCount, documentCount }) => {
+    const tsParsed = timestamp.replace(' ', 'T').replace('+00', '') + 'Z';
+    return {
+      timestamp: new Date(tsParsed).valueOf(),
+      dataCount,
+      documentCount,
+    };
+  });
 
   return { series };
 }

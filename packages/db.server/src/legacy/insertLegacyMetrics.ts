@@ -1,4 +1,6 @@
 import { z } from 'zod';
+
+import { actions, loaders, Project, projects, requests, usages, webVitals } from '../';
 import { LegacysPanSchema } from './legacySpan';
 import {
   transformLegacyAction,
@@ -6,7 +8,6 @@ import {
   transformLegacyRequest,
   transformLegacyWebVitals,
 } from './transformers';
-import { requests, usages, loaders, actions, webVitals } from '../';
 
 type TransformedSpan = ReturnType<
   | typeof transformLegacyRequest
@@ -23,8 +24,8 @@ export async function insertLegacyMetrics({
   project,
   unverifiedEvents,
 }: {
-  project: any;
-  unverifiedEvents: any;
+  project: Project;
+  unverifiedEvents: unknown;
 }): Promise<string[]> {
   const spans = z.array(LegacysPanSchema).safeParse(unverifiedEvents);
 
@@ -57,9 +58,17 @@ export async function insertLegacyMetrics({
   const eventNames = new Set<string>();
 
   const settled = await Promise.allSettled(
-    transformedSpans.map((event) => {
+    transformedSpans.map(async (event) => {
       if (requests.isRequestEvent(event)) {
         eventNames.add(event.name);
+        if (project.clientVersion !== event.details.version) {
+          await projects.update({
+            id: project.id,
+            attributes: { clientVersion: event.details.version },
+          });
+
+          eventNames.add('project-client-updated');
+        }
         return requests.insert(project, event);
       }
 
@@ -78,7 +87,7 @@ export async function insertLegacyMetrics({
         return webVitals.insert(project, event);
       }
 
-      // @ts-expect-error
+      // @ts-expect-error this should never happen
       console.warn(`Failed to process data: unknown event type ${event.name}`);
     }),
   );
@@ -88,7 +97,7 @@ export async function insertLegacyMetrics({
   await usages.insert({
     projectId: project.id,
     teamId: project.teamId,
-    events: BigInt(unverifiedEvents.length),
+    events: BigInt(spans.data.length),
   });
 
   if (failures.length) {

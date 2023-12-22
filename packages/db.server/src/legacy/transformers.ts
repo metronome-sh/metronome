@@ -1,5 +1,5 @@
+import { ActionEvent, LoaderEvent, RequestEvent, WebVitalEvent } from '../types';
 import { LegacySpan } from './legacySpan';
-import { RequestEvent, LoaderEvent, ActionEvent, WebVitalEvent } from '../types';
 import { SemanticAttributes } from './semantics';
 
 export function transformLegacyRequest(span: LegacySpan): RequestEvent {

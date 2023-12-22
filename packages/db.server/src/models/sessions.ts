@@ -15,14 +15,7 @@ import {
   pageviews,
   sessions,
 } from '../schema';
-import {
-  CachedSession,
-  Identifier,
-  Interval,
-  PageviewEvent,
-  Project,
-  Range,
-} from '../types';
+import { CachedSession, Identifier, Interval, PageviewEvent, Project, Range } from '../types';
 import { toPostgresTzName } from '../utils/aggregations';
 import { observable, operators, throttleTime } from '../utils/events';
 import { resolveIp } from '../utils/ip';
@@ -33,10 +26,7 @@ const VISITORS_RIGHT_NOW_DURATION_MINUTES = env.when({
   development: 1,
 });
 
-function getUserIds(
-  project: Project,
-  identifier: Identifier,
-): [id: string, previousId: string] {
+function getUserIds(project: Project, identifier: Identifier): [id: string, previousId: string] {
   const { salt, previousSalt } = project;
 
   const projectSalt = project.id + salt;
@@ -67,22 +57,16 @@ async function sessionFromCache(ids: [string, string], timestamp: number) {
   const midnightTimestamp = midnight.getTime();
 
   const sessionExpiresIn = new Date();
-  sessionExpiresIn.setMinutes(
-    sessionExpiresIn.getMinutes() + SESSION_DURATION_MINUTES,
-  );
+  sessionExpiresIn.setMinutes(sessionExpiresIn.getMinutes() + SESSION_DURATION_MINUTES);
 
   const sessionExpiresInTimestamp = sessionExpiresIn.getTime();
 
   // Take midnight if the sessionExpires is greater than midnight
   const sessionReferenceTime =
-    sessionExpiresInTimestamp > midnightTimestamp
-      ? midnightTimestamp
-      : sessionExpiresInTimestamp;
+    sessionExpiresInTimestamp > midnightTimestamp ? midnightTimestamp : sessionExpiresInTimestamp;
 
   // Now subtract the ms from the current date
-  const sessionDurationSeconds = Math.round(
-    (sessionReferenceTime - Date.now()) / 1000,
-  );
+  const sessionDurationSeconds = Math.round((sessionReferenceTime - Date.now()) / 1000);
 
   const [id, previousId] = ids;
 
@@ -92,11 +76,7 @@ async function sessionFromCache(ids: [string, string], timestamp: number) {
 
   if (session) {
     // Reset sesssion
-    await cache.unique.set(
-      ['session', session.id],
-      session,
-      sessionDurationSeconds,
-    );
+    await cache.unique.set(['session', session.id], session, sessionDurationSeconds);
     return { session, existed: true };
   }
 
@@ -116,15 +96,7 @@ export async function upsert(
   pageviewEvent: PageviewEvent,
 ): Promise<{ sessionId: string; userId: string }> {
   const {
-    details: {
-      timestamp,
-      ip,
-      ua,
-      deviceCategory,
-      screen,
-      language,
-      connection,
-    },
+    details: { timestamp, ip, ua, deviceCategory, screen, language, connection },
   } = pageviewEvent;
 
   // Get locks
@@ -284,7 +256,7 @@ export async function overviewSeries({
   const result = await db()
     .select({
       // prettier-ignore
-      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${sessions.timestamp}, ${sql.raw(pgTz)})`,
+      timestamp: sql<string>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${sessions.timestamp}, ${sql.raw(pgTz)})`,
       count: sql<number>`sum(${sessions.count})::integer`,
       pageviews: sql<number>`sum(${sessions.pageviews})::integer`,
       uniqueUserIds: sql<number>`sum(${sessions.uniqueUserIds})::integer`,
@@ -300,15 +272,16 @@ export async function overviewSeries({
     )
     .groupBy(sql`1`);
 
-  const series = result.map(
-    ({ timestamp, count, pageviews, uniqueUserIds, duration }) => ({
-      timestamp: timestamp.valueOf(),
+  const series = result.map(({ timestamp, count, pageviews, uniqueUserIds, duration }) => {
+    const tsParsed = timestamp.replace(' ', 'T').replace('+00', '') + 'Z';
+    return {
+      timestamp: new Date(tsParsed).valueOf(),
       count,
       pageviews,
       uniqueUserIds,
       duration,
-    }),
-  );
+    };
+  });
 
   return { series };
 }
@@ -381,7 +354,7 @@ export async function bounceRateSeries({
   const result = await db()
     .select({
       // prettier-ignore
-      timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${bounceRates.timestamp}, ${sql.raw(pgTz)})`,
+      timestamp: sql<string>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${bounceRates.timestamp}, ${sql.raw(pgTz)})`,
       singlePageSessions: sql<number>`sum(${bounceRates.singlePageSessions})::integer`,
       totalSessions: sql<number>`sum(${bounceRates.totalSessions})::integer`,
     })
@@ -395,15 +368,16 @@ export async function bounceRateSeries({
     )
     .groupBy(sql`1`);
 
-  const series = result.map(
-    ({ timestamp, singlePageSessions, totalSessions }) => ({
-      timestamp: timestamp.valueOf(),
+  const series = result.map(({ timestamp, singlePageSessions, totalSessions }) => {
+    const tsParsed = timestamp.replace(' ', 'T').replace('+00', '') + 'Z';
+    return {
+      timestamp: new Date(tsParsed).valueOf(),
       bounceRate:
         totalSessions === 0 || totalSessions === null
           ? null
           : (singlePageSessions / totalSessions) * 100,
-    }),
-  );
+    };
+  });
 
   return { series };
 }

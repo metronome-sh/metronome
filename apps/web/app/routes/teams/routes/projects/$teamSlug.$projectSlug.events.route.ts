@@ -1,12 +1,12 @@
 import { projects } from '@metronome/db.server';
 import { type LoaderFunctionArgs } from '@remix-run/node';
+import { invariant } from 'ts-invariant';
 
 import { handle } from '#app/handlers';
 import { notFound, stream } from '#app/responses';
+import { checkForProjectClientUpdates } from '#app/utils';
 
 import { type loader as teamSlugProjectSlugLoader } from './$teamSlug.$projectSlug.route';
-import { checkForProjectClientUpdates } from '#app/utils';
-import { invariant } from 'ts-invariant';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { auth } = await handle(request);

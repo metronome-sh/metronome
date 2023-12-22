@@ -141,7 +141,7 @@ export function createRemixFunctionOverviewSeries(schema: typeof loaders | typeo
     const result = await db()
       .select({
         // prettier-ignore
-        timestamp: sql<Date>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${table.timestamp}, ${sql.raw(pgTz)})`,
+        timestamp: sql<string>`time_bucket_gapfill('1 ${sql.raw(interval)}', ${table.timestamp}, ${sql.raw(pgTz)})`,
         count: sql<number | null>`sum(${table.count})::integer`,
         erroredCount: sql<number | null>`sum(${table.erroredCount})::integer`,
         okCount: sql<number | null>`sum(${table.count} - ${table.erroredCount})::integer`,
@@ -156,12 +156,16 @@ export function createRemixFunctionOverviewSeries(schema: typeof loaders | typeo
       )
       .groupBy(sql`1`);
 
-    const series = result.map(({ timestamp, count, erroredCount, okCount }) => ({
-      timestamp: timestamp.valueOf(),
-      count,
-      erroredCount,
-      okCount,
-    }));
+    const series = result.map(({ timestamp, count, erroredCount, okCount }) => {
+      const tsParsed = timestamp.replace(' ', 'T').replace('+00', '') + 'Z';
+
+      return {
+        timestamp: new Date(tsParsed).valueOf(),
+        count,
+        erroredCount,
+        okCount,
+      };
+    });
 
     return { series };
   };

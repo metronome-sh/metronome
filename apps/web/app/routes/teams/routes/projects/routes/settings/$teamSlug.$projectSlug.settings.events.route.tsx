@@ -30,26 +30,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       .add({
         days: -(Temporal.Now.instant().toZonedDateTimeISO('UTC').day - 1),
       }),
-    to: Temporal.Now.instant()
-      .toZonedDateTimeISO('UTC')
-      .withPlainTime('23:59:59'),
+    to: Temporal.Now.instant().toZonedDateTimeISO('UTC').withPlainTime('23:59:59'),
   };
 
-  return stream<typeof settingsLoader>(
-    '$teamSlug.$projectSlug.settings',
-    request,
-    async (send) => {
-      const cleanupProjectUsage = await usages.watch(
-        { project },
-        async ({ ts }) => {
-          const usage = await usages.projectUsage({ project, range });
-          send({ usage }, ts);
-        },
-      );
+  return stream<typeof settingsLoader>('$teamSlug.$projectSlug.settings', request, async (send) => {
+    const cleanupProjectUsage = await usages.watch({ project }, async ({ ts }) => {
+      const usage = await usages.projectUsage({ project, range });
+      send({ usage }, ts);
+    });
 
-      return async function cleanup() {
-        await cleanupProjectUsage();
-      };
-    },
-  );
+    return async function cleanup() {
+      await cleanupProjectUsage();
+    };
+  });
 }

@@ -9,9 +9,7 @@ import { getTimeZoneOffset } from './timeZones';
 const postgresTzs = new Map<string, string>();
 
 export async function toPostgresTzName(
-  options:
-    | { offset: string; timeZoneId?: never }
-    | { offset?: never; timeZoneId: string },
+  options: { offset: string; timeZoneId?: never } | { offset?: never; timeZoneId: string },
 ) {
   const key = JSON.stringify(options);
 
@@ -21,10 +19,11 @@ export async function toPostgresTzName(
 
   let name = 'UTC';
 
-  const offset =
-    options.offset ?? (await getTimeZoneOffset(options.timeZoneId));
+  const offset = options.offset ?? (await getTimeZoneOffset(options.timeZoneId));
 
-  const [result] = await db().execute(
+  const {
+    rows: [result],
+  } = await db().execute(
     sql`SELECT name FROM pg_timezone_names WHERE utc_offset = ${offset} LIMIT 1;`,
   );
 
@@ -71,7 +70,8 @@ export async function timeOffsetAggregatedTableExists({
   }
 
   // prettier-ignore
-  const [exists] = await db().execute(sql`SELECT 1 FROM pg_views WHERE viewname = ${name};`);
+  const result = await db().execute(sql`SELECT 1 FROM pg_views WHERE viewname = ${name};`);
+  const exists = result.rows.length > 0;
 
   if (exists) existsCache.add(name);
 
@@ -90,28 +90,13 @@ export async function createTimeOffsetAggregatedView({
   offset: string;
   interval: 'hour' | 'day' | 'week' | 'month';
   definitions: {
-    hour: (args: {
-      baseTable: string;
-      timeZone: string;
-    }) => ReturnType<typeof sql>;
-    day: (args: {
-      hourTable: string;
-      timeZone: string;
-    }) => ReturnType<typeof sql>;
-    week: (args: {
-      dayTable: string;
-      timeZone: string;
-    }) => ReturnType<typeof sql>;
-    month: (args: {
-      dayTable: string;
-      timeZone: string;
-    }) => ReturnType<typeof sql>;
+    hour: (args: { baseTable: string; timeZone: string }) => ReturnType<typeof sql>;
+    day: (args: { hourTable: string; timeZone: string }) => ReturnType<typeof sql>;
+    week: (args: { dayTable: string; timeZone: string }) => ReturnType<typeof sql>;
+    month: (args: { dayTable: string; timeZone: string }) => ReturnType<typeof sql>;
   };
 }) {
-  const lock = await cache.lock(
-    [from, base, offset, interval],
-    20_000,
-  );
+  const lock = await cache.lock([from, base, offset, interval], 20_000);
 
   // Check if table exists already and return if it does once adquired the lock
   if (await timeOffsetAggregatedTableExists({ base, offset, interval })) {
@@ -128,9 +113,7 @@ export async function createTimeOffsetAggregatedView({
 
   const createHourTable = async () => {
     // Check if table exists
-    if (
-      await timeOffsetAggregatedTableExists({ base, offset, interval: 'hour' })
-    ) {
+    if (await timeOffsetAggregatedTableExists({ base, offset, interval: 'hour' })) {
       return;
     }
 
@@ -170,9 +153,7 @@ export async function createTimeOffsetAggregatedView({
 
   const createDayTable = async () => {
     // Check if table exists
-    if (
-      await timeOffsetAggregatedTableExists({ base, offset, interval: 'day' })
-    ) {
+    if (await timeOffsetAggregatedTableExists({ base, offset, interval: 'day' })) {
       return;
     }
 
@@ -212,9 +193,7 @@ export async function createTimeOffsetAggregatedView({
 
   const createWeekTable = async () => {
     // Check if table exists
-    if (
-      await timeOffsetAggregatedTableExists({ base, offset, interval: 'week' })
-    ) {
+    if (await timeOffsetAggregatedTableExists({ base, offset, interval: 'week' })) {
       return;
     }
 
@@ -255,9 +234,7 @@ export async function createTimeOffsetAggregatedView({
 
   const createMonthTable = async () => {
     // Check if table exists
-    if (
-      await timeOffsetAggregatedTableExists({ base, offset, interval: 'month' })
-    ) {
+    if (await timeOffsetAggregatedTableExists({ base, offset, interval: 'month' })) {
       return;
     }
 

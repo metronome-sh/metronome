@@ -12,9 +12,7 @@ export function useEventRouteData<TData>(
   const timestampsRef = useRef<Record<string, number>>({});
 
   const eventCallback = useCallback(
-    (
-      event: CustomEvent<{ data: Partial<UnwrapDeferred<TData>>; ts: number }>,
-    ) => {
+    (event: CustomEvent<{ data: Partial<UnwrapDeferred<TData>>; ts: number }>) => {
       const { data: eventData, ts } = event.detail;
 
       setData((prevData) => {
@@ -38,10 +36,7 @@ export function useEventRouteData<TData>(
   );
 
   useEffect(() => {
-    eventTarget?.addEventListener(
-      routeId,
-      eventCallback as EventListenerOrEventListenerObject,
-    );
+    eventTarget?.addEventListener(routeId, eventCallback as EventListenerOrEventListenerObject);
 
     return () => {
       eventTarget?.removeEventListener(

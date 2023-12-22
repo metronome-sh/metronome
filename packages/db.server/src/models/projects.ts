@@ -1,4 +1,7 @@
+import { cache } from '@metronome/cache.server';
 import { and, eq, sql } from 'drizzle-orm';
+import { buildJsonbObject } from 'src/utils/buildJsonObject';
+import { invariant } from 'ts-invariant';
 
 import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
@@ -6,9 +9,6 @@ import { projects, teams, users, usersToTeams } from '../schema';
 import { NewProject, Project, UpdateProjectAttributes } from '../types';
 import { observable, operators, throttleTime } from '../utils/events';
 import { generateSlug } from '../utils/slugs';
-import invariant from 'ts-invariant';
-import { cache } from '@metronome/cache.server';
-import { buildJsonbObject } from 'src/utils/buildJsonObject';
 
 export async function insert(newProject: NewProject) {
   const slug = await generateSlug({
