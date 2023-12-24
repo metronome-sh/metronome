@@ -30,7 +30,7 @@ export const Navigation: FunctionComponent = () => {
         name: 'Web Vitals',
         Icon: Icon.Heartbeat,
         to: `/${team.slug}/${project.slug}/web-vitals`,
-        commingSoon: true,
+        commingSoon: false,
       },
       {
         name: 'Routes',

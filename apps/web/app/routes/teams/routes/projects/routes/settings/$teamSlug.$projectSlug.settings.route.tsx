@@ -17,6 +17,7 @@ import { namedAction } from '#app/utils';
 import { DangerZoneForm } from './components/DangerZoneForm';
 import { GeneralSettingsForm } from './components/GeneralSettingsForm';
 import { InformationForm } from './components/InformationForm';
+import { VisibilityForm } from './components/VisibilityForm';
 
 export const CreateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -63,6 +64,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
     async visibility() {
       const { visible } = await form.validate(ProjectVisibilitySchema);
+
+      console.log({ visible });
 
       await projects.update({ id: project.id, attributes: { isPublic: visible } }).catch(() => {
         throw json({ success: false });
@@ -139,7 +142,7 @@ export default function Route() {
       <Heading title="Settings" description="Manage your project configuration." />
       <div className="max-w-screen-sm mx-auto space-y-12">
         <GeneralSettingsForm />
-        {/* <VisibilityForm /> */}
+        <VisibilityForm />
         <InformationForm />
         <DangerZoneForm />
       </div>

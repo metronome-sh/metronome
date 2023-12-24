@@ -63,23 +63,21 @@ const WebVitals: FunctionComponent = () => {
       >
         {(resolvedWebVitalsOverview) => {
           const overview = Object.fromEntries(
-            (webVitalsOverviewEvent ?? resolvedWebVitalsOverview).map(
-              (vital) => [
-                vital.name,
-                {
-                  ...vital,
-                  parsed: {
-                    ...vital.values,
-                    p75:
-                      vital.name === 'CLS'
-                        ? vital.values.p75 !== null
-                          ? `${Math.round(vital.values.p75 * 100) / 100}`
-                          : '—'
-                        : formatDuration(vital.values.p75, 'ms'),
-                  },
+            (webVitalsOverviewEvent ?? resolvedWebVitalsOverview).map((vital) => [
+              vital.name,
+              {
+                ...vital,
+                parsed: {
+                  ...vital.values,
+                  p75:
+                    vital.name === 'CLS'
+                      ? vital.values.p75 !== null
+                        ? `${Math.round(vital.values.p75 * 100) / 100}`
+                        : '—'
+                      : formatDuration(vital.values.p75, 'ms'),
                 },
-              ],
-            ),
+              },
+            ]),
           );
 
           return (

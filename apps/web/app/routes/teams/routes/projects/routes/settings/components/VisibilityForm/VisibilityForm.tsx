@@ -6,8 +6,6 @@ import { useForm } from 'react-hook-form';
 import { Button, Form, Input, Switch } from '#app/components';
 import { cn } from '#app/components/utils';
 
-// import { Loadable } from '#app/components/Loadable';
-// import { useFetcherState } from '#app/hooks/useFetcherState';
 import { useTeamProjectLoaderData } from '../../../../hooks';
 import {
   ProjectVisibilitySchema,
@@ -17,12 +15,12 @@ import {
 export const VisibilityForm: FunctionComponent = () => {
   const { project } = useTeamProjectLoaderData();
 
-  const { teamId, projectId } = useParams();
+  const { teamSlug, projectSlug } = useParams();
 
   const form = useForm<ProjectVisibilitySchemaType>({
     resolver: zodResolver(ProjectVisibilitySchema),
     defaultValues: {
-      visible: project.visibility === 'PUBLIC',
+      visible: !!project.isPublic,
     },
     mode: 'onSubmit',
   });
@@ -30,7 +28,7 @@ export const VisibilityForm: FunctionComponent = () => {
   // We use this when the data gets revalidated by remix
   // Probably we need to find a better way to do this in a Remixy way
   useEffect(() => {
-    form.reset({ visible: project.visibility === 'PUBLIC' });
+    form.reset({ visible: !!project.isPublic });
   }, [project, form]);
 
   const fetcher = useFetcher();
@@ -39,22 +37,17 @@ export const VisibilityForm: FunctionComponent = () => {
     (data: ProjectVisibilitySchemaType) => {
       fetcher.submit(data, {
         method: 'POST',
-        action: `/${teamId!}/${projectId}/settings?index&intent=visibility`,
+        action: `/${teamSlug!}/${projectSlug}/settings?index&intent=visibility`,
       });
     },
-    [fetcher, projectId, teamId],
+    [fetcher, projectSlug, teamSlug],
   );
 
   const isDirty = Object.values(form.formState.dirtyFields).length > 0;
 
-  // const state = useFetcherState(fetcher);
-
   return (
     <div>
-      <Form.Section
-        title="Visibility"
-        description="Manage the project visibility outside of the team."
-      />
+      <Form.Section title="Visibility" description="Manage the project visibility." />
       <Form.Provider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <Form.Field
@@ -65,15 +58,11 @@ export const VisibilityForm: FunctionComponent = () => {
                 <div className="space-y-0.5">
                   <Form.Label>Make project public</Form.Label>
                   <Form.Description>
-                    Anyone that has your project link will be able to see your
-                    project data.
+                    Anyone that has your project link will be able to see your project data.
                   </Form.Description>
                 </div>
                 <Form.Control>
-                  <Switch
-                    checked={Boolean(field.value)}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={Boolean(field.value)} onCheckedChange={field.onChange} />
                 </Form.Control>
               </Form.Item>
             )}

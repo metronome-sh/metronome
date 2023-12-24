@@ -9,11 +9,6 @@ import {
   useOverviewEventData,
   useOverviewLoaderData,
 } from '../../../../hooks';
-// import {
-//   useIsNavigatingOverview,
-//   useOverviewEventData,
-//   useOverviewLoaderData,
-// } from '#app/routes/teams/routes/projects/routes/overview/hooks';
 
 export const VisitorsRightNow: FunctionComponent = () => {
   const { visitorsRightNow } = useOverviewLoaderData();
@@ -27,10 +22,7 @@ export const VisitorsRightNow: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<Metric.Skeleton title={title} />}>
-      <Await
-        resolve={visitorsRightNow}
-        errorElement={<Metric.Error title={title} />}
-      >
+      <Await resolve={visitorsRightNow} errorElement={<Metric.Error title={title} />}>
         {(resolvedVisitorsRightNow) => {
           // prettier-ignore
           const value = visitorsRightNowEvent ?? resolvedVisitorsRightNow;

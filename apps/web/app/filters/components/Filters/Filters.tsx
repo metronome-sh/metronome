@@ -2,10 +2,7 @@ import { useNavigate, useSearchParams } from '@remix-run/react';
 import { type FunctionComponent, useCallback, useMemo, useState } from 'react';
 
 import { Button, Icon } from '#app/components';
-import {
-  type ActiveFilterOption,
-  type FilterObject,
-} from '#app/filters/filters.types';
+import { type ActiveFilterOption, type FilterObject } from '#app/filters/filters.types';
 import {
   analyzeDependencies as analyzeDependenciesPrimitive,
   getInitialFiltersOptions,
@@ -27,9 +24,7 @@ export type FiltersProps = {
 export const Filters: FunctionComponent<FiltersProps> = ({ filters }) => {
   const [search] = useSearchParams();
 
-  const [activeFilterOptions, setActiveFilterOptions] = useState<
-    ActiveFilterOption[]
-  >(() => {
+  const [activeFilterOptions, setActiveFilterOptions] = useState<ActiveFilterOption[]>(() => {
     return mergeFilterOptionsWithSearch(search, filters);
   });
 
@@ -41,18 +36,13 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filters }) => {
     (option: ActiveFilterOption) => {
       sethighlightedFilters([]);
 
-      const { updates } = analyzeDependenciesPrimitive(
-        filters,
-        option,
-        activeFilterOptions,
-      );
+      const { updates } = analyzeDependenciesPrimitive(filters, option, activeFilterOptions);
 
       const updateOptions = updates.map((u) => u.to);
 
       const filteredOptions = activeFilterOptions.filter((o) => {
         return (
-          !updateOptions.find((u) => u.filterId === o.filterId) &&
-          o.filterId !== option.filterId
+          !updateOptions.find((u) => u.filterId === o.filterId) && o.filterId !== option.filterId
         );
       });
 
@@ -60,21 +50,14 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filters }) => {
 
       setActiveFilterOptions(next);
 
-      navigate(
-        { search: toUrlSearchParamsString(next) },
-        { preventScrollReset: true },
-      );
+      navigate({ search: toUrlSearchParamsString(next) }, { preventScrollReset: true });
     },
     [filters, activeFilterOptions, navigate],
   );
 
   const onHover = useCallback(
     (option: ActiveFilterOption) => {
-      const { updates } = analyzeDependenciesPrimitive(
-        filters,
-        option,
-        activeFilterOptions,
-      );
+      const { updates } = analyzeDependenciesPrimitive(filters, option, activeFilterOptions);
       const filterIds = updates.map((update) => update.from.filterId);
       sethighlightedFilters(filterIds);
     },
@@ -96,10 +79,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filters }) => {
   const handleReset = useCallback(() => {
     const next = getInitialFiltersOptions(filters);
     setActiveFilterOptions(next);
-    navigate(
-      { search: toUrlSearchParamsString(next) },
-      { preventScrollReset: true },
-    );
+    navigate({ search: toUrlSearchParamsString(next) }, { preventScrollReset: true });
   }, [filters, navigate]);
 
   const analyzeDependencies = useCallback(
@@ -138,12 +118,7 @@ export const Filters: FunctionComponent<FiltersProps> = ({ filters }) => {
         ))}
       </filtersContext.Provider>
       {isDirty ? (
-        <Button
-          className="px-2"
-          size="sm"
-          variant="outline-dashed"
-          onClick={handleReset}
-        >
+        <Button className="px-2" size="sm" variant="outline-dashed" onClick={handleReset}>
           <Icon.RotateTwo />
         </Button>
       ) : null}

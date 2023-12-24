@@ -217,3 +217,14 @@ export async function getLastViewedProject(userId: string): Promise<Project | nu
 
   return project.projects;
 }
+
+export async function findPublicProjectById(projectId: string): Promise<Project | null> {
+  const [project] = await db()
+    .select()
+    .from(projects)
+    .where(
+      and(eq(projects.id, projectId), eq(projects.deleted, false), eq(projects.isPublic, true)),
+    );
+
+  return project ?? null;
+}

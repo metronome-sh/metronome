@@ -31,14 +31,10 @@ export function getScore(
     score = 100 - (value / good) * (100 - 66.66);
   } else if (value <= needsImprovement) {
     // linearly interpolate between 66.66 and 33.33
-    score =
-      66.66 - ((value - good) / (needsImprovement - good)) * (66.66 - 33.33);
+    score = 66.66 - ((value - good) / (needsImprovement - good)) * (66.66 - 33.33);
   } else {
     // linear extrapolation below 33.33
-    score =
-      33.33 -
-      ((value - needsImprovement) / (needsImprovement - good)) *
-        (66.66 - 33.33);
+    score = 33.33 - ((value - needsImprovement) / (needsImprovement - good)) * (66.66 - 33.33);
   }
 
   // If score goes negative, return 0
