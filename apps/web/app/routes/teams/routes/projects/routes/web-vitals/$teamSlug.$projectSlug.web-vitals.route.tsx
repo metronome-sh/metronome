@@ -38,8 +38,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
+  const webVitalsBreakdownByRoute = await webVitals.breakdownByRoute({
+    project,
+    range,
+    interval,
+  });
+
   return defer({
     webVitalsOverview,
+    webVitalsBreakdownByRoute,
   });
 }
 
@@ -51,7 +58,7 @@ export default function Component() {
         <NotificationsOutlet />
         <Heading
           title="Web Vitals"
-          description="Understand client performance and user behavior."
+          description="User experience interacting with a web page."
           separatorClassName="md:mb-4"
         />
       </div>

@@ -2,7 +2,11 @@ import { and, between, eq, sql } from 'drizzle-orm';
 import { throttleTime } from 'rxjs';
 
 import { db } from '../../db';
-import { getWebVitalsOverviewAggregatedView, webVitals } from '../../schema';
+import {
+  getWebVitalsOverviewAggregatedView,
+  getWebVitalsRoutesAggregatedView,
+  webVitals,
+} from '../../schema';
 import { WebVitalEventSchema } from '../../schemaValidation';
 import { Interval, Project, Range, ScoredWebVital, WebVitalEvent, WebVitalName } from '../../types';
 import { getDeviceProps } from '../../utils/device';
@@ -116,4 +120,60 @@ export async function watch(
     });
 
   return () => subscription.unsubscribe();
+}
+
+export async function breakdownByRoute({
+  project,
+  range: { from, to },
+  interval = 'hour',
+}: {
+  project: Project;
+  range: Range;
+  interval: Interval;
+}) {
+  const webVitals = await getWebVitalsRoutesAggregatedView({
+    timeZoneId: from.timeZoneId,
+    interval: interval,
+  });
+
+  const fromDate = new Date(from.epochMilliseconds);
+  const toDate = new Date(to.epochMilliseconds);
+
+  const result = await db()
+    .select({
+      name: webVitals.name,
+      routeId: webVitals.remixRouteId,
+      valueP75: sql<number>`approx_percentile(0.75, rollup(${webVitals.valuePctAgg}))`,
+    })
+    .from(webVitals)
+    .where(and(eq(webVitals.projectId, project.id), between(webVitals.timestamp, fromDate, toDate)))
+    .groupBy(webVitals.name, webVitals.remixRouteId);
+
+  const groupedByRoute = result.reduce(
+    (acc, row) => {
+      const { routeId, name, valueP75 } = row;
+
+      const scoredRow = {
+        name: name as WebVitalName,
+        values: { p50: null, p75: valueP75, p90: null, p95: null, p99: null },
+        // prettier-ignore
+        scores: { p50: null, p75: getScore(name, valueP75), p90: null, p95: null, p99: null, },
+      };
+
+      const route = acc[routeId] || { routeId, vitals: [] };
+
+      return {
+        ...acc,
+        [routeId]: {
+          ...route,
+          vitals: [...route.vitals, scoredRow],
+        },
+      };
+    },
+    {} as Record<string, { routeId: string; vitals: ScoredWebVital[] }>,
+  );
+
+  console.log(JSON.stringify(groupedByRoute));
+
+  return Object.values(groupedByRoute);
 }

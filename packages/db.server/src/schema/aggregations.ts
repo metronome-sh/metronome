@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { sql } from 'drizzle-orm';
-import {
-  bigint,
-  decimal,
-  integer,
-  pgTable,
-  text,
-  timestamp,
-} from 'drizzle-orm/pg-core';
+import { bigint, decimal, integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { Interval } from '../types';
 import {
@@ -40,10 +33,7 @@ export function getUsagesAggregatedView({
   return usagesAggregatedTables[interval];
 }
 
-export async function getRequestsOverviewAggregatedView(
-  timeZoneId: string,
-  interval: Interval,
-) {
+export async function getRequestsOverviewAggregatedView(timeZoneId: string, interval: Interval) {
   const aggregatedSchemaColumns = {
     teamId: text('team_id').notNull(),
     projectId: text('project_id').notNull(),
@@ -112,9 +102,7 @@ export async function getRequestsOverviewAggregatedView(
       month: ({ dayTable, timeZone }) => sql`
         SELECT
           team_id,
-          project_id, time_bucket('1 month', "timestamp", ${sql.raw(
-            timeZone,
-          )}) AS timestamp,
+          project_id, time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
           sum(count) AS count,
           sum(document_count) AS document_count,
           sum(data_count) AS data_count,
@@ -201,9 +189,7 @@ export async function getRemixFunctionOverviewAggregatedView({
         SELECT
           team_id,
           project_id,
-          time_bucket('1 month', "timestamp", ${sql.raw(
-            timeZone,
-          )}) AS timestamp,
+          time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
           sum(count) AS count,
           sum(errored_count) AS errored_count,
           rollup(duration_pct_agg) as duration_pct_agg
@@ -214,6 +200,102 @@ export async function getRemixFunctionOverviewAggregatedView({
   });
 
   return pgTable(name, aggregatedSchemaColumns);
+}
+
+export async function getWebVitalsRoutesAggregatedView({
+  timeZoneId,
+  interval,
+}: {
+  timeZoneId: string;
+  interval: 'hour' | 'day' | 'week' | 'month';
+}) {
+  const aggregatedSchema = {
+    teamId: text('team_id').notNull(),
+    projectId: text('project_id').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    name: webVitalName('name').notNull(),
+    count: integer('count').notNull(),
+    valuePctAgg: decimal('value_pct_agg').notNull(),
+    deviceCategory: text('device_category').notNull(),
+    remixRouteId: text('remix_route_id').notNull(),
+  };
+
+  const base = 'web_vitals_routes';
+
+  const offset = getTimeZoneOffset(timeZoneId);
+  const name = tableName({ base, offset, interval });
+  const exists = await timeOffsetAggregatedTableExists({
+    base,
+    offset,
+    interval,
+  });
+
+  if (exists) {
+    return pgTable(name, aggregatedSchema);
+  }
+
+  await createTimeOffsetAggregatedView({
+    from: 'web_vitals',
+    base,
+    offset,
+    interval,
+    definitions: {
+      hour: ({ baseTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          remix_route_id,
+          count(*) AS count,
+          percentile_agg(value) as value_pct_agg
+        FROM ${sql.raw(baseTable)}
+        GROUP BY 1, 2, 3, 4, 5, 6
+      `,
+      day: ({ hourTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          remix_route_id,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(hourTable)}
+        GROUP BY 1, 2, 3, 4, 5, 6
+      `,
+      week: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          remix_route_id,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5, 6
+      `,
+      month: ({ dayTable, timeZone }) => sql`
+        SELECT
+          team_id,
+          project_id,
+          name,
+          device_category,
+          remix_route_id,
+          time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
+          count(*) AS count,
+          rollup(value_pct_agg) as value_pct_agg
+        FROM ${sql.raw(dayTable)}
+        GROUP BY 1, 2, 3, 4, 5, 6
+      `,
+    },
+  });
+
+  return pgTable(name, aggregatedSchema);
 }
 
 export async function getWebVitalsOverviewAggregatedView({
@@ -389,9 +471,7 @@ export async function getSessionOverviewAggregatedView({
         SELECT
           team_id,
           project_id,
-          time_bucket('1 month', "timestamp", ${sql.raw(
-            timeZone,
-          )}) AS timestamp,
+          time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
           sum(count) AS count,
           sum(pageviews) as pageviews,
           sum(unique_sessions) AS unique_sessions,
@@ -443,9 +523,7 @@ export async function getPageviewsOverviewAggregatedView({
               SELECT
                 team_id,
                 project_id,
-                time_bucket('1 hour', "timestamp", ${sql.raw(
-                  timeZone,
-                )}) AS timestamp,
+                time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
                 count(*) AS count
               FROM ${sql.raw(baseTable)}
               GROUP BY 1, 2, 3
@@ -454,9 +532,7 @@ export async function getPageviewsOverviewAggregatedView({
               SELECT
                 team_id,
                 project_id,
-                time_bucket('1 day', "timestamp", ${sql.raw(
-                  timeZone,
-                )}) AS timestamp,
+                time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
                 sum(count) AS count
               FROM ${sql.raw(hourTable)}
               GROUP BY 1, 2, 3
@@ -465,9 +541,7 @@ export async function getPageviewsOverviewAggregatedView({
               SELECT
                 team_id,
                 project_id,
-                time_bucket('1 week', "timestamp", ${sql.raw(
-                  timeZone,
-                )}) AS timestamp,
+                time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
                 sum(count) AS count
               FROM ${sql.raw(dayTable)}
               GROUP BY 1, 2, 3
@@ -476,9 +550,7 @@ export async function getPageviewsOverviewAggregatedView({
               SELECT
                 team_id,
                 project_id,
-                time_bucket('1 month', "timestamp", ${sql.raw(
-                  timeZone,
-                )}) AS timestamp,
+                time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
                 sum(count) AS count
               FROM ${sql.raw(dayTable)}
               GROUP BY 1, 2, 3
@@ -527,9 +599,7 @@ export async function getBounceRateAggregatedView({
         SELECT
             team_id,
             project_id,
-            time_bucket('1 hour', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             SUM(case when pageviews = 1 then 1 else 0 end) as single_page_sessions,
             COUNT(1) as total_sessions
         FROM ${sql.raw(baseTable)}
@@ -539,9 +609,7 @@ export async function getBounceRateAggregatedView({
         SELECT
             team_id,
             project_id,
-            time_bucket('1 day', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             SUM(single_page_sessions) as single_page_sessions,
             SUM(total_sessions) as total_sessions
         FROM ${sql.raw(hourTable)}
@@ -551,9 +619,7 @@ export async function getBounceRateAggregatedView({
         SELECT
             team_id,
             project_id,
-            time_bucket('1 week', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             SUM(single_page_sessions) as single_page_sessions,
             SUM(total_sessions) as total_sessions
         FROM ${sql.raw(dayTable)}
@@ -563,9 +629,7 @@ export async function getBounceRateAggregatedView({
         SELECT
             team_id,
             project_id,
-            time_bucket('1  month', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1  month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             SUM(single_page_sessions) as single_page_sessions,
             SUM(total_sessions) as total_sessions
         FROM ${sql.raw(dayTable)}
@@ -669,9 +733,7 @@ export async function getLocationsAggregatedView({
           country,
           region,
           city,
-          time_bucket('1 month', "timestamp", ${sql.raw(
-            timeZone,
-          )}) AS timestamp,
+          time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
           sum(count) as count,
           sum(unique_user_ids) as unique_user_ids,
           sum(unique_sessions) as unique_sessions
@@ -726,9 +788,7 @@ export async function getPageviewsRoutesAggregatedView({
             project_id,
             route_path,
             url_path,
-            time_bucket('1 hour', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             count(*) as count,
             count(distinct user_id) as unique_user_ids,
             count(distinct session_id) as unique_sessions
@@ -741,9 +801,7 @@ export async function getPageviewsRoutesAggregatedView({
             project_id,
             route_path,
             url_path,
-            time_bucket('1 day', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(count) as count,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
@@ -756,9 +814,7 @@ export async function getPageviewsRoutesAggregatedView({
             project_id,
             route_path,
             url_path,
-            time_bucket('1 week', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(count) as count,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
@@ -771,9 +827,7 @@ export async function getPageviewsRoutesAggregatedView({
             project_id,
             route_path,
             url_path,
-            time_bucket('1 month', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(count) as count,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
@@ -826,9 +880,7 @@ export async function getPageviewsReferrersAggregatedView({
             team_id,
             project_id,
             referrer_domain,
-            time_bucket('1 hour', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 hour', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             count(distinct user_id) as unique_user_ids,
             count(distinct session_id) as unique_sessions
           FROM ${sql.raw(baseTable)}
@@ -839,9 +891,7 @@ export async function getPageviewsReferrersAggregatedView({
             team_id,
             project_id,
             referrer_domain,
-            time_bucket('1 day', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 day', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
           FROM ${sql.raw(hourTable)}
@@ -852,9 +902,7 @@ export async function getPageviewsReferrersAggregatedView({
             team_id,
             project_id,
             referrer_domain,
-            time_bucket('1 week', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 week', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
           FROM ${sql.raw(dayTable)}
@@ -865,9 +913,7 @@ export async function getPageviewsReferrersAggregatedView({
             team_id,
             project_id,
             referrer_domain,
-            time_bucket('1 month', "timestamp", ${sql.raw(
-              timeZone,
-            )}) AS timestamp,
+            time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
             sum(unique_user_ids) as unique_user_ids,
             sum(unique_sessions) as unique_sessions
           FROM ${sql.raw(dayTable)}
@@ -957,9 +1003,7 @@ export async function getDevicesAggregatedView({
           project_id,
           browser,
           os,
-          time_bucket('1 month', "timestamp", ${sql.raw(
-            timeZone,
-          )}) AS timestamp,
+          time_bucket('1 month', "timestamp", ${sql.raw(timeZone)}) AS timestamp,
           sum(unique_user_ids) as unique_user_ids,
           sum(unique_sessions) as unique_sessions
         FROM ${sql.raw(dayTable)}
