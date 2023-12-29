@@ -6,7 +6,7 @@ FSL-1.0-MIT
 
 ## Notice
 
-Copyright ${year} ${licensor name}
+Copyright 2023, Metronome.sh
 
 ## Terms and Conditions
 
