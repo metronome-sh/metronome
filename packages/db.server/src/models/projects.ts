@@ -81,9 +81,7 @@ export async function findByApiKey({ apiKey }: { apiKey: string }) {
     where: (projects, { eq }) => {
       return eq(projects.apiKey, apiKey);
     },
-    with: {
-      team: true,
-    },
+    with: { team: true },
   });
 
   return project;

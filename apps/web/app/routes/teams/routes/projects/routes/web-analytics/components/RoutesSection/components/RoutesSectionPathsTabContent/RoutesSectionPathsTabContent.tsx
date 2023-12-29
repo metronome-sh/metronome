@@ -14,8 +14,7 @@ import {
 
 export const RoutesSectionPathsTabContent: FunctionComponent = () => {
   const { routesByRoutePath } = useWebAnalyticsLoaderData();
-  const { routesByRoutePath: routesByRoutePathEvent } =
-    useWebAnalyticsEventData();
+  const { routesByRoutePath: routesByRoutePathEvent } = useWebAnalyticsEventData();
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -25,15 +24,10 @@ export const RoutesSectionPathsTabContent: FunctionComponent = () => {
         <TableWithBarChart.Skeleton />
       ) : (
         <Suspense fallback={<TableWithBarChart.Skeleton />}>
-          <Await
-            resolve={routesByRoutePath}
-            errorElement={<TableWithBarChart.Error />}
-          >
+          <Await resolve={routesByRoutePath} errorElement={<TableWithBarChart.Error />}>
             {(resolvedRoutesByRoutePath) => {
               return (
-                <TableWithBarChart<
-                  keyof Awaited<typeof resolvedRoutesByRoutePath>[number]
-                >
+                <TableWithBarChart<keyof Awaited<typeof resolvedRoutesByRoutePath>[number]>
                   data={routesByRoutePathEvent ?? resolvedRoutesByRoutePath}
                   valueKey="uniqueUserIds"
                   headers={{
@@ -62,9 +56,7 @@ export const RoutesSectionPathsTabContent: FunctionComponent = () => {
                           ) : (
                             <Tooltip.Provider>
                               <Tooltip>
-                                <Tooltip.Trigger
-                                  disabled={(value as number) < 1000}
-                                >
+                                <Tooltip.Trigger disabled={(value as number) < 1000}>
                                   {formatNumber(value as number)}
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>

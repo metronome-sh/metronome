@@ -8,7 +8,15 @@ import {
   webVitals,
 } from '../../schema';
 import { WebVitalEventSchema } from '../../schemaValidation';
-import { Interval, Project, Range, ScoredWebVital, WebVitalEvent, WebVitalName } from '../../types';
+import {
+  Interval,
+  Project,
+  Range,
+  RouteVitals,
+  ScoredWebVital,
+  WebVitalEvent,
+  WebVitalName,
+} from '../../types';
 import { getDeviceProps } from '../../utils/device';
 import { observable, operators } from '../../utils/events';
 import { resolveIp } from '../../utils/ip';
@@ -137,6 +145,7 @@ export async function breakdownByRoute({
   });
 
   const fromDate = new Date(from.epochMilliseconds);
+
   const toDate = new Date(to.epochMilliseconds);
 
   const result = await db()
@@ -153,27 +162,30 @@ export async function breakdownByRoute({
     (acc, row) => {
       const { routeId, name, valueP75 } = row;
 
-      const scoredRow = {
+      const scoredRow: ScoredWebVital = {
         name: name as WebVitalName,
         values: { p50: null, p75: valueP75, p90: null, p95: null, p99: null },
-        // prettier-ignore
-        scores: { p50: null, p75: getScore(name, valueP75), p90: null, p95: null, p99: null, },
+        scores: { p50: null, p75: getScore(name, valueP75), p90: null, p95: null, p99: null },
       };
 
-      const route = acc[routeId] || { routeId, vitals: [] };
+      if (!acc[routeId]) {
+        acc[routeId] = {
+          routeId,
+          FCP: null,
+          LCP: null,
+          CLS: null,
+          FID: null,
+          TTFB: null,
+          INP: null,
+        };
+      }
 
-      return {
-        ...acc,
-        [routeId]: {
-          ...route,
-          vitals: [...route.vitals, scoredRow],
-        },
-      };
+      acc[routeId] = { ...acc[routeId], [name]: scoredRow };
+
+      return acc;
     },
-    {} as Record<string, { routeId: string; vitals: ScoredWebVital[] }>,
+    {} as Record<string, RouteVitals>,
   );
-
-  console.log(JSON.stringify(groupedByRoute));
 
   return Object.values(groupedByRoute);
 }

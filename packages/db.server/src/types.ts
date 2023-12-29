@@ -106,3 +106,13 @@ export interface CachedSession {
   userId: string;
   timestamp: number;
 }
+
+export type RouteVitals = {
+  routeId: string;
+  FCP: ScoredWebVital | null;
+  LCP: ScoredWebVital | null;
+  CLS: ScoredWebVital | null;
+  FID: ScoredWebVital | null;
+  TTFB: ScoredWebVital | null;
+  INP: ScoredWebVital | null;
+};

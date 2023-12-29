@@ -1,6 +1,7 @@
 export function formatDuration(
   duration: number | undefined | null,
   unit: 'ms' | 'us' | 'ns',
+  short?: boolean,
 ): string {
   if (duration === undefined || duration === null) {
     return '—'; // Return a dash for undefined or null
@@ -22,7 +23,7 @@ export function formatDuration(
     if (formattedDuration.endsWith('.00')) {
       formattedDuration = (convertedDuration / 1000).toFixed(0);
     }
-    return `${formattedDuration} secs`;
+    return `${formattedDuration} ${short ? 's' : 'secs'}`;
   }
 
   formattedDuration = convertedDuration.toFixed(0);

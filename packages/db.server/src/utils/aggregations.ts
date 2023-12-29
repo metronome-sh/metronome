@@ -125,6 +125,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(createHourSql);
 
+    // prettier-ignore
+    const realtimeSql = sql`ALTER MATERIALIZED VIEW ${sql.raw(hourTable)} set (timescaledb.materialized_only = false);`;
+
+    await db({ write: true }).execute(realtimeSql);
+
     const compressHourSql = sql`
       ALTER MATERIALIZED VIEW ${sql.raw(hourTable)} set (timescaledb.compress);
     `;
@@ -143,12 +148,12 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesHourSql);
 
-    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+    // const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
 
-    await queues.aggregations.add(
-      { aggregation: hourTable, watermark: '1 hour' },
-      { jobId: hourTable, delay },
-    );
+    // await queues.aggregations.add(
+    //   { aggregation: hourTable, watermark: '1 hour' },
+    //   { jobId: hourTable, delay },
+    // );
   };
 
   const createDayTable = async () => {
@@ -164,6 +169,11 @@ export async function createTimeOffsetAggregatedView({
     createDaySql.append(sql`WITH NO DATA;`);
 
     await db({ write: true }).execute(createDaySql);
+
+    // prettier-ignore
+    const realtimeSql = sql`ALTER MATERIALIZED VIEW ${sql.raw(dayTable)} set (timescaledb.materialized_only = false);`;
+
+    await db({ write: true }).execute(realtimeSql);
 
     const compressDaySql = sql`
       ALTER MATERIALIZED VIEW ${sql.raw(dayTable)} set (timescaledb.compress);
@@ -183,12 +193,12 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesDaySql);
 
-    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+    // const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
 
-    await queues.aggregations.add(
-      { aggregation: dayTable, watermark: '1 day' },
-      { jobId: dayTable, delay },
-    );
+    // await queues.aggregations.add(
+    //   { aggregation: dayTable, watermark: '1 day' },
+    //   { jobId: dayTable, delay },
+    // );
   };
 
   const createWeekTable = async () => {
@@ -205,6 +215,11 @@ export async function createTimeOffsetAggregatedView({
     createWeekSql.append(sql`WITH NO DATA;`);
 
     await db({ write: true }).execute(createWeekSql);
+
+    // prettier-ignore
+    const realtimeSql = sql`ALTER MATERIALIZED VIEW ${sql.raw(weekTable)} set (timescaledb.materialized_only = false);`;
+
+    await db({ write: true }).execute(realtimeSql);
 
     const compressWeekSql = sql`
       ALTER MATERIALIZED VIEW ${sql.raw(weekTable)} set (timescaledb.compress);
@@ -224,12 +239,12 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(policiesWeekSql);
 
-    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+    // const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
 
-    await queues.aggregations.add(
-      { aggregation: weekTable, watermark: '1 week' },
-      { jobId: weekTable, delay },
-    );
+    // await queues.aggregations.add(
+    //   { aggregation: weekTable, watermark: '1 week' },
+    //   { jobId: weekTable, delay },
+    // );
   };
 
   const createMonthTable = async () => {
@@ -247,6 +262,11 @@ export async function createTimeOffsetAggregatedView({
 
     await db({ write: true }).execute(createMonthSql);
 
+    // prettier-ignore
+    const realtimeSql = sql`ALTER MATERIALIZED VIEW ${sql.raw(monthTable)} set (timescaledb.materialized_only = false);`;
+
+    await db({ write: true }).execute(realtimeSql);
+
     const compressMonthSql = sql`
     ALTER MATERIALIZED VIEW ${sql.raw(monthTable)} set (timescaledb.compress);
   `;
@@ -254,23 +274,23 @@ export async function createTimeOffsetAggregatedView({
     await db({ write: true }).execute(compressMonthSql);
 
     const policiesMonthSql = sql`
-    SELECT timescaledb_experimental.add_policies(
-      ${sql.raw(monthTable.replaceAll('"', "'"))},
-      refresh_start_offset => '3 months'::interval,
-      refresh_end_offset => '1 month'::interval,
-      compress_after => '6 months'::interval,
-      drop_after => '1 year'::interval
-    );
-  `;
+      SELECT timescaledb_experimental.add_policies(
+        ${sql.raw(monthTable.replaceAll('"', "'"))},
+        refresh_start_offset => '4 months'::interval,
+        refresh_end_offset => '1 month'::interval,
+        compress_after => '6 months'::interval,
+        drop_after => '1 year'::interval
+      );
+    `;
 
     await db({ write: true }).execute(policiesMonthSql);
 
-    const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
+    // const delay = Math.floor(Math.random() * (10 - 1 + 1) + 1) * 60 * 1000;
 
-    await queues.aggregations.add(
-      { aggregation: monthTable, watermark: '1 month' },
-      { jobId: monthTable, delay },
-    );
+    // await queues.aggregations.add(
+    //   { aggregation: monthTable, watermark: '1 month' },
+    //   { jobId: monthTable, delay },
+    // );
   };
 
   if (interval === 'hour') {
@@ -302,6 +322,8 @@ export async function refreshAggregation({
     // prettier-ignore
     return db({ write: true }).execute(sql`CALL refresh_continuous_aggregate('${sql.raw(aggregation)}', '2023-01-01', date_trunc('${sql.raw(interval)}', now() - interval '1 ${sql.raw(interval)}'));`);
   };
+
+  console.log(`Refreshing aggregation ${aggregation} with watermark ${watermark}`);
 
   if (watermark === '1 hour') {
     return refreshContinuous('hour');

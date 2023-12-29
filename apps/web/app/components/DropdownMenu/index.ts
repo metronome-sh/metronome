@@ -13,6 +13,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from './DropdownMenu';
 
 export const DropdownMenu = Object.assign(DropdownMenuPrimitive, {
@@ -29,4 +30,5 @@ export const DropdownMenu = Object.assign(DropdownMenuPrimitive, {
   Trigger: DropdownMenuTrigger,
   RadioGroup: DropdownMenuRadioGroup,
   RadioItem: DropdownMenuRadioItem,
+  CheckboxItem: DropdownMenuCheckboxItem,
 });

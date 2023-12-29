@@ -13,5 +13,5 @@ export { insertLegacyMetrics } from './legacy/insertLegacyMetrics';
 
 export { actions, loaders, pageviews, projects, requests, sessions, teams, usages, users };
 export { webVitals } from './models/webVitals';
-export type { Project, Team, User } from './types';
+export type * from './types';
 export { refreshAggregation } from './utils/aggregations';

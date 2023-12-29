@@ -77,7 +77,7 @@ export function resolveIp(ip: string): {
     return { countryCode, country, region, city };
   } catch (error) {
     if (env.production) {
-      console.warn(`Could not resolve IP address ${ip}: `, (error as Error)?.name);
+      // console.warn(`Could not resolve IP address ${ip}: `, (error as Error)?.name);
     }
     return resolvedUnknown;
   }

@@ -19,6 +19,7 @@ import { Calendar } from './Calendar';
 import { CaretDownFilled } from './CaretDownFilled';
 import { Check } from './Check';
 import { ChevronRight } from './ChevronRight';
+import { CircleFilled } from './CircleFilled';
 import { Clipboard } from './Clipboard';
 import { ClipboardCheck } from './ClipboardCheck';
 import { ClipboardCopy } from './ClipboardCopy';
@@ -44,11 +45,13 @@ import { RouteSquareTwo } from './RouteSquareTwo';
 import { Search } from './Search';
 import { Settings } from './Settings';
 import { SettingsTwo } from './SettingsTwo';
+import { SquareFilled } from './SquareFilled';
 import { SquareRoundedPlus } from './SquareRoundedPlus';
 import { SquaresFilled } from './SquaresFilled';
 import { Sun } from './Sun';
 import { TerminalTwo } from './TerminalTwo';
 import { TimelineEventExclamation } from './TimelineEventExclamation';
+import { TriangleFilled } from './TriangleFilled';
 import { TriangleInvertedFilled } from './TriangleInvertedFilled';
 import { UserScan } from './UserScan';
 import { World } from './World';
@@ -91,6 +94,8 @@ export const Icon = {
   BrandUbuntu,
   SettingsTwo,
   BrandAndroid,
+  CircleFilled,
+  SquareFilled,
   BrandFirefox,
   BrandWindows,
   ChevronRight,
@@ -100,6 +105,7 @@ export const Icon = {
   SquaresFilled,
   ClipboardCheck,
   RouteSquareTwo,
+  TriangleFilled,
   CaretDownFilled,
   ArrowNarrowLeft,
   ArrowNarrowRight,

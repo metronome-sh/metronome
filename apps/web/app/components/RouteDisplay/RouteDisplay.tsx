@@ -1,4 +1,5 @@
-import type { FunctionComponent } from 'react';
+import { type FunctionComponent } from 'react';
+
 import { cn } from '../utils';
 
 export type RouteDisplayProps = {
@@ -17,7 +18,8 @@ export const RouteDisplay: FunctionComponent<RouteDisplayProps> = ({ route }) =>
           <span
             key={`${segment}-${index}`}
             className={cn('px-[0.5px] text-foreground', {
-              'text-cyan-500': segment.startsWith(':') || segment.startsWith('*'),
+              'text-cyan-500':
+                segment.startsWith(':') || segment.startsWith('*') || segment.startsWith('$'),
               'text-muted-foreground/70': segment === '/',
             })}
           >

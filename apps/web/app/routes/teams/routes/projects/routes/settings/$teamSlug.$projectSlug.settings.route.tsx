@@ -81,7 +81,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return json({ success: true });
     },
     async delete() {
-      const teamProjects = await teams.getProjects({ teamId: project.teamId });
+      const teamProjects = await projects.findByTeamId({ teamId: project.teamId });
 
       await projects.destroy({ id: project.id });
 

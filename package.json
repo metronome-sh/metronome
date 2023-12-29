@@ -14,7 +14,8 @@
     "docker:restart": "docker-compose --env-file .env -f docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
     "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix",
-    "db": "pnpm --dir packages/db.server"
+    "db": "pnpm --dir packages/db.server",
+    "docker:push": "docker build  -t metronomedotsh/metronome:latest -f Dockerfile . && docker push metronomedotsh/metronome:latest"
   },
   "keywords": [],
   "author": "",

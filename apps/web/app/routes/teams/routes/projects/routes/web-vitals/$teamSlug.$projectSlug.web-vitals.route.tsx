@@ -7,6 +7,7 @@ import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
+import { WebVitalsByRouteSection } from './components/WebVitalsByRouteSection';
 import { WebVitalsSection } from './components/WebVitalsSection';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -38,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     interval,
   });
 
-  const webVitalsBreakdownByRoute = await webVitals.breakdownByRoute({
+  const webVitalsBreakdownByRoute = webVitals.breakdownByRoute({
     project,
     range,
     interval,
@@ -58,7 +59,7 @@ export default function Component() {
         <NotificationsOutlet />
         <Heading
           title="Web Vitals"
-          description="User experience interacting with a web page."
+          description="User experience interacting with your app."
           separatorClassName="md:mb-4"
         />
       </div>
@@ -67,6 +68,7 @@ export default function Component() {
       </div>
       <div className="pt-4 px-4">
         <WebVitalsSection />
+        <WebVitalsByRouteSection />
       </div>
     </div>
   );
