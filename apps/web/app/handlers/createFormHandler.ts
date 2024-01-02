@@ -6,9 +6,12 @@ export async function createFormHandler({ request }: { request: Request }) {
   let formData: FormData = new FormData();
   let formDataObject: Record<string, string> = {};
 
+  const contentType = request.headers.get('content-type');
+  const formHeaders = ['multipart/form-data', 'application/x-www-form-urlencoded'];
+
   if (
     ['post', 'put'].includes(request.method.toLowerCase()) &&
-    request.headers.get('content-type')?.includes('multipart/form-data')
+    formHeaders.some((header) => contentType?.includes(header))
   ) {
     try {
       formData = await request.clone().formData();
