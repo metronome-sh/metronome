@@ -52,7 +52,9 @@ function createRememberFunction(connection: typeof ioredis) {
 
     const newValue = await callback();
 
-    await connection.set(stringifiedKey, JSON.stringify(await callback()), 'EX', ttl);
+    if (newValue !== null || newValue !== undefined) {
+      await connection.set(stringifiedKey, JSON.stringify(await callback()), 'EX', ttl);
+    }
 
     return newValue as Data;
   };

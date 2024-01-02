@@ -6,12 +6,17 @@ export async function createFormHandler({ request }: { request: Request }) {
   let formData: FormData = new FormData();
   let formDataObject: Record<string, string> = {};
 
-  if (['post', 'put'].includes(request.method.toLowerCase())) {
-    formData = await request.clone().formData();
-    formDataObject = Object.fromEntries(formData.entries()) as Record<
-      string,
-      string
-    >;
+  if (
+    ['post', 'put'].includes(request.method.toLowerCase()) &&
+    request.headers.get('content-type')?.includes('multipart/form-data')
+  ) {
+    try {
+      formData = await request.clone().formData();
+      formDataObject = Object.fromEntries(formData.entries()) as Record<string, string>;
+    } catch (error) {
+      formData = new FormData();
+      formDataObject = {};
+    }
   }
 
   function get(key: string): string | undefined {
@@ -23,12 +28,9 @@ export async function createFormHandler({ request }: { request: Request }) {
 
     if (!result.success) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw new Response(
-        `Invalid form data: ${JSON.stringify(formatZodError(result.error))}`,
-        {
-          status: 400,
-        },
-      );
+      throw new Response(`Invalid form data: ${JSON.stringify(formatZodError(result.error))}`, {
+        status: 400,
+      });
     }
 
     return result.data;
