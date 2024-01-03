@@ -14,5 +14,15 @@ export function getTimeZoneFromRequest(request: Request): Temporal.TimeZone {
     return Temporal.TimeZone.from('UTC') as Temporal.TimeZone;
   }
 
-  return Temporal.TimeZone.from(timeZone) as Temporal.TimeZone;
+  let temporalTimezone: Temporal.TimeZone;
+
+  // Handle edge cases where the timezone is not valid
+  // Like Etc/Unknown
+  try {
+    temporalTimezone = Temporal.TimeZone.from(timeZone) as Temporal.TimeZone;
+  } catch (error) {
+    temporalTimezone = Temporal.TimeZone.from('UTC') as Temporal.TimeZone;
+  }
+
+  return temporalTimezone;
 }
