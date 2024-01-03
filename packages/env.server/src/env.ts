@@ -113,6 +113,7 @@ export class Environment {
   public producer() {
     return {
       apiKey: this.optional('PRODUCER_PROJECT_API_KEY'),
+      url: this.optional('PRODUCER_URL'),
     };
   }
 
