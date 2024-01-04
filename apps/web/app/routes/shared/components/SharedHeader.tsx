@@ -2,10 +2,6 @@ import { Link } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 
 import { Brand, Button, Icon } from '#app/components';
-// import { Breadcrumb, UserMenu } from '..';
-// import { Brand } from '../Brand';
-// import { Button } from '../Button';
-// import { Icon } from '../Icon';
 
 export const SharedHeader: FunctionComponent = () => {
   return (

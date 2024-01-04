@@ -49,6 +49,8 @@ export class Environment {
     return envVar;
   }
 
+  protected required = this.defined;
+
   /**
    * DB Connection URLs.
    * @returns Object with readable and writable database URLs.

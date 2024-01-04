@@ -8,6 +8,9 @@ import { Metric } from '#app/routes/teams/routes/projects/components';
 import { formatNumber } from '#app/utils';
 
 export const VisitorsRightNow: FunctionComponent = () => {
+  // const { visitorsRightNow } = useLoaderData<{ visitorsRightNow?: Promise<number> }>();
+  // const { visitorsRightNow: visitorsRightNowEvent } = useEventData<{ visitorsRightNow?: number }>();
+
   const { visitorsRightNow } = useSharedProjectLoaderData();
   const { visitorsRightNow: visitorsRightNowEvent } = useSharedProjectEventData();
 
