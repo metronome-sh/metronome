@@ -1,16 +1,24 @@
-import { Await } from '@remix-run/react';
+import { loaders } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 import { Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
-import { BarStackChart, Icon, Spinner } from '#app/components';
+import { BarStackChart } from '#app/components';
+import { useEventData } from '#app/hooks/useEventData';
 
-import { useOverviewEventData, useOverviewLoaderData } from '../../../../hooks';
 import { useIsNavigatingOverview } from '../../../../hooks/useIsNavigatingOverview';
 
 export const Chart: FunctionComponent = () => {
-  const { loadersOverviewSeries } = useOverviewLoaderData();
-  const { loadersOverviewSeries: loadersOverviewSeriesEvent } =
-    useOverviewEventData();
+  const { loadersOverviewSeries } = useLoaderData() as {
+    loadersOverviewSeries?: ReturnType<typeof loaders.overviewSeries>;
+  };
+
+  const { loadersOverviewSeries: loadersOverviewSeriesEvent } = useEventData() as {
+    loadersOverviewSeries?: Awaited<ReturnType<typeof loaders.overviewSeries>>;
+  };
+
+  invariant(loadersOverviewSeries, 'requestOverview was not found in loader data');
 
   const isNavigating = useIsNavigatingOverview();
 
@@ -20,18 +28,15 @@ export const Chart: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<BarStackChart.Skeleton />}>
-      <Await
-        resolve={loadersOverviewSeries}
-        errorElement={<BarStackChart.Error />}
-      >
+      <Await resolve={loadersOverviewSeries} errorElement={<BarStackChart.Error />}>
         {(resolvedLoadersSeries) => {
-          const series = (
-            loadersOverviewSeriesEvent?.series ?? resolvedLoadersSeries.series
-          ).map(({ timestamp, okCount, erroredCount }) => ({
-            timestamp,
-            okCount,
-            erroredCount,
-          }));
+          const series = (loadersOverviewSeriesEvent?.series ?? resolvedLoadersSeries.series).map(
+            ({ timestamp, okCount, erroredCount }) => ({
+              timestamp,
+              okCount,
+              erroredCount,
+            }),
+          );
 
           return (
             <BarStackChart

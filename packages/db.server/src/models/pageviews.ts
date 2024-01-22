@@ -59,6 +59,8 @@ export async function overview({
   range: Range;
   interval: Interval;
 }) {
+  console.time('pageviews.overview');
+
   const pageviews = await getPageviewsOverviewAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -79,6 +81,8 @@ export async function overview({
         between(pageviews.timestamp, fromDate, toDate),
       ),
     );
+
+  console.timeEnd('pageviews.overview');
 
   return { pageviewCount };
 }
@@ -120,6 +124,8 @@ export async function routesByRoutePath({
     uniqueUserIds: number;
   }[]
 > {
+  console.time('pageviews.routesByRoutePath');
+
   const pageviews = await getPageviewsRoutesAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -145,6 +151,8 @@ export async function routesByRoutePath({
     .orderBy(sql`2 desc`)
     .limit(400);
 
+  console.timeEnd('pageviews.routesByRoutePath');
+
   return results;
 }
 
@@ -163,6 +171,8 @@ export async function routesByUrlPath({
     uniqueUserIds: number;
   }[]
 > {
+  console.time('pageviews.routesByUrlPath');
+
   const pageviews = await getPageviewsRoutesAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -189,6 +199,8 @@ export async function routesByUrlPath({
     .orderBy(sql`3 desc`)
     .limit(400);
 
+  console.timeEnd('pageviews.routesByUrlPath');
+
   return results;
 }
 
@@ -207,6 +219,8 @@ export async function referrers({
     uniqueUserIds: number;
   }[]
 > {
+  console.time('pageviews.referrers');
+
   const pageviews = await getPageviewsReferrersAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -232,9 +246,13 @@ export async function referrers({
     .orderBy(sql`2 desc`)
     .limit(400);
 
-  return results.map((r) => ({
+  const referrersArray = results.map((r) => ({
     referrerDomain: r.referrerDomain,
     name: getDisplayNameFromURL(r.referrerDomain),
     uniqueUserIds: r.uniqueUserIds,
   }));
+
+  console.timeEnd('pageviews.referrers');
+
+  return referrersArray;
 }

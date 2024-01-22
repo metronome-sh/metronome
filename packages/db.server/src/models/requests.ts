@@ -10,6 +10,7 @@ import { resolveIp } from '../utils/ip';
 
 export function isRequestEvent(event: unknown): event is RequestEvent {
   const result = RequestEventSchema.safeParse(event);
+
   return result.success;
 }
 
@@ -44,6 +45,7 @@ export async function overview({
   range: Range;
   interval: Interval;
 }) {
+  console.time('requests.overview');
   const requests = await getRequestsOverviewAggregatedView(from.timeZoneId, interval);
 
   const fromDate = new Date(from.toInstant().epochMilliseconds);
@@ -64,6 +66,8 @@ export async function overview({
         eq(requests.projectId, project.id),
       ),
     );
+
+  console.timeEnd('requests.overview');
 
   if (result.length === 0) {
     return {
@@ -93,6 +97,7 @@ export async function countSeries({
   range: Range;
   interval: Interval;
 }) {
+  console.time('requests.countSeries');
   const requests = await getRequestsOverviewAggregatedView(from.timeZoneId, interval);
 
   const fromDate = new Date(from.toInstant().epochMilliseconds);
@@ -126,6 +131,7 @@ export async function countSeries({
     };
   });
 
+  console.timeEnd('requests.countSeries');
   return { series };
 }
 

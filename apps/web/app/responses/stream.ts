@@ -37,9 +37,12 @@ export async function stream<LoaderFunction>(
 
         cleanup?.();
         closed = true;
-        // clearInterval(pingInterval);
         request.signal.removeEventListener('abort', close);
-        controller.close();
+        try {
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
       }
 
       streamController.signal.addEventListener('abort', close);
@@ -50,10 +53,7 @@ export async function stream<LoaderFunction>(
 
       request.signal.addEventListener('abort', close);
 
-      function send(
-        sendData: Partial<UnwrapDeferred<LoaderFunction>>,
-        ts: number,
-      ) {
+      function send(sendData: Partial<UnwrapDeferred<LoaderFunction>>, ts: number) {
         if (closed) return;
 
         const stringified = JSON.stringify({

@@ -15,12 +15,12 @@ import { Filters, filters } from '#app/filters';
 import { handle } from '#app/handlers';
 import { notFound } from '#app/responses';
 
-import { ActionsSection } from './components/ActionsSection';
-import { LoadersSection } from './components/LoadersSection';
-import { RequestsSection } from './components/RequestsSection';
+import { ActionsSection } from '../teams/routes/projects/routes/overview/components/ActionsSection';
+import { LoadersSection } from '../teams/routes/projects/routes/overview/components/LoadersSection';
+import { RequestsSection } from '../teams/routes/projects/routes/overview/components/RequestsSection';
+import { WebAnalyticsSection } from '../teams/routes/projects/routes/overview/components/WebAnalyticsSection';
+import { WebVitalsSection } from '../teams/routes/projects/routes/overview/components/WebVitalsSection';
 import { SharedHeader } from './components/SharedHeader';
-import { WebAnalyticsSection } from './components/WebAnalyticsSection';
-import { WebVitalsSection } from './components/WebVitalsSection';
 import { useSharedProjectLoaderData } from './hooks/useSharedProjectLoaderData';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

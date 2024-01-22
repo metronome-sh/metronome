@@ -1,5 +1,6 @@
 import { and, between, eq, sql } from 'drizzle-orm';
 import { throttleTime } from 'rxjs';
+import { prettyPrintZodError } from 'src/utils/prettyPrintZodError';
 
 import { db } from '../../db';
 import {

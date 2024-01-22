@@ -1,19 +1,24 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { BarStackChart } from '#app/components/BarStackChart';
+import { useEventData } from '#app/hooks/useEventData';
 
-import {
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
 import { useIsNavigatingWebAnalytics } from '../../../../hooks/useIsNavigatingWebAnalytics';
 
 export const BounceRateTabContent: FunctionComponent = () => {
-  const { bounceRateSeries } = useWebAnalyticsLoaderData();
-  const { bounceRateSeries: bounceRateSeriesEvent } =
-    useWebAnalyticsEventData();
+  const { bounceRateSeries } = useLoaderData() as {
+    bounceRateSeries?: ReturnType<typeof sessions.bounceRateSeries>;
+  };
+
+  const { bounceRateSeries: bounceRateSeriesEvent } = useEventData() as {
+    bounceRateSeries?: Awaited<ReturnType<typeof sessions.bounceRateSeries>>;
+  };
+
+  invariant(bounceRateSeries, 'bounceRateSeries was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -23,14 +28,9 @@ export const BounceRateTabContent: FunctionComponent = () => {
         <BarStackChart.Skeleton />
       ) : (
         <Suspense fallback={<BarStackChart.Skeleton />}>
-          <Await
-            resolve={bounceRateSeries}
-            errorElement={<BarStackChart.Error />}
-          >
+          <Await resolve={bounceRateSeries} errorElement={<BarStackChart.Error />}>
             {(resolvedBounceRateSeries) => {
-              const series =
-                bounceRateSeriesEvent?.series ??
-                resolvedBounceRateSeries.series;
+              const series = bounceRateSeriesEvent?.series ?? resolvedBounceRateSeries.series;
               return (
                 <BarStackChart
                   // TODO - fix this
@@ -39,8 +39,7 @@ export const BounceRateTabContent: FunctionComponent = () => {
                   colors={['#f43f5e']}
                   labels={{ bounceRate: 'Bounce rate' }}
                   formatValues={{
-                    bounceRate: (value) =>
-                      value !== null ? `${Math.round(value)}%` : '-',
+                    bounceRate: (value) => (value !== null ? `${Math.round(value)}%` : '-'),
                   }}
                 />
               );

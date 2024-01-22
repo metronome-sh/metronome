@@ -1,1 +1,0 @@
-export { TotalSessions } from './TotalSessions';

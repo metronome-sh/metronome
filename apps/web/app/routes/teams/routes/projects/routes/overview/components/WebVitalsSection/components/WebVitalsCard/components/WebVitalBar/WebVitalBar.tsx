@@ -22,12 +22,7 @@ export const WebVitalBar: FunctionComponent<WebVitalBarProps> = ({
   return (
     <div className={cn(isLoading && 'opacity-[0.15]')}>
       <div className={cn('w-full', isLoading && 'animate-pulse')}>
-        <div
-          className={cn(
-            'flex',
-            (isDisabled || isLoading || !hasValue) && 'opacity-0',
-          )}
-        >
+        <div className={cn('flex', (isDisabled || isLoading || !hasValue) && 'opacity-0')}>
           <div className="" style={{ width: `${100 - (score ?? 0)}%` }} />
           <div className="relative h-2 flex-grow">
             <div className="absolute -top-4 -ml-1">
@@ -52,9 +47,7 @@ export const WebVitalBar: FunctionComponent<WebVitalBarProps> = ({
                 ? 'bg-muted-foreground'
                 : 'bg-green-500 group-hover:opacity-100 transition-opacity',
               !hasValue && 'bg-muted-foreground opacity-50',
-              !(isDisabled || isLoading) &&
-                (score ?? 0) < 66.6666 &&
-                'opacity-50',
+              !(isDisabled || isLoading) && (score ?? 0) < 66.6666 && 'opacity-50',
             )}
           />
           <div
@@ -76,9 +69,7 @@ export const WebVitalBar: FunctionComponent<WebVitalBarProps> = ({
                 ? 'bg-muted-foreground'
                 : 'bg-red-500 group-hover:opacity-100 transition-opacity',
               !hasValue && 'bg-muted-foreground opacity-50',
-              !(isDisabled || isLoading) &&
-                (score ?? 0) > 33.3333 &&
-                'opacity-50',
+              !(isDisabled || isLoading) && (score ?? 0) > 33.3333 && 'opacity-50',
             )}
           />
         </div>

@@ -1,21 +1,26 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 import { Suspense } from 'react';
+import invariant from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { Metric } from '#app/routes/teams/routes/projects/components/Metric';
 import { formatTime } from '#app/utils/formatTime';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const MedianSessionTimeTabTrigger: FunctionComponent = () => {
-  const { sessionsOverview } = useWebAnalyticsLoaderData();
-  const { sessionsOverview: sessionsOverviewEvent } =
-    useWebAnalyticsEventData();
+  const { sessionsOverview } = useLoaderData() as {
+    sessionsOverview?: ReturnType<typeof sessions.overview>;
+  };
+
+  const { sessionsOverview: sessionsOverviewEvent } = useEventData() as {
+    sessionsOverview?: Awaited<ReturnType<typeof sessions.overview>>;
+  };
+
+  invariant(sessionsOverview, 'sessionsOverview was not found in loader data');
 
   const title = 'Median session time';
 
@@ -25,15 +30,10 @@ export const MedianSessionTimeTabTrigger: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<Metric.Skeleton title={title} compact />}>
-      <Await
-        resolve={sessionsOverview}
-        errorElement={<Metric.Error title={title} compact />}
-      >
+      <Await resolve={sessionsOverview} errorElement={<Metric.Error title={title} compact />}>
         {(resolvedSessionsOverview) => {
           const value =
-            sessionsOverviewEvent?.duration?.p50 ??
-            resolvedSessionsOverview.duration.p50 ??
-            0;
+            sessionsOverviewEvent?.duration?.p50 ?? resolvedSessionsOverview.duration.p50 ?? 0;
 
           return (
             <Tabs.Trigger value="median-session-time" asChild>

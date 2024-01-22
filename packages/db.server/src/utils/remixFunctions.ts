@@ -67,6 +67,8 @@ export function createRemixFunctionOverview(schema: typeof loaders | typeof acti
   }> {
     const base = getTableConfig(schema).name;
 
+    console.time(`${base}.overview`);
+
     const table = await getRemixFunctionOverviewAggregatedView({
       base,
       timeZone: from.timeZoneId,
@@ -97,6 +99,8 @@ export function createRemixFunctionOverview(schema: typeof loaders | typeof acti
         ),
       );
 
+    console.timeEnd(`${base}.overview`);
+
     return {
       count,
       duration: { p50: durationP50 },
@@ -126,6 +130,8 @@ export function createRemixFunctionOverviewSeries(schema: typeof loaders | typeo
     }[];
   }> {
     const base = getTableConfig(schema).name;
+
+    console.time(`${base}.overviewSeries`);
 
     const table = await getRemixFunctionOverviewAggregatedView({
       base,
@@ -167,6 +173,7 @@ export function createRemixFunctionOverviewSeries(schema: typeof loaders | typeo
       };
     });
 
+    console.timeEnd(`${base}.overviewSeries`);
     return { series };
   };
 }

@@ -4,8 +4,8 @@ import { db } from '../db';
 import { nanoid } from '../modules/nanoid';
 import { projects, teams, usersToTeams } from '../schema';
 import { NewTeam, Team } from '../types';
-import { generateSlug } from '../utils/slugs';
 import { buildJsonbObject } from '../utils/buildJsonObject';
+import { generateSlug } from '../utils/slugs';
 
 export async function insert(newTeam: NewTeam): Promise<Team> {
   const slug = await generateSlug({

@@ -1,1 +1,0 @@
-export { WebVitalBar } from './WebVitalBar';

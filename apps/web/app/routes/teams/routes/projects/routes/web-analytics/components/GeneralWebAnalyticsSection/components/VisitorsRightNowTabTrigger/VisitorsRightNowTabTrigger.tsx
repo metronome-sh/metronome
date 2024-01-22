@@ -1,21 +1,26 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 import { Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { Metric } from '#app/routes/teams/routes/projects/components/Metric';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const VisitorsRightNowTabTrigger: FunctionComponent = () => {
-  const { visitorsRightNow } = useWebAnalyticsLoaderData();
-  const { visitorsRightNow: visitorsRightNowEvent } =
-    useWebAnalyticsEventData();
+  const { visitorsRightNow } = useLoaderData() as {
+    visitorsRightNow?: ReturnType<typeof sessions.visitorsRightNow>;
+  };
+
+  const { visitorsRightNow: visitorsRightNowEvent } = useEventData() as {
+    visitorsRightNow?: Awaited<ReturnType<typeof sessions.visitorsRightNow>>;
+  };
+
+  invariant(visitorsRightNow, 'visitorsRightNow was not found in loader data');
 
   const title = 'Visitors right now';
 
@@ -25,10 +30,7 @@ export const VisitorsRightNowTabTrigger: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<Metric.Skeleton title={title} compact />}>
-      <Await
-        resolve={visitorsRightNow}
-        errorElement={<Metric.Error title={title} compact />}
-      >
+      <Await resolve={visitorsRightNow} errorElement={<Metric.Error title={title} compact />}>
         {(resolvedVisitorsRightNow) => {
           // prettier-ignore
           const value = visitorsRightNowEvent ?? resolvedVisitorsRightNow ?? 0;

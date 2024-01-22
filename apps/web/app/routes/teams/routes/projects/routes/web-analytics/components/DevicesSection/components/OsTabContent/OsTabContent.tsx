@@ -1,16 +1,15 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { Icon, TableWithBarChart, Tooltip } from '#app/components';
 import { cn } from '#app/components/utils';
+import { useEventData } from '#app/hooks/useEventData';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 const osMap = {
   windows: Icon.BrandWindows,
@@ -21,8 +20,15 @@ const osMap = {
 };
 
 export const OsTabContent: FunctionComponent = () => {
-  const { devicesByOs } = useWebAnalyticsLoaderData();
-  const { devicesByOs: devicesByOsEvent } = useWebAnalyticsEventData();
+  const { devicesByOs } = useLoaderData() as {
+    devicesByOs?: ReturnType<typeof sessions.devicesByOs>;
+  };
+
+  const { devicesByOs: devicesByOsEvent } = useEventData() as {
+    devicesByOs?: Awaited<ReturnType<typeof sessions.devicesByOs>>;
+  };
+
+  invariant(devicesByOs, 'devicesByOs was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -32,15 +38,10 @@ export const OsTabContent: FunctionComponent = () => {
         <TableWithBarChart.Skeleton />
       ) : (
         <Suspense fallback={<TableWithBarChart.Skeleton />}>
-          <Await
-            resolve={devicesByOs}
-            errorElement={<TableWithBarChart.Error />}
-          >
+          <Await resolve={devicesByOs} errorElement={<TableWithBarChart.Error />}>
             {(resolvedDevicesByOs) => {
               return (
-                <TableWithBarChart<
-                  keyof Awaited<typeof resolvedDevicesByOs>[number]
-                >
+                <TableWithBarChart<keyof Awaited<typeof resolvedDevicesByOs>[number]>
                   data={devicesByOsEvent ?? resolvedDevicesByOs}
                   valueKey="uniqueUserIds"
                   headers={{
@@ -60,9 +61,7 @@ export const OsTabContent: FunctionComponent = () => {
                           ) : (
                             <Tooltip.Provider>
                               <Tooltip>
-                                <Tooltip.Trigger
-                                  disabled={(value as number) < 1000}
-                                >
+                                <Tooltip.Trigger disabled={(value as number) < 1000}>
                                   {formatNumber(value as number)}
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>

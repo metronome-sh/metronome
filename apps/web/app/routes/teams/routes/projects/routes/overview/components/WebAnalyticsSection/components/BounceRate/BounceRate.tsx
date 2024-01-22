@@ -1,17 +1,23 @@
-import { Await } from '@remix-run/react';
+import { sessions } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { Metric } from '#app/routes/teams/routes/projects/components';
 
-import {
-  useIsNavigatingOverview,
-  useOverviewEventData,
-  useOverviewLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingOverview } from '../../../../hooks';
 
 export const BounceRate: FunctionComponent = () => {
-  const { bounceRate } = useOverviewLoaderData();
-  const { bounceRate: bounceRateEvent } = useOverviewEventData();
+  const { bounceRate } = useLoaderData() as {
+    bounceRate?: ReturnType<typeof sessions.bounceRate>;
+  };
+
+  const { bounceRate: bounceRateEvent } = useEventData() as {
+    bounceRate?: Awaited<ReturnType<typeof sessions.bounceRate>>;
+  };
+
+  invariant(bounceRate, 'requestOverview was not found in loader data');
 
   const title = 'Bounce rate';
 
@@ -26,12 +32,7 @@ export const BounceRate: FunctionComponent = () => {
       <Await resolve={bounceRate} errorElement={<Metric.Error title={title} />}>
         {(resolvedBounceRate) => {
           const value = bounceRateEvent ?? resolvedBounceRate;
-          return (
-            <Metric
-              title={title}
-              value={value !== null ? `${Math.round(value)}%` : '—'}
-            />
-          );
+          return <Metric title={title} value={value !== null ? `${Math.round(value)}%` : '—'} />;
         }}
       </Await>
     </Suspense>

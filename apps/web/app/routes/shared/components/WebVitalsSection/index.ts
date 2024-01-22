@@ -1,1 +1,0 @@
-export { WebVitalsSection } from './WebVitalsSection';

@@ -1,16 +1,24 @@
-import { Await } from '@remix-run/react';
+import { requests } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 import { Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
-import { BarStackChart, Icon, Spinner } from '#app/components';
+import { BarStackChart } from '#app/components';
+import { useEventData } from '#app/hooks/useEventData';
 
-import { useOverviewEventData, useOverviewLoaderData } from '../../../../hooks';
 import { useIsNavigatingOverview } from '../../../../hooks/useIsNavigatingOverview';
 
 export const Chart: FunctionComponent = () => {
-  const { requestsCountSeries } = useOverviewLoaderData();
-  const { requestsCountSeries: requestsCountSeriesEvent } =
-    useOverviewEventData();
+  const { requestsCountSeries } = useLoaderData() as {
+    requestsCountSeries?: ReturnType<typeof requests.countSeries>;
+  };
+
+  const { requestsCountSeries: requestsCountSeriesEvent } = useEventData() as {
+    requestsCountSeries?: Awaited<ReturnType<typeof requests.countSeries>>;
+  };
+
+  invariant(requestsCountSeries, 'requestOverview was not found in loader data');
 
   const isNavigating = useIsNavigatingOverview();
 
@@ -20,14 +28,9 @@ export const Chart: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<BarStackChart.Skeleton />}>
-      <Await
-        resolve={requestsCountSeries}
-        errorElement={<BarStackChart.Error />}
-      >
+      <Await resolve={requestsCountSeries} errorElement={<BarStackChart.Error />}>
         {(resolvedRequestsCountSeries) => {
-          const data =
-            requestsCountSeriesEvent?.series ??
-            resolvedRequestsCountSeries.series;
+          const data = requestsCountSeriesEvent?.series ?? resolvedRequestsCountSeries.series;
 
           return (
             <BarStackChart

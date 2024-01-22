@@ -77,22 +77,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       });
 
       const cleanupPageviewsWatch = pageviews.watch(project, async ({ ts }) => {
-        const [
-          pageviewsOverview,
-          routesByRoutePath,
-          routesByUrlPath,
-          referrers,
-        ] = await Promise.all([
-          pageviews.overview({ project, range, interval }),
-          pageviews.routesByRoutePath({ project, range, interval }),
-          pageviews.routesByUrlPath({ project, range, interval }),
-          pageviews.referrers({ project, range, interval }),
-        ]);
+        const [pageviewsOverview, routesByRoutePath, routesByUrlPath, referrers] =
+          await Promise.all([
+            pageviews.overview({ project, range, interval }),
+            pageviews.routesByRoutePath({ project, range, interval }),
+            pageviews.routesByUrlPath({ project, range, interval }),
+            pageviews.referrers({ project, range, interval }),
+          ]);
 
-        send(
-          { pageviewsOverview, routesByRoutePath, routesByUrlPath, referrers },
-          ts,
-        );
+        send({ pageviewsOverview, routesByRoutePath, routesByUrlPath, referrers }, ts);
       });
       return async function cleanup() {
         cleanupSessionsWatch();

@@ -1,1 +1,0 @@
-export { WebVitalsCard } from './WebVitalsCard';

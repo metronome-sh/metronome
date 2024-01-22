@@ -1,15 +1,14 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { cn, Icon, TableWithBarChart, Tooltip } from '#app/components';
+import { useEventData } from '#app/hooks/useEventData';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 const browserMap = {
   chrome: Icon.BrandChrome,
@@ -21,9 +20,15 @@ const browserMap = {
 };
 
 export const BrowsersTabContent: FunctionComponent = () => {
-  const { devicesByBrowser } = useWebAnalyticsLoaderData();
-  const { devicesByBrowser: devicesByBrowserEvent } =
-    useWebAnalyticsEventData();
+  const { devicesByBrowser } = useLoaderData() as {
+    devicesByBrowser?: ReturnType<typeof sessions.devicesByBrowser>;
+  };
+
+  const { devicesByBrowser: devicesByBrowserEvent } = useEventData() as {
+    devicesByBrowser?: Awaited<ReturnType<typeof sessions.devicesByBrowser>>;
+  };
+
+  invariant(devicesByBrowser, 'devicesByBrowser was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -33,15 +38,10 @@ export const BrowsersTabContent: FunctionComponent = () => {
         <TableWithBarChart.Skeleton />
       ) : (
         <Suspense fallback={<TableWithBarChart.Skeleton />}>
-          <Await
-            resolve={devicesByBrowser}
-            errorElement={<TableWithBarChart.Error />}
-          >
+          <Await resolve={devicesByBrowser} errorElement={<TableWithBarChart.Error />}>
             {(resolvedDevicesByBrowser) => {
               return (
-                <TableWithBarChart<
-                  keyof Awaited<typeof resolvedDevicesByBrowser>[number]
-                >
+                <TableWithBarChart<keyof Awaited<typeof resolvedDevicesByBrowser>[number]>
                   data={devicesByBrowserEvent ?? resolvedDevicesByBrowser}
                   valueKey="uniqueUserIds"
                   headers={{
@@ -61,9 +61,7 @@ export const BrowsersTabContent: FunctionComponent = () => {
                           ) : (
                             <Tooltip.Provider>
                               <Tooltip>
-                                <Tooltip.Trigger
-                                  disabled={(value as number) < 1000}
-                                >
+                                <Tooltip.Trigger disabled={(value as number) < 1000}>
                                   {formatNumber(value as number)}
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>
@@ -86,8 +84,7 @@ export const BrowsersTabContent: FunctionComponent = () => {
                       size: 40,
                       render: (value, { className, ...props }) => {
                         const IconFromMap =
-                          browserMap &&
-                          browserMap[value as keyof typeof browserMap]
+                          browserMap && browserMap[value as keyof typeof browserMap]
                             ? browserMap[value as keyof typeof browserMap]
                             : Icon.World;
 

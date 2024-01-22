@@ -1,8 +1,4 @@
-import {
-  type FunctionComponent,
-  type PropsWithChildren,
-  type ReactNode,
-} from 'react';
+import { type FunctionComponent, type PropsWithChildren, type ReactNode } from 'react';
 
 import { cn, Icon } from '#app/components';
 
@@ -38,14 +34,7 @@ export const WebVitalsCard: FunctionComponent<WebVitalsCardProps> & {
   return (
     <div className="flex flex-col gap-3 bg-muted/30 py-3 lg:py-5 px-4 lg:px-6 rounded-xl relative group">
       <div className="flex justify-between">
-        <div
-          className={cn(
-            'text-left text-muted-foreground text-lg',
-            nameClassName,
-          )}
-        >
-          {name}
-        </div>
+        <div className={cn('text-left text-muted-foreground text-lg', nameClassName)}>{name}</div>
         <div
           className={cn(
             'text-right text-xl',
@@ -104,9 +93,7 @@ const WebVitalsCardError: FunctionComponent = () => {
       name="Error"
       value="000000"
     >
-      <div
-        className={cn('absolute inset-0 flex gap-2 items-center px-4 lg:px-8')}
-      >
+      <div className={cn('absolute inset-0 flex gap-2 items-center px-4 lg:px-8')}>
         <div>
           <Icon.AlertSquareRoundedOutline className="stroke-destructive" />
         </div>

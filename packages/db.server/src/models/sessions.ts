@@ -154,6 +154,8 @@ export async function upsert(
 }
 
 export async function visitorsRightNow(project: Project): Promise<number> {
+  console.time('sessions.visitorsRightNow');
+
   const [{ visitorsRightNow = 0 }] = await db()
     .select({
       visitorsRightNow: sql<number>`count(distinct ${pageviews.sessionId})::integer`,
@@ -178,6 +180,7 @@ export async function visitorsRightNow(project: Project): Promise<number> {
       ),
     );
 
+  console.timeEnd('sessions.visitorsRightNow');
   return visitorsRightNow;
 }
 
@@ -194,6 +197,8 @@ export async function overview({
   uniqueVisitors: number;
   duration: { p50: null | number };
 }> {
+  console.time('sessions.overview');
+
   const sessions = await getSessionOverviewAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -223,6 +228,7 @@ export async function overview({
       ),
     );
 
+  console.timeEnd('sessions.overview');
   return { totalSessions, uniqueVisitors, duration: { p50: durationP50 } };
 }
 
@@ -243,6 +249,8 @@ export async function overviewSeries({
     duration: number;
   }[];
 }> {
+  console.time('sessions.overviewSeries');
+
   const sessions = await getSessionOverviewAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -283,6 +291,7 @@ export async function overviewSeries({
     };
   });
 
+  console.timeEnd('sessions.overviewSeries');
   return { series };
 }
 
@@ -295,6 +304,8 @@ export async function bounceRate({
   range: Range;
   interval: Interval;
 }): Promise<number | null> {
+  console.time('sessions.bounceRate');
+
   const bounceRates = await getBounceRateAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -322,6 +333,8 @@ export async function bounceRate({
       ),
     );
 
+  console.timeEnd('sessions.bounceRate');
+
   return totalSessions === 0 || totalSessions === null
     ? null
     : (singlePageSessions / totalSessions) * 100;
@@ -341,6 +354,8 @@ export async function bounceRateSeries({
     bounceRate: number | null;
   }[];
 }> {
+  console.time('sessions.bounceRateSeries');
+
   const bounceRates = await getBounceRateAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -379,6 +394,8 @@ export async function bounceRateSeries({
     };
   });
 
+  console.timeEnd('sessions.bounceRateSeries');
+
   return { series };
 }
 
@@ -397,6 +414,8 @@ export async function countries({
     count: number;
   }[]
 > {
+  console.time('sessions.countries');
+
   const locations = await getLocationsAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -422,6 +441,8 @@ export async function countries({
     .groupBy(locations.countryCode, locations.country)
     .orderBy(sql`3 desc`);
 
+  console.timeEnd('sessions.countries');
+
   return result;
 }
 
@@ -440,6 +461,8 @@ export async function cities({
     count: number;
   }[]
 > {
+  console.time('sessions.cities');
+
   const locations = await getLocationsAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -465,6 +488,8 @@ export async function cities({
     .groupBy(locations.countryCode, locations.city)
     .orderBy(sql`3 desc`)
     .limit(400);
+
+  console.timeEnd('sessions.cities');
 
   return result;
 }
@@ -508,6 +533,8 @@ export async function devicesByBrowser({
   range: Range;
   interval: Interval;
 }) {
+  console.time('sessions.devicesByBrowser');
+
   const devices = await getDevicesAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -533,6 +560,7 @@ export async function devicesByBrowser({
     .groupBy(devices.browser)
     .orderBy(sql`3 desc`);
 
+  console.timeEnd('sessions.devicesByBrowser');
   return result;
 }
 
@@ -545,6 +573,8 @@ export async function devicesByOs({
   range: Range;
   interval: Interval;
 }) {
+  console.time('sessions.devicesByOs');
+
   const devices = await getDevicesAggregatedView({
     timeZoneId: from.timeZoneId,
     interval,
@@ -569,6 +599,8 @@ export async function devicesByOs({
     )
     .groupBy(devices.os)
     .orderBy(sql`2 desc`);
+
+  console.timeEnd('sessions.devicesByOs');
 
   return result;
 }

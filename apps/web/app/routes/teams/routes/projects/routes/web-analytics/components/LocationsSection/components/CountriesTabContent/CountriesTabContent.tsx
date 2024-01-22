@@ -1,20 +1,26 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { cn, TableWithBarChart, Tooltip } from '#app/components';
+import { useEventData } from '#app/hooks/useEventData';
 import { countryFlag, formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const CountriesTabContent: FunctionComponent = () => {
-  const { locationsByCountry } = useWebAnalyticsLoaderData();
-  const { locationsByCountry: locationsByCountryEvent } =
-    useWebAnalyticsEventData();
+  const { locationsByCountry } = useLoaderData() as {
+    locationsByCountry?: ReturnType<typeof sessions.countries>;
+  };
+
+  const { locationsByCountry: locationsByCountryEvent } = useEventData() as {
+    locationsByCountry?: Awaited<ReturnType<typeof sessions.countries>>;
+  };
+
+  invariant(locationsByCountry, 'locationsByCountry was not found in loader data');
+
   const isNavigating = useIsNavigatingWebAnalytics();
 
   return (
@@ -23,15 +29,10 @@ export const CountriesTabContent: FunctionComponent = () => {
         <TableWithBarChart.Skeleton />
       ) : (
         <Suspense fallback={<TableWithBarChart.Skeleton />}>
-          <Await
-            resolve={locationsByCountry}
-            errorElement={<TableWithBarChart.Error />}
-          >
+          <Await resolve={locationsByCountry} errorElement={<TableWithBarChart.Error />}>
             {(resolvedLocationsByCountry) => {
               return (
-                <TableWithBarChart<
-                  keyof Awaited<typeof resolvedLocationsByCountry>[number]
-                >
+                <TableWithBarChart<keyof Awaited<typeof resolvedLocationsByCountry>[number]>
                   data={locationsByCountryEvent ?? resolvedLocationsByCountry}
                   valueKey="count"
                   headers={{
@@ -49,9 +50,7 @@ export const CountriesTabContent: FunctionComponent = () => {
                           ) : (
                             <Tooltip.Provider>
                               <Tooltip>
-                                <Tooltip.Trigger
-                                  disabled={(value as number) < 1000}
-                                >
+                                <Tooltip.Trigger disabled={(value as number) < 1000}>
                                   {formatNumber(value as number)}
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>

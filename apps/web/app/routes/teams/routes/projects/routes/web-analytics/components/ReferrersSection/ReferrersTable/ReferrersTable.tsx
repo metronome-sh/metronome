@@ -1,19 +1,25 @@
-import { Await } from '@remix-run/react';
+import { pageviews } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { TableWithBarChart, Tooltip } from '#app/components';
 import { cn } from '#app/components/utils';
+import { useEventData } from '#app/hooks/useEventData';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../hooks';
 
 export const ReferrersTable: FunctionComponent = () => {
-  const { referrers } = useWebAnalyticsLoaderData();
-  const { referrers: referrersEvent } = useWebAnalyticsEventData();
+  const { referrers } = useLoaderData() as {
+    referrers?: ReturnType<typeof pageviews.referrers>;
+  };
+
+  const { referrers: referrersEvent } = useEventData() as {
+    referrers?: Awaited<ReturnType<typeof pageviews.referrers>>;
+  };
+
+  invariant(referrers, 'referrers was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -45,10 +51,7 @@ export const ReferrersTable: FunctionComponent = () => {
                   size: 32,
                   render: (value, props) => {
                     return (
-                      <div
-                        {...props}
-                        className={cn(props.className, 'relative ml-1')}
-                      >
+                      <div {...props} className={cn(props.className, 'relative ml-1')}>
                         <div className="absolute inset-0 flex items-center justify-center">
                           {value ? (
                             <img
@@ -73,9 +76,7 @@ export const ReferrersTable: FunctionComponent = () => {
                       ) : (
                         <Tooltip.Provider>
                           <Tooltip>
-                            <Tooltip.Trigger
-                              disabled={(value as number) < 1000}
-                            >
+                            <Tooltip.Trigger disabled={(value as number) < 1000}>
                               {formatNumber(value as number)}
                             </Tooltip.Trigger>
                             <Tooltip.Content>

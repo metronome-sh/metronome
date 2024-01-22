@@ -1,20 +1,26 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { TableWithBarChart, Tooltip } from '#app/components';
 import { cn } from '#app/components/utils';
+import { useEventData } from '#app/hooks/useEventData';
 import { countryFlag, formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const CitiesTabContent: FunctionComponent = () => {
-  const { locationsByCity } = useWebAnalyticsLoaderData();
-  const { locationsByCity: locationsByCityEvent } = useWebAnalyticsEventData();
+  const { locationsByCity } = useLoaderData() as {
+    locationsByCity?: ReturnType<typeof sessions.cities>;
+  };
+
+  const { locationsByCity: locationsByCityEvent } = useEventData() as {
+    locationsByCity?: Awaited<ReturnType<typeof sessions.cities>>;
+  };
+
+  invariant(locationsByCity, 'locationsByCity was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -24,15 +30,10 @@ export const CitiesTabContent: FunctionComponent = () => {
         <TableWithBarChart.Skeleton />
       ) : (
         <Suspense fallback={<TableWithBarChart.Skeleton />}>
-          <Await
-            resolve={locationsByCity}
-            errorElement={<TableWithBarChart.Error />}
-          >
+          <Await resolve={locationsByCity} errorElement={<TableWithBarChart.Error />}>
             {(resolvedLocationsByCity) => {
               return (
-                <TableWithBarChart<
-                  keyof Awaited<typeof resolvedLocationsByCity>[number]
-                >
+                <TableWithBarChart<keyof Awaited<typeof resolvedLocationsByCity>[number]>
                   data={locationsByCityEvent ?? resolvedLocationsByCity}
                   valueKey="count"
                   headers={{
@@ -50,9 +51,7 @@ export const CitiesTabContent: FunctionComponent = () => {
                           ) : (
                             <Tooltip.Provider>
                               <Tooltip>
-                                <Tooltip.Trigger
-                                  disabled={(value as number) < 1000}
-                                >
+                                <Tooltip.Trigger disabled={(value as number) < 1000}>
                                   {formatNumber(value as number)}
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>

@@ -1,18 +1,24 @@
+import { sessions } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { BarStackChart } from '#app/components/BarStackChart';
+import { useEventData } from '#app/hooks/useEventData';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const VisitorsChartTabContent: FunctionComponent = () => {
-  const { overviewSeries } = useWebAnalyticsLoaderData();
-  const { overviewSeries: overviewSeriesEvent } = useWebAnalyticsEventData();
+  const { overviewSeries } = useLoaderData() as {
+    overviewSeries?: ReturnType<typeof sessions.overviewSeries>;
+  };
+
+  const { overviewSeries: overviewSeriesEvent } = useEventData() as {
+    overviewSeries?: Awaited<ReturnType<typeof sessions.overviewSeries>>;
+  };
+
+  invariant(overviewSeries, 'overviewSeries was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 
@@ -22,13 +28,9 @@ export const VisitorsChartTabContent: FunctionComponent = () => {
         <BarStackChart.Skeleton />
       ) : (
         <Suspense fallback={<BarStackChart.Skeleton />}>
-          <Await
-            resolve={overviewSeries}
-            errorElement={<BarStackChart.Error />}
-          >
+          <Await resolve={overviewSeries} errorElement={<BarStackChart.Error />}>
             {(resolvedOverviewSeries) => {
-              const value =
-                overviewSeriesEvent?.series ?? resolvedOverviewSeries.series;
+              const value = overviewSeriesEvent?.series ?? resolvedOverviewSeries.series;
 
               const series = value.map(({ timestamp, uniqueUserIds }) => ({
                 timestamp,

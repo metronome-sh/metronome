@@ -1,18 +1,24 @@
-import { Await } from '@remix-run/react';
+import { sessions } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { Metric } from '#app/routes/teams/routes/projects/components';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingOverview,
-  useOverviewEventData,
-  useOverviewLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingOverview } from '../../../../hooks';
 
 export const VisitorsRightNow: FunctionComponent = () => {
-  const { visitorsRightNow } = useOverviewLoaderData();
-  const { visitorsRightNow: visitorsRightNowEvent } = useOverviewEventData();
+  const { visitorsRightNow } = useLoaderData() as {
+    visitorsRightNow?: ReturnType<typeof sessions.visitorsRightNow>;
+  };
+
+  const { visitorsRightNow: visitorsRightNowEvent } = useEventData() as {
+    visitorsRightNow?: Awaited<ReturnType<typeof sessions.visitorsRightNow>>;
+  };
+
+  invariant(visitorsRightNow, 'requestOverview was not found in loader data');
 
   const title = 'Visitors right now';
 

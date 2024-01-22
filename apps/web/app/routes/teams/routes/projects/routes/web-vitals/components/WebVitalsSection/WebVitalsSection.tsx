@@ -1,12 +1,13 @@
-import { Await } from '@remix-run/react';
+import { webVitals } from '@metronome/db.server';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { formatDuration } from '#app/utils';
 
 import { Section } from '../../../../components/Section';
 import { useIsNavigatingWebVitals } from '../../hooks/useIsNavigatingWebVitals';
-import { useWebVitalsEventData } from '../../hooks/useWebVitalsEventData';
-import { useWebVitalsLoaderData } from '../../hooks/useWebVitalsLoaderData';
 import { WebVitalsCard } from './components/WebVitalsCard';
 
 const VITALS = [
@@ -19,8 +20,15 @@ const VITALS = [
 ];
 
 const WebVitals: FunctionComponent = () => {
-  const { webVitalsOverview } = useWebVitalsLoaderData();
-  const { webVitalsOverview: webVitalsOverviewEvent } = useWebVitalsEventData();
+  const { webVitalsOverview } = useLoaderData() as {
+    webVitalsOverview?: ReturnType<typeof webVitals.overview>;
+  };
+
+  const { webVitalsOverview: webVitalsOverviewEvent } = useEventData() as {
+    webVitalsOverview?: Awaited<ReturnType<typeof webVitals.overview>>;
+  };
+
+  invariant(webVitalsOverview, 'webVitalsOverview was not found in loader data');
 
   const isNavigating = useIsNavigatingWebVitals();
 

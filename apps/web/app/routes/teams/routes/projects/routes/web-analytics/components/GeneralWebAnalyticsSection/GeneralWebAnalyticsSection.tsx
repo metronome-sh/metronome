@@ -29,11 +29,7 @@ export const GeneralWebAnalyticsSection: FunctionComponent = () => {
       <Card className="px-0 lg:px-0">
         <Tabs.Root defaultValue="visitors">
           <Tabs.List className="grid grid-cols-1 md:grid-cols-5 gap-4 px-4 py-4">
-            {range === 'today' ? (
-              <VisitorsRightNowTabTrigger />
-            ) : (
-              <UniqueVisitorsTabTrigger />
-            )}
+            {range === 'today' ? <VisitorsRightNowTabTrigger /> : <UniqueVisitorsTabTrigger />}
             <SessionsTabTrigger />
             <ViewsTabTrigger />
             <MedianSessionTimeTabTrigger />

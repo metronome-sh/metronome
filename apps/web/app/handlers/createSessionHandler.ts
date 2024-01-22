@@ -33,10 +33,7 @@ export function createSessionHandler({ request }: { request: Request }) {
     keys.forEach((key) => session.unset(key));
   }
 
-  async function set<T>(
-    data: Record<string, T>,
-    options?: { replace?: boolean },
-  ) {
+  async function set<T>(data: Record<string, T>, options?: { replace?: boolean }) {
     const session = await instance();
 
     if (options?.replace) await clear();
@@ -56,10 +53,7 @@ export function createSessionHandler({ request }: { request: Request }) {
     }
   }
 
-  async function flash<T>(
-    data: Record<string, T>,
-    options?: { replace?: boolean },
-  ) {
+  async function flash<T>(data: Record<string, T>, options?: { replace?: boolean }) {
     const session = await instance();
 
     if (options?.replace) clear();

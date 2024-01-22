@@ -12,7 +12,13 @@ export async function checkForProjectClientUpdates(currentClientVersion: string)
     60 * 60 * 24,
   );
 
-  const needsToUpdate = semver.lt(currentClientVersion, latestClientVersion);
+  const needsToUpdate = false;
+
+  try {
+    semver.lt(currentClientVersion, latestClientVersion);
+  } catch (error) {
+    console.error(error);
+  }
 
   return {
     latestClientVersion,

@@ -127,6 +127,7 @@ export const projects = pgTable('projects', {
   salt: text('salt'),
   runtime: text('runtime'),
   previousSalt: text('previous_salt'),
+  isUsingVite: boolean('is_using_vite').default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });

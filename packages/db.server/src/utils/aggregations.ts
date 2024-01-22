@@ -1,5 +1,4 @@
 import { cache } from '@metronome/cache.server';
-import { queues } from '@metronome/queues.server';
 import { sql } from 'drizzle-orm';
 
 import { db } from '../db';

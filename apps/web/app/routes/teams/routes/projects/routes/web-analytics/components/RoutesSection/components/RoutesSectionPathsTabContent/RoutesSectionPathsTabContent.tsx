@@ -1,20 +1,26 @@
+import { pageviews } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent, Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
 import { RouteDisplay, TableWithBarChart, Tooltip } from '#app/components';
 import { cn } from '#app/components/utils';
+import { useEventData } from '#app/hooks/useEventData';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const RoutesSectionPathsTabContent: FunctionComponent = () => {
-  const { routesByRoutePath } = useWebAnalyticsLoaderData();
-  const { routesByRoutePath: routesByRoutePathEvent } = useWebAnalyticsEventData();
+  const { routesByRoutePath } = useLoaderData() as {
+    routesByRoutePath?: ReturnType<typeof pageviews.routesByRoutePath>;
+  };
+
+  const { routesByRoutePath: routesByRoutePathEvent } = useEventData() as {
+    routesByRoutePath?: Awaited<ReturnType<typeof pageviews.routesByRoutePath>>;
+  };
+
+  invariant(routesByRoutePath, 'routesByRoutePath was not found in loader data');
 
   const isNavigating = useIsNavigatingWebAnalytics();
 

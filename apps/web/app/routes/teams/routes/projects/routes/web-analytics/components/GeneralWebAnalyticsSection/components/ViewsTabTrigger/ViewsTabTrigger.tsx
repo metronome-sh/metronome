@@ -1,21 +1,26 @@
+import { pageviews } from '@metronome/db.server';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Await } from '@remix-run/react';
+import { Await, useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 import { Suspense } from 'react';
+import { invariant } from 'ts-invariant';
 
+import { useEventData } from '#app/hooks/useEventData';
 import { Metric } from '#app/routes/teams/routes/projects/components/Metric';
 import { formatNumber } from '#app/utils';
 
-import {
-  useIsNavigatingWebAnalytics,
-  useWebAnalyticsEventData,
-  useWebAnalyticsLoaderData,
-} from '../../../../hooks';
+import { useIsNavigatingWebAnalytics } from '../../../../hooks';
 
 export const ViewsTabTrigger: FunctionComponent = () => {
-  const { pageviewsOverview } = useWebAnalyticsLoaderData();
-  const { pageviewsOverview: pageviewsOverviewEvent } =
-    useWebAnalyticsEventData();
+  const { pageviewsOverview } = useLoaderData() as {
+    pageviewsOverview?: ReturnType<typeof pageviews.overview>;
+  };
+
+  const { pageviewsOverview: pageviewsOverviewEvent } = useEventData() as {
+    pageviewsOverview?: Awaited<ReturnType<typeof pageviews.overview>>;
+  };
+
+  invariant(pageviewsOverview, 'pageviewsOverview was not found in loader data');
 
   const title = 'Views';
 
@@ -25,15 +30,10 @@ export const ViewsTabTrigger: FunctionComponent = () => {
 
   return (
     <Suspense fallback={<Metric.Skeleton title={title} compact />}>
-      <Await
-        resolve={pageviewsOverview}
-        errorElement={<Metric.Error title={title} compact />}
-      >
+      <Await resolve={pageviewsOverview} errorElement={<Metric.Error title={title} compact />}>
         {(resolvedPageviewsOverview) => {
           const value =
-            pageviewsOverviewEvent?.pageviewCount ??
-            resolvedPageviewsOverview.pageviewCount ??
-            0;
+            pageviewsOverviewEvent?.pageviewCount ?? resolvedPageviewsOverview.pageviewCount ?? 0;
 
           return (
             <Tabs.Trigger value="views" asChild>

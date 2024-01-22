@@ -1,6 +1,6 @@
 import { projects, users } from '@metronome/db.server';
-import { type LoaderFunctionArgs, redirect, defer } from '@remix-run/node';
-import { Await, Outlet } from '@remix-run/react';
+import { defer, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { Outlet } from '@remix-run/react';
 
 import { Breadcrumb } from '#app/components';
 import { handle } from '#app/handlers';
@@ -9,7 +9,6 @@ import { checkForProjectClientUpdates } from '#app/utils';
 
 import { ProjectSelector } from '../../components';
 import { Navigation, VersionNotification } from './components';
-import { useTeamProjectLoaderData } from './hooks';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '' } = params;

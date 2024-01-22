@@ -37,6 +37,16 @@ export async function insertMetrics({
 
       if (loaders.isLoaderEvent(event)) {
         eventNames.add(event.name);
+
+        if (event.details.adapter === 'vite' && !project.isUsingVite) {
+          await projects.update({
+            id: project.id,
+            attributes: { isUsingVite: true },
+          });
+
+          eventNames.add('project-client-updated');
+        }
+
         return loaders.insert(project, event);
       }
 
