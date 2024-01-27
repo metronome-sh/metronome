@@ -1,15 +1,15 @@
+import { useLoaderData } from '@remix-run/react';
 import { type FunctionComponent } from 'react';
 
 import { Section } from '../../../../components';
-import { useTeamProjectLoaderData } from '../../../../hooks';
 import { Chart, Duration, Requests } from './components';
 import { DataRequests } from './components/DataRequests';
 import { DocumentRequests } from './components/DocumentRequests';
 
 export const RequestsSection: FunctionComponent = () => {
-  const { project } = useTeamProjectLoaderData();
+  const { isUsingVite = false } = useLoaderData() as { isUsingVite?: boolean };
 
-  if (project.isUsingVite) return null;
+  if (isUsingVite) return null;
 
   return (
     <Section>
