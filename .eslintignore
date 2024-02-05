@@ -6,3 +6,4 @@
 drizzle.config.ts
 tailwind.config.ts
 **/*.stories.tsx
+**/migrations/**/*

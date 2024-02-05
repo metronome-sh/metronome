@@ -33,15 +33,15 @@ export const Navigation: FunctionComponent = () => {
         commingSoon: false,
       },
       {
-        name: 'Routes',
-        Icon: Icon.RouteSquareTwo,
-        to: `/${team.slug}/${project.slug}/routes`,
-        commingSoon: true,
-      },
-      {
         name: 'Errors',
         Icon: Icon.TimelineEventExclamation,
         to: `/${team.slug}/${project.slug}/errors`,
+        commingSoon: false,
+      },
+      {
+        name: 'Routes',
+        Icon: Icon.RouteSquareTwo,
+        to: `/${team.slug}/${project.slug}/routes`,
         commingSoon: true,
       },
       {

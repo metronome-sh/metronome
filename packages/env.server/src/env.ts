@@ -19,12 +19,33 @@ export class Environment {
    */
   public test: boolean = false;
 
-  constructor() {
-    let envPath = path.resolve(process.cwd(), '../../.env');
+  private warnings = new Set<string>();
 
-    if (!fs.existsSync(envPath)) {
-      envPath = path.resolve(process.cwd(), '../../../.env');
-    }
+  constructor() {
+    const envPath = (() => {
+      let currentDir = __dirname;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const envFilePath = path.join(currentDir, '.env');
+
+        if (fs.existsSync(envFilePath)) {
+          return envFilePath;
+        }
+
+        const parentDir = path.dirname(currentDir);
+
+        if (parentDir === currentDir) {
+          if (process.env.NODE_ENV === 'development') {
+            invariant(false, '.env file was not found');
+          }
+
+          return undefined;
+        }
+
+        currentDir = parentDir;
+      }
+    })();
 
     config({ path: envPath });
 
@@ -37,8 +58,9 @@ export class Environment {
 
   protected optional<T = string>(envVarName: string, defaultValue?: T): T | string | undefined {
     const envVar = process.env[envVarName];
-    if (!envVar) {
+    if (!envVar && !this.warnings.has(envVarName)) {
       console.warn(`Warning: environment ${envVarName} variable is not defined`);
+      this.warnings.add(envVarName);
     }
     return envVar ?? defaultValue;
   }
@@ -82,6 +104,16 @@ export class Environment {
       : readableUrl;
 
     return { readableUrl, writableUrl };
+  }
+
+  public clickhouse() {
+    const host = this.defined('CLICKHOUSE_HOST');
+    const port = this.defined('CLICKHOUSE_PORT');
+    const username = this.defined('CLICKHOUSE_USER');
+    const password = this.optional('CLICKHOUSE_PASSWORD');
+    const database = this.defined('CLICKHOUSE_DB');
+
+    return { host, port, username, password, database };
   }
 
   public session() {
@@ -204,6 +236,24 @@ export class Environment {
     const licenseKey = this.optional('MAXMIND_LICENSE_KEY');
 
     return { licenseKey };
+  }
+
+  public s3() {
+    const accessKeyId = this.required('S3_ACCESS_KEY_ID');
+    const secretAccessKey = this.required('S3_SECRET_ACCESS_KEY');
+    const endpoint = this.optional('S3_ENDPOINT');
+    const s3ForcePathStyle = this.optional('S3_FORCE_PATH_STYLE', 'false') === 'true';
+    const region = this.optional('S3_REGION', 'us-east-1');
+
+    return {
+      endpoint,
+      region,
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      forcePathStyle: s3ForcePathStyle,
+    };
   }
 }
 

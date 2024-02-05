@@ -23,6 +23,7 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
+    "@epic-web/remember": "^1.0.2",
     "dotenv": "^16.3.1",
     "ts-invariant": "^0.10.3"
   }

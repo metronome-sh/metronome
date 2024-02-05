@@ -5,7 +5,7 @@ EventEmitter.defaultMaxListeners = 1_000;
 
 import { createQueue } from './createQueue';
 
-export const metrics = createQueue<{ apiKey: string; data: unknown }>('metrics', {
+const commonConfig = {
   removeOnComplete: true,
   removeOnFail: true,
   attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
@@ -13,17 +13,14 @@ export const metrics = createQueue<{ apiKey: string; data: unknown }>('metrics',
     type: 'fixed',
     delay: 1000 * 60 * 5, // 5 minutes
   },
-});
+};
 
-export const legacyMetrics = createQueue<{ apiKey: string; data: unknown }>('legacy-metrics', {
-  removeOnComplete: true,
-  removeOnFail: true,
-  attempts: env.when({ production: 288 * 2, development: 0 }), // 2 days worth of attempts
-  backoff: {
-    type: 'fixed',
-    delay: 1000 * 60 * 5, // 5 minutes
-  },
-});
+export const metrics = createQueue<{ apiKey: string; data: unknown }>('metrics', commonConfig);
+
+export const legacyMetrics = createQueue<{ apiKey: string; data: unknown }>(
+  'legacy-metrics',
+  commonConfig,
+);
 
 export const events = createQueue<
   {
@@ -52,3 +49,13 @@ export const aggregations = createQueue<{
   priority: 1,
   attempts: 1,
 });
+
+export const otelSpans = createQueue<{
+  apiKey: string;
+  spans: unknown;
+}>('otel-spans', commonConfig);
+
+export const otelMetrics = createQueue<{
+  apiKey: string;
+  metrics: unknown;
+}>('otel-metrics', commonConfig);
