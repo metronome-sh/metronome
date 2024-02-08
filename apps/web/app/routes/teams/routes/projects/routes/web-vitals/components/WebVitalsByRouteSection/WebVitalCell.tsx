@@ -1,4 +1,4 @@
-import { WebVitalName } from '@metronome/db.server';
+import { WebVitalName } from '@metronome/db';
 import { FunctionComponent } from 'react';
 
 import { cn, Icon } from '#app/components';

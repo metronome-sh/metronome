@@ -1,7 +1,7 @@
 import { useSubmit } from '@remix-run/react';
 import { type FunctionComponent, PropsWithChildren } from 'react';
 
-import { useRootLoaderData } from '#app/hooks';
+import { useRootLoaderData } from '#app/hooks/useRootLoaderData';
 
 import { Avatar, Button, DropdownMenu } from '..';
 

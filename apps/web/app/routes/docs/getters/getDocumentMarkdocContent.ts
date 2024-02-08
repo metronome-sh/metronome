@@ -1,16 +1,15 @@
-import {
+import markdoc, {
   type Config as MarkdocConfig,
-  parse,
   type RenderableTreeNode,
   type Tag,
-  Tokenizer,
-  transform,
 } from '@markdoc/markdoc';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { DOCUMENTS_PATH } from '../constants';
 import { DocumentHeadings } from '../types';
+
+const { parse, Tokenizer, transform } = markdoc;
 
 async function checkFileExists(filePath: string) {
   try {

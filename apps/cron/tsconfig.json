@@ -6,8 +6,8 @@
     "lib": ["esnext"],
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "target": "es2017",
+    "target": "ESNext",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true
   },

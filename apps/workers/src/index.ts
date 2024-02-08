@@ -1,5 +1,5 @@
-import { env } from '@metronome/env.server';
-import { queues } from '@metronome/queues.server';
+import { env } from '@metronome/env';
+import { queues } from '@metronome/queues';
 
 import { aggregations } from './aggregations';
 import { events } from './events';

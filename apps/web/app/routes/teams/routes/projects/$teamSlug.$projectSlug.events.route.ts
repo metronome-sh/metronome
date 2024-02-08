@@ -1,8 +1,8 @@
-import { projects } from '@metronome/db.server';
+import { projects } from '@metronome/db';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { invariant } from 'ts-invariant';
 
-import { handle } from '#app/handlers';
+import { handle } from '#app/handlers/handle';
 import { notFound, stream } from '#app/responses';
 import { checkForProjectClientUpdates } from '#app/utils';
 

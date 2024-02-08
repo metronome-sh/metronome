@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { env } from '@metronome/env.server';
+import { env } from '@metronome/env';
 import Bree from 'bree';
 
 const bree = new Bree({

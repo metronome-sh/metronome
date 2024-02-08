@@ -1,7 +1,7 @@
 import { SerializeFrom } from '@remix-run/node';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useEventContext } from '#app/events';
+import { useEventContext } from '#app/events/useEventContext';
 
 export function useEventRouteData<TData>(
   routeId: string,

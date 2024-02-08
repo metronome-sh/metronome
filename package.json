@@ -7,7 +7,8 @@
   "main": "index.js",
   "scripts": {
     "clean": "find . '(' -name \"node_modules\" -o -name \"build\" -o -name \"dist\" -o -name \".cache\" -o -name \".turbo\" ')' -type d -prune -exec rm -rf '{}' +",
-    "dev": "pnpm -r --parallel dev",
+    "dav:all": "pnpm -r --parallel dev",
+    "dev": "pnpm -r --parallel --filter \"!@metronome/producer\" dev",
     "dev:web": "pnpm -r --parallel --filter \"@metronome/web...\" dev",
     "build": "pnpm -r build",
     "docker:up": "docker-compose --env-file .env -f docker-compose.dev.yml up -d",
@@ -38,11 +39,17 @@
     "tailwindcss": "^3.3.5"
   },
   "dependencies": {
+    "@metronome/db": "workspace:*",
     "boxen": "^7.1.1",
     "chalk": "^5.3.0",
     "cross-env": "^7.0.3",
     "nanoid": "^3.3.6",
     "ora": "^7.0.1",
     "yargs": "^17.7.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "bullmq@5.1.9": "patches/bullmq@5.1.9.patch"
+    }
   }
 }

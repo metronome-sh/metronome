@@ -1,10 +1,17 @@
-import { env } from '@metronome/env.server';
+import { env } from '@metronome/env';
 import { globSync } from 'glob';
-import { resolve } from 'path';
+import { dirname, resolve } from 'path';
+import { serverOnly$ } from 'vite-env-only';
+import { fileURLToPath } from 'url';
 
 let observableRoutes: string[] = [];
 
-export function getObservableRoutes(paths: string[] = [resolve(__dirname, '../app/routes')]) {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export const getObservableRoutes = serverOnly$(function getObservableRoutes(
+  paths: string[] = [resolve(__dirname, '../routes')],
+) {
   if (observableRoutes.length === 0 || env.dev) {
     // prettier-ignore
     const routesWithEvents = globSync(paths.map((p) => `${p}/**/*.{events.route.tsx,events.route.ts}`));
@@ -22,4 +29,4 @@ export function getObservableRoutes(paths: string[] = [resolve(__dirname, '../ap
   }
 
   return observableRoutes;
-}
+})!;

@@ -1,17 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { projects, teams } from '@metronome/db.server';
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
+import { projects, teams } from '@metronome/db';
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useParams, useSubmit } from '@remix-run/react';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button, Card, Form, Input } from '#app/components';
-import { handle } from '#app/handlers';
+import { handle } from '#app/handlers/handle';
 import { notFound } from '#app/responses';
 
 export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;
@@ -81,8 +77,7 @@ export default function Component() {
             <Card.Header>
               <Card.Title>Create project</Card.Title>
               <Card.Description>
-                Create a new project to start tracking your app&apos;s
-                performance
+                Create a new project to start tracking your app&apos;s performance
               </Card.Description>
             </Card.Header>
             <Card.Content className="space-y-6">

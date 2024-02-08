@@ -1,8 +1,9 @@
-import { cache } from '@metronome/cache.server';
+import { cache } from '@metronome/cache';
 import { $ } from 'execa';
 import * as semver from 'semver';
+import { serverOnly$ } from 'vite-env-only';
 
-export async function checkForProjectClientUpdates(currentClientVersion: string) {
+export const checkForProjectClientUpdates = serverOnly$(async (currentClientVersion: string) => {
   const latestClientVersion = await cache.remember(
     'latestMetronomeClientVersion',
     async () => {
@@ -24,4 +25,4 @@ export async function checkForProjectClientUpdates(currentClientVersion: string)
     latestClientVersion,
     needsToUpdate: currentClientVersion === '0.0.0' ? false : needsToUpdate,
   };
-}
+})!;

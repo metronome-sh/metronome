@@ -1,9 +1,9 @@
-import { projects, users } from '@metronome/db.server';
+import { projects, users } from '@metronome/db';
 import { defer, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 
 import { Breadcrumb } from '#app/components';
-import { handle } from '#app/handlers';
+import { handle } from '#app/handlers/handle';
 import { notFound } from '#app/responses';
 import { checkForProjectClientUpdates } from '#app/utils';
 
