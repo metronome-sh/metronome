@@ -1,14 +1,21 @@
 import { z } from 'zod';
 
 import { Icon, Ping } from '#app/components';
-import { type FilterObject } from '#app/filters/filters.types';
+import { type FilterDefinitionFunction } from '#app/filters/filters.types';
 
 import { type DateRangeOptionIds, type DateRangeParsed } from './date-range.types';
 import { areDatesInRange, isDifferenceGreaterThanDays } from './helpers';
 import { Temporal } from '@js-temporal/polyfill';
 import { getTimeZoneFromRequest } from '#app/utils/timeZone';
 
-export const dateRange = () =>
+export const dateRangeWithAll = () => dateRange({ withAll: true });
+
+export const dateRange = (options?: {
+  /**
+   * Include the "All" option in the date range
+   */
+  withAll?: boolean;
+}) =>
   ({
     filterId: 'date-range',
     label: 'Date range',
@@ -21,6 +28,13 @@ export const dateRange = () =>
           const [value] = activeOption.value;
 
           const now = Temporal.Now.instant().toZonedDateTimeISO(timeZone);
+
+          if (value === 'all') {
+            return {
+              from: now.subtract({ years: 10 }),
+              to: now.withPlainTime('23:59:59'),
+            };
+          }
 
           if (value === 'today') {
             return {
@@ -124,8 +138,19 @@ export const dateRange = () =>
         } as unknown as DateRangeParsed;
       },
     },
-    initial: 'today',
+    initial: options?.withAll ? 'all' : 'today',
     options: [
+      {
+        optionId: 'all',
+        hidden: !options?.withAll,
+        label: (active) => (
+          <span className="flex gap-2 items-center">
+            All
+            {active ? <Ping className="h-2 w-2" /> : null}
+          </span>
+        ),
+        value: () => ['all'],
+      },
       {
         optionId: 'today',
         label: (active) => (
@@ -236,4 +261,4 @@ export const dateRange = () =>
     //     },
     //   },
     // },
-  }) satisfies FilterObject<DateRangeOptionIds, DateRangeParsed>;
+  }) satisfies FilterDefinitionFunction<DateRangeOptionIds, DateRangeParsed>;

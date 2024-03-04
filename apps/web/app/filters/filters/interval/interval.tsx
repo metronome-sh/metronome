@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { Icon } from '#app/components';
-import { type FilterObject } from '#app/filters/filters.types';
+import { type FilterDefinitionFunction } from '#app/filters/filters.types';
 
 import {
   areDatesInRange,
@@ -106,4 +106,4 @@ export const interval = () =>
         },
       },
     ],
-  }) satisfies FilterObject<IntervalOptionIds, IntervalParsed>;
+  }) satisfies FilterDefinitionFunction<IntervalOptionIds, IntervalParsed>;

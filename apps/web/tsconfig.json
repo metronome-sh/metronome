@@ -17,9 +17,11 @@
     "paths": {
       // "~/*": ["./app/*"],
       "#*": ["./*"],
-      "#/storybook/*": ["./.storybook/*"]
+      "#storybook/*": ["./.storybook/*"]
     },
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
+
+    // "allowSyntheticDefaultImports": true,
 
     // Vite takes care of building everything, not tsc.
     "noEmit": true

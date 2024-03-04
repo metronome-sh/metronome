@@ -1,6 +1,6 @@
 'use strict';
 
-const { clickhouse } = require('../clickhouse');
+const { clickhouse } = require('../clickhouse.cjs');
 
 module.exports.up = async function () {
   await clickhouse.command({
@@ -8,7 +8,11 @@ module.exports.up = async function () {
       CREATE MATERIALIZED VIEW IF NOT EXISTS events_to_errors_mv TO errors AS
       SELECT
         project_id,
-        sipHash64(arrayElement(arrayFilter(x -> (x.1 = 'exception.stacktrace'), arrayZip(e.event_attributes.key, e.event_attributes.value)), 1).2) as hash,
+        lower(hex(MD5(concat(
+          arrayElement(arrayFilter(x -> (x.1 = 'exception.type'), arrayZip(e.event_attributes.key, e.event_attributes.value)), 1).2,
+          arrayElement(arrayFilter(x -> (x.1 = 'exception.message'), arrayZip(e.event_attributes.key, e.event_attributes.value)), 1).2,
+          arrayElement(arrayFilter(x -> (x.1 = 'exception.stacktrace'), arrayZip(e.event_attributes.key, e.event_attributes.value)), 1).2
+        )))) as hash,
         count() AS occurrences,
         any(s.kind) AS kind,
         any(arrayElement(arrayFilter(x -> (x.1 = 'exception.type'), arrayZip(e.event_attributes.key, e.event_attributes.value)), 1).2) AS name,

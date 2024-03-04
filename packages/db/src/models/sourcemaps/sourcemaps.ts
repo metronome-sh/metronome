@@ -1,15 +1,14 @@
 import AdmZip from 'adm-zip';
-import { invariant } from 'ts-invariant';
 import { clickhouse } from '../../modules/clickhouse';
 import { s3Client, getBucket, PutObjectCommand, deleteDirectory } from '../../modules/s3Client';
 import { Project } from '../../types';
 
 export async function create({
-  content,
+  fileBuffer,
   version,
   project,
 }: {
-  content: string;
+  fileBuffer: Buffer;
   version: string;
   project: Project;
 }) {
@@ -18,8 +17,7 @@ export async function create({
 
   await deleteDirectory(directory);
 
-  const zipBuffer = Buffer.from(content, 'binary');
-  const zip = new AdmZip(zipBuffer);
+  const zip = new AdmZip(fileBuffer);
 
   await Promise.all(
     zip.getEntries().map(async (entry) => {

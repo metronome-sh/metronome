@@ -3,6 +3,7 @@ import { clickhouse } from '../../modules/clickhouse';
 import { Span } from '../spans/spans.types';
 import { ClickHouseEvent } from './events.types';
 import { z } from 'zod';
+import { createErrorHouseKeepingFromEvents } from '../errors/errors';
 
 export const EventSchema = z.object({
   name: z.string(),
@@ -19,7 +20,7 @@ export async function createFromSpans({
 }): Promise<void> {
   const spans = Array.isArray(spanOrSpans) ? spanOrSpans : [spanOrSpans];
 
-  const values: ClickHouseEvent[] = spans.flatMap((s) => {
+  const events: ClickHouseEvent[] = spans.flatMap((s) => {
     return s.events.map((e) => {
       const attributesKeys = Object.keys(e.attributes);
       const attributesValues = Object.values(e.attributes);
@@ -38,7 +39,9 @@ export async function createFromSpans({
 
   await clickhouse.insert({
     table: 'events',
-    values,
+    values: events,
     format: 'JSONEachRow',
   });
+
+  await createErrorHouseKeepingFromEvents({ events, project });
 }

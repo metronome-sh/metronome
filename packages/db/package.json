@@ -20,9 +20,10 @@
     "geoip:download": "NODE_ENV=production tsx ./cli/geoip.mts",
     "test": "vitest run",
     "configure": "pnpm migrate:up && pnpm geoip:download",
-    "clickhouse:create": "migrate -c ./clickhouse --template-file ./template.js create",
-    "clickhouse:up": "migrate -c ./clickhouse --store=./store.js up",
-    "clickhouse:down": "migrate -c ./clickhouse --store=./store.js down",
+    "drizzle:up": "tsx ./drizzle/migrate.mts",
+    "clickhouse:create": "migrate -c ./clickhouse --template-file ./template.cjs create",
+    "clickhouse:up": "migrate -c ./clickhouse --store=./store.cjs up",
+    "clickhouse:down": "migrate -c ./clickhouse --store=./store.cjs down",
     "user:reset-password": "node ./scripts/reset-password.mjs"
   },
   "keywords": [],

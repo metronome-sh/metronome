@@ -22,7 +22,7 @@ export const Heading: FunctionComponent<PageHeaderProps> = ({
         <h1 className="text-2xl font-medium">{title}</h1>
         <p className="text-muted-foreground">{description}</p>
       </div>
-      <div className="md:px-4 pb-4">
+      <div className="md:px-4 pb-2 md:pb-0">
         <Separator className={cn('opacity-50', separatorClassName)} />
       </div>
     </div>

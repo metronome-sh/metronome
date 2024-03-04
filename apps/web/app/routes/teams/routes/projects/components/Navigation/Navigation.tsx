@@ -54,12 +54,12 @@ export const Navigation: FunctionComponent = () => {
   }, [team, project]);
 
   return (
-    <div className="relative w-full md:pt-5 md:pb-1 px-4 border-b bg-black">
+    <div className="relative w-full md:pt-5 px-0 md:px-4 border-b bg-black">
       <ScrollArea className="h-10">
         <ScrollArea.ScrollBar orientation="horizontal">
           <ScrollArea.Thumb className="hidden" />
         </ScrollArea.ScrollBar>
-        <div className="flex gap-2">
+        <div className="flex gap-2 px-4 md:px-0">
           <Tooltip.Provider>
             {navigation.map((item) => {
               const markup = (

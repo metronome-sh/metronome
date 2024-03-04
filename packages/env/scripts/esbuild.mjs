@@ -13,6 +13,13 @@ export const esbuildConfig = {
   format: 'esm',
   outfile: 'dist/index.server.js',
   logLevel: 'info',
+  treeShaking: true,
 };
 
-await build(esbuildConfig);
+export const cjsConfig = {
+  ...esbuildConfig,
+  format: 'cjs',
+  outfile: 'dist/index.server.cjs',
+};
+
+await Promise.all([build(esbuildConfig), build(cjsConfig)]);

@@ -56,6 +56,14 @@ import { TriangleInvertedFilled } from './TriangleInvertedFilled';
 import { UserScan } from './UserScan';
 import { World } from './World';
 import { X } from './X';
+import { Monitor } from './Monitor';
+import { ClockHourTwo } from './ClockHourTwo';
+import { Dots } from './Dots';
+import { Folder } from './Folder';
+import { FolderCheck } from './FolderCheck';
+import { FolderPause } from './FolderPause';
+import { Confetti } from './Confetti';
+import { FolderUp } from './FolderUp';
 
 export const Icon = {
   X,
@@ -65,19 +73,27 @@ export const Icon = {
   Key,
   Home,
   Menu,
+  Dots,
   Alarm,
   World,
   Check,
+  Folder,
+  FolderCheck,
+  FolderPause,
+  FolderUp,
+  Confetti,
   Quote,
   Filter,
   Rocket,
   Search,
   Github,
+  Monitor,
   Refresh,
   Calendar,
   UserScan,
   Settings,
   FileText,
+  ClockHourTwo,
   EyeClosed,
   Heartbeat,
   LoaderTwo,

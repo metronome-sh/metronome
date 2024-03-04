@@ -5,6 +5,7 @@
   "license": "FSL-1.0-MIT",
   "exports": {
     "import": "./dist/index.server.js",
+    "require": "./dist/index.server.cjs",
     "types": "./dist/index.d.ts"
   },
   "type": "module",

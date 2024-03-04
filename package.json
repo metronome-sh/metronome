@@ -17,8 +17,11 @@
     "docker:restart": "docker-compose --env-file .env -f docker-compose.dev.yml restart",
     "reset": "pnpm clean && pnpm i && pnpm -r build",
     "lint": "eslint --ext .ts,.tsx . --config .eslintrc.json --fix",
-    "db": "pnpm --dir packages/db.server",
-    "docker:push": "docker build  -t metronomedotsh/metronome:latest -f Dockerfile . && docker push metronomedotsh/metronome:latest"
+    "db": "pnpm --filter @metronome/db",
+    "web": "pnpm --dir apps/web",
+    "storybook": "pnpm --dir apps/web storybook",
+    "docker:push": "docker build  -t metronomedotsh/metronome:latest -f Dockerfile . && docker push metronomedotsh/metronome:latest",
+    "user:reset-password": "pnpm --filter @metronome/db user:reset-password"
   },
   "keywords": [],
   "devDependencies": {

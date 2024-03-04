@@ -6,12 +6,14 @@ import { fileURLToPath } from 'url';
 
 let observableRoutes: string[] = [];
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export const getObservableRoutes = serverOnly$(function getObservableRoutes(paths?: string[]) {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-export const getObservableRoutes = serverOnly$(function getObservableRoutes(
-  paths: string[] = [resolve(__dirname, '../routes')],
-) {
+  if (!paths) {
+    paths = [resolve(__dirname, '../app')];
+  }
+
   if (observableRoutes.length === 0 || env.dev) {
     // prettier-ignore
     const routesWithEvents = globSync(paths.map((p) => `${p}/**/*.{events.route.tsx,events.route.ts}`));

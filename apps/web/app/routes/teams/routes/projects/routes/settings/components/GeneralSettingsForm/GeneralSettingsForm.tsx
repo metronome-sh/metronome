@@ -7,9 +7,9 @@ import { Button, Form, Input } from '#app/components';
 
 import { useTeamProjectLoaderData } from '../../../../hooks';
 import {
-  CreateProjectSchema,
-  CreateProjectSchemaType,
-} from '../../$teamSlug.$projectSlug.settings.route';
+  createProjectSchema,
+  type CreateProjectSchemaType,
+} from '../../../../../../schemas/_createProjectSchema';
 
 export const GeneralSettingsForm: FunctionComponent = () => {
   const { project } = useTeamProjectLoaderData();
@@ -17,7 +17,7 @@ export const GeneralSettingsForm: FunctionComponent = () => {
   const { teamSlug, projectSlug } = useParams();
 
   const form = useForm<CreateProjectSchemaType>({
-    resolver: zodResolver(CreateProjectSchema),
+    resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: project.name,
       url: project.url ?? '',

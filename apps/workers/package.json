@@ -14,9 +14,11 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@metronome/cache": "workspace:*",
     "@metronome/db": "workspace:*",
     "@metronome/env": "workspace:*",
     "@metronome/queues": "workspace:*",
+    "ts-invariant": "^0.10.3",
     "tsx": "^3.14.0"
   }
 }

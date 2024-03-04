@@ -2,7 +2,6 @@ import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { invariant } from 'ts-invariant';
-import { fileURLToPath } from 'url';
 
 export class Environment {
   /**
@@ -23,11 +22,8 @@ export class Environment {
   private warnings = new Set<string>();
 
   constructor() {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-
     const envPath = (() => {
-      let currentDir = __dirname;
+      let currentDir = process.cwd();
 
       // eslint-disable-next-line no-constant-condition
       while (true) {

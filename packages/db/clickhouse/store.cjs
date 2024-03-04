@@ -1,4 +1,4 @@
-const { clickhouse } = require('./clickhouse');
+const { clickhouse } = require('./clickhouse.cjs');
 
 class ClickHouseStore {
   async load(fn) {

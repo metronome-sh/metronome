@@ -17,3 +17,4 @@ export { insertLegacyMetrics } from './legacy/insertLegacyMetrics';
 export { refreshAggregation } from './utils/aggregations';
 
 export type * from './types';
+export type { ProjectError, ErrorHousekeepingStatus } from './models/errors/errors.types';

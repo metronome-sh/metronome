@@ -31,7 +31,7 @@ export const Breadcrumb: FunctionComponent<BreadcrumbProps> = ({
     <li className="flex gap-2 items-center text-sm">
       <Icon.ChevronRight
         strokeWidth={2}
-        className={cn('stroke-muted-foreground', chevronClassName)}
+        className={cn('stroke-muted-foreground breadcrumb-chevron', chevronClassName)}
       />
       {link ? <Link to={link}>{children}</Link> : <>{children}</>}
     </li>,

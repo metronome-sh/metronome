@@ -1,13 +1,13 @@
 'use strict';
 
-const { clickhouse } = require('../clickhouse');
+const { clickhouse } = require('../clickhouse.cjs');
 
 module.exports.up = async function () {
   await clickhouse.command({
     query: `
       CREATE TABLE errors (
         project_id String,
-        hash UInt64,
+        hash FixedString(32),
         kind UInt8,
         occurrences SimpleAggregateFunction(sum, UInt64),
         name String,

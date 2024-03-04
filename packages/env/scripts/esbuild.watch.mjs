@@ -1,9 +1,9 @@
 import { context } from 'esbuild';
 
-import { esbuildConfig } from './esbuild.mjs';
+import { esbuildConfig, cjsConfig } from './esbuild.mjs';
 
-const cjsContext = await context(esbuildConfig);
+const [esmContext, cjsContext] = await Promise.all([context(esbuildConfig), context(cjsConfig)]);
 
-await cjsContext.rebuild();
+await Promise.all([esmContext.rebuild(), cjsContext.rebuild()]);
 
-await cjsContext.watch();
+await Promise.all([esmContext.watch(), cjsContext.watch()]);

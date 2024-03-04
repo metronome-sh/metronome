@@ -11,7 +11,7 @@ import { handle } from '#app/handlers/handle';
 
 export const AuthenticationSchema = z.object({
   email: z.string().email(),
-  password: z.string().nonempty(),
+  password: z.string().min(1),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
