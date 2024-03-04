@@ -4,6 +4,7 @@ import { FunctionComponent, Suspense, useMemo } from 'react';
 import { useErrorsLoaderData } from '../hooks/useErrorsLoaderData';
 import { ErrorListItem } from './ErrorListItem';
 import { useIsNavigatingErrors } from '../hooks/useIsNavigatingErrors';
+import { useErrorsEventData } from '../hooks/useErrorsEventData';
 
 const Fallback = () => (
   <div className="flex-grow flex items-center justify-center">
@@ -13,6 +14,7 @@ const Fallback = () => (
 
 export const ErrorsList: FunctionComponent = () => {
   const { projectErrors } = useErrorsLoaderData();
+  const { projectErrors: projectErrorsEvent } = useErrorsEventData(projectErrors);
   const isNavigating = useIsNavigatingErrors();
   const fetchers = useFetchers();
 
@@ -36,9 +38,9 @@ export const ErrorsList: FunctionComponent = () => {
     <Suspense fallback={<Fallback />}>
       <Await resolve={projectErrors}>
         {(projectErrorsResolved) => {
-          const toRender = projectErrorsResolved.filter(
-            (error) => !hiddenHashes.includes(error.hash),
-          );
+          const toRender = (projectErrorsEvent ?? projectErrorsResolved).filter((error) => {
+            return !hiddenHashes.includes(error.hash);
+          });
 
           if (toRender.length === 0)
             return (

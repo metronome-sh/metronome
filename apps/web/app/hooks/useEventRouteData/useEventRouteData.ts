@@ -5,6 +5,7 @@ import { useEventContext } from '#app/events/useEventContext';
 
 export function useEventRouteData<TData>(
   routeId: string,
+  deps?: unknown,
 ): Partial<Awaited<SerializeFrom<UnwrapDeferred<TData>>>> {
   const { eventTarget } = useEventContext();
 
@@ -37,7 +38,6 @@ export function useEventRouteData<TData>(
 
   useEffect(() => {
     eventTarget?.addEventListener(routeId, eventCallback as EventListenerOrEventListenerObject);
-
     return () => {
       eventTarget?.removeEventListener(
         routeId,
@@ -45,7 +45,7 @@ export function useEventRouteData<TData>(
       );
       setData({});
     };
-  }, [eventCallback, eventTarget, routeId]);
+  }, [eventCallback, eventTarget, routeId, deps]);
 
   return data as Partial<Awaited<SerializeFrom<UnwrapDeferred<TData>>>>;
 }

@@ -37,7 +37,8 @@ export const EventProvider: FunctionComponent<PropsWithChildren> = ({ children }
     if (!isWindowVisible) return;
 
     const eventSources = routesToObserve.map((route) => {
-      const url = `${route.pathname}/events${location.search}`;
+      const pathname = route.pathname.replace(/\/$/, '');
+      const url = `${pathname}/events${location.search}`;
       const eventSource = new EventSource(url);
 
       eventSource.addEventListener('message', (event) => {

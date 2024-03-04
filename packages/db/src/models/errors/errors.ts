@@ -1,11 +1,13 @@
-import { Project, Range } from '../../types';
-import { clickhouse } from '../../modules/clickhouse';
-import { ClickHouseProjectError, ErrorHousekeepingStatus, ProjectError } from './errors.types';
-import { ClickHouseEvent } from '../events/events.types';
-import { errorsHousekeeping } from '../../schema';
-import { db } from '../../db';
+import { queues } from '@metronome/queues';
 import crypto from 'crypto';
 import { and, eq, inArray } from 'drizzle-orm';
+import { db } from '../../db';
+import { Project, Range } from '../../types';
+import { errorsHousekeeping } from '../../schema';
+import { clickhouse } from '../../modules/clickhouse';
+import { ClickHouseEvent } from '../events/events.types';
+import { observable, operators, throttleTime } from '../../utils/events';
+import { ClickHouseProjectError, ErrorHousekeepingStatus, ProjectError } from './errors.types';
 
 export async function createErrorHouseKeepingFromEvents({
   events,
@@ -31,6 +33,8 @@ export async function createErrorHouseKeepingFromEvents({
     status: 'unresolved' as const,
   }));
 
+  if (values.length === 0) return;
+
   await db({ write: true })
     .insert(errorsHousekeeping)
     .values(values)
@@ -38,6 +42,12 @@ export async function createErrorHouseKeepingFromEvents({
       target: [errorsHousekeeping.projectId, errorsHousekeeping.hash],
       set: { status: 'unresolved', updatedAt: new Date() },
     });
+
+  await queues.events.add({
+    eventsNames: ['errors-changed'],
+    projectId: project.id,
+    ts: Date.now(),
+  });
 }
 
 export async function all({
@@ -95,7 +105,7 @@ export async function all({
   return errors;
 }
 
-function updateStatus({
+async function updateStatus({
   project,
   hashes,
   status,
@@ -104,12 +114,18 @@ function updateStatus({
   hashes: string[];
   status: ErrorHousekeepingStatus;
 }) {
-  return db({ write: true })
+  await db({ write: true })
     .update(errorsHousekeeping)
     .set({ status })
     .where(
       and(eq(errorsHousekeeping.projectId, project.id), inArray(errorsHousekeeping.hash, hashes)),
     );
+
+  await queues.events.add({
+    eventsNames: ['errors-changed'],
+    projectId: project.id,
+    ts: Date.now(),
+  });
 }
 
 export function archive({ project, hashes }: { project: Project; hashes: string[] }) {
@@ -122,4 +138,23 @@ export function resolve({ project, hashes }: { project: Project; hashes: string[
 
 export function unresolve({ project, hashes }: { project: Project; hashes: string[] }) {
   return updateStatus({ project, hashes, status: 'unresolved' });
+}
+
+export async function watch(
+  project: Project,
+  callback: (event: { ts: number }) => Promise<void>,
+): Promise<() => void> {
+  await callback({ ts: Date.now() });
+
+  const subscription = observable
+    .pipe(
+      operators.project(project),
+      operators.events(['errors-changed']),
+      throttleTime(1000, undefined, { leading: true, trailing: true }),
+    )
+    .subscribe(async ([e]) => {
+      await callback({ ts: e.returnvalue.ts });
+    });
+
+  return () => subscription.unsubscribe();
 }

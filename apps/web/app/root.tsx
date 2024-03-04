@@ -1,6 +1,6 @@
 import { json, type LinksFunction, type LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
-
+import path from 'path';
 import favicon from '#app/images/favicon.svg';
 import faviconAlt from '#app/images/favicon-alternate.png';
 import faviconAltSvg from '#app/images/favicon-alternate.svg';
@@ -47,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const user = await auth.user({ required: false });
 
-  const observableRoutes = getObservableRoutes?.() ?? [];
+  const observableRoutes = getObservableRoutes?.([path.resolve(process.cwd(), 'app')]) ?? [];
 
   const timeZone = getTimeZoneFromRequest(request);
 
