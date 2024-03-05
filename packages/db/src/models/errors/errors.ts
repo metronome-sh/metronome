@@ -1,8 +1,8 @@
 import { queues } from '@metronome/queues';
 import crypto from 'crypto';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, gte, inArray, lt, sql } from 'drizzle-orm';
 import { db } from '../../db';
-import { Project, Range } from '../../types';
+import { Project, Range, User } from '../../types';
 import { errorsHousekeeping } from '../../schema';
 import { clickhouse } from '../../modules/clickhouse';
 import { ClickHouseEvent } from '../events/events.types';
@@ -63,7 +63,7 @@ export async function all({
     query: `
       select
         sum(occurrences) as occurrences,
-        any(hash) as hash,
+        hash,
         any(kind) as kind,
         any(name) as name,
         any(message) as message,
@@ -81,10 +81,14 @@ export async function all({
         and errors_housekeeping.status = {status: String}
       where
         project_id = {projectId: String}
+      group by
+        hash
       having
         occurrences > 0
         and lastSeen >= {from: UInt64}
         and lastSeen <= {to: UInt64}
+      order by
+        lastSeen desc
     `,
     format: 'JSONEachRow',
     query_params: {
@@ -126,6 +130,23 @@ async function updateStatus({
     projectId: project.id,
     ts: Date.now(),
   });
+}
+
+export async function unseenErrorsCount({ project, user }: { project: Project; user: User }) {
+  const result = await db()
+    .select({
+      count: sql<number>`count(*)::integer`,
+    })
+    .from(errorsHousekeeping)
+    .where(
+      and(
+        eq(errorsHousekeeping.projectId, project.id),
+        eq(errorsHousekeeping.status, 'unresolved'),
+        gte(errorsHousekeeping.updatedAt, new Date(user.settings?.lastErrorVisitedAt ?? 0)),
+      ),
+    );
+
+  return result[0].count;
 }
 
 export function archive({ project, hashes }: { project: Project; hashes: string[] }) {

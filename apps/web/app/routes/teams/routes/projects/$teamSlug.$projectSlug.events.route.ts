@@ -1,4 +1,4 @@
-import { projects } from '@metronome/db';
+import { errors, projects } from '@metronome/db';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { invariant } from 'ts-invariant';
 
@@ -36,8 +36,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         send({ semver }, ts);
       });
 
+      const cleanupError = await errors.watch(project, async ({ ts }) => {
+        const pathname = new URL(request.url).searchParams.get('__pathname__') ?? '';
+
+        if (pathname.endsWith('errors')) return;
+
+        const unseenErrorsCount = await errors.unseenErrorsCount({ project, user });
+        send({ unseenErrorsCount }, ts);
+      });
+
       return async function cleanup() {
-        await cleanupProjectSemVer();
+        await Promise.all([cleanupProjectSemVer(), cleanupError()]);
       };
     },
   );

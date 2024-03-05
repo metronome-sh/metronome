@@ -4,7 +4,7 @@ import { errorsHousekeeping } from '../../schema';
 export type ProjectError = {
   occurrences: number;
   hash: string;
-  kind: string;
+  kind: number;
   name: string;
   message: string;
   versions: string[];

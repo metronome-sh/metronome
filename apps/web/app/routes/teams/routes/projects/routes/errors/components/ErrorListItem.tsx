@@ -7,6 +7,7 @@ import { ProjectError } from '@metronome/db';
 import { Temporal } from '@js-temporal/polyfill';
 import { formatTemporalDuration } from '#app/utils/formatTemporalDuration';
 import { ErrorListRoutesPill } from './ErrorListRoutesPill';
+import { cn } from '#app/components/utils';
 
 type ErrorListItemProps = {
   error: ProjectError;
@@ -55,18 +56,30 @@ export const ErrorListItem: FunctionComponent<ErrorListItemProps> = ({ error }) 
   );
 
   return (
-    <li className="relative group bg-zinc-900/50 hover:bg-zinc-900 pt-2 pb-3 px-4 border-b border-x border-zinc-800 overflow-hidden first:border-t first:rounded-t-lg last:rounded-b-lg">
+    <li
+      className={cn(
+        'relative group pt-2 pb-3 px-4 border-b border-x border-zinc-800 overflow-hidden first:border-t first:rounded-t-lg last:rounded-b-lg',
+        // TODO hilight the most recent errors
+        false ? 'bg-yellow-900/10 hover:bg-yellow-900/20' : 'bg-zinc-900/50 hover:bg-zinc-900',
+      )}
+    >
       <Link
         className="flex flex-col md:flex-row justify-between md:items-center"
+        prefetch="intent"
         to={`./${error.hash}`}
       >
         <div>
           <div className="font-medium tracking-wider">{error.name}</div>
           <div className="font-mono text-sm pr-9">{error.message}</div>
           <div className="flex gap-2 mt-4 text-xs flex-wrap">
-            <div className="flex items-center border rounded px-1 py-0.5 bg-blue-900/40 gap-1">
-              <Icon.Monitor />
-              <span>client</span>
+            <div
+              className={cn('flex items-center border rounded px-1 py-0.5 gap-1', {
+                'border-blue-700': error.kind !== 2,
+                'border-green-700': error.kind === 2,
+              })}
+            >
+              {error.kind === 2 ? <Icon.Monitor /> : <Icon.Server />}
+              <span className="font-medium">{error.kind === 2 ? 'Client' : 'Server'}</span>
             </div>
             <div className="px-1 py-0.5 border rounded flex gap-1 items-center">
               <Icon.ClockHourTwo />

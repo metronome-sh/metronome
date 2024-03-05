@@ -34,6 +34,7 @@ export const users = pgTable('users', {
       lastSelectedTeamSlug?: string | null;
       customerId: string | null;
       seenNotifications?: string[];
+      lastErrorVisitedAt?: number;
     }>()
     .default({
       emails: [],
@@ -42,6 +43,7 @@ export const users = pgTable('users', {
       lastSelectedProjectSlug: null,
       lastSelectedTeamSlug: null,
       customerId: null,
+      lastErrorVisitedAt: undefined,
     }),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

@@ -64,6 +64,7 @@ import { FolderCheck } from './FolderCheck';
 import { FolderPause } from './FolderPause';
 import { Confetti } from './Confetti';
 import { FolderUp } from './FolderUp';
+import { Server } from './Server';
 
 export const Icon = {
   X,
@@ -86,6 +87,7 @@ export const Icon = {
   Filter,
   Rocket,
   Search,
+  Server,
   Github,
   Monitor,
   Refresh,

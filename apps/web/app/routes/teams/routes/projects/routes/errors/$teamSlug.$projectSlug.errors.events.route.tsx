@@ -1,4 +1,4 @@
-import { projects, errors } from '@metronome/db';
+import { projects, errors, users } from '@metronome/db';
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { invariant } from 'ts-invariant';
 import { filters } from '#app/filters';
@@ -31,6 +31,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return stream<typeof errorsLoader>('$teamSlug.$projectSlug.errors', request, async (send) => {
     const cleanupProjectErrors = await errors.watch(project, async ({ ts }) => {
+      await users.update(user.id, { settings: { lastErrorVisitedAt: Date.now() } });
       const projectErrors = await errors.all({ project, range, status });
       send({ projectErrors }, ts);
     });

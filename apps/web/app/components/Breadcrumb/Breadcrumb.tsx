@@ -33,7 +33,13 @@ export const Breadcrumb: FunctionComponent<BreadcrumbProps> = ({
         strokeWidth={2}
         className={cn('stroke-muted-foreground breadcrumb-chevron', chevronClassName)}
       />
-      {link ? <Link to={link}>{children}</Link> : <>{children}</>}
+      {link ? (
+        <Link to={link} prefetch="intent" className={cn(link && 'hover:underline')}>
+          {children}
+        </Link>
+      ) : (
+        <>{children}</>
+      )}
     </li>,
     breadcrumbOutlet,
   );

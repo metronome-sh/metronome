@@ -8,7 +8,6 @@ export function useEventRouteData<TData>(
   deps?: unknown,
 ): Partial<Awaited<SerializeFrom<UnwrapDeferred<TData>>>> {
   const { eventTarget } = useEventContext();
-
   const [data, setData] = useState<Partial<UnwrapDeferred<TData>>>({});
   const timestampsRef = useRef<Record<string, number>>({});
 

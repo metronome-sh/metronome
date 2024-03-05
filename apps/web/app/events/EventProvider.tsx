@@ -38,7 +38,11 @@ export const EventProvider: FunctionComponent<PropsWithChildren> = ({ children }
 
     const eventSources = routesToObserve.map((route) => {
       const pathname = route.pathname.replace(/\/$/, '');
-      const url = `${pathname}/events${location.search}`;
+
+      const search = new URLSearchParams(location.search);
+      search.set('__pathname__', location.pathname);
+
+      const url = `${pathname}/events?${search.toString()}`;
       const eventSource = new EventSource(url);
 
       eventSource.addEventListener('message', (event) => {
