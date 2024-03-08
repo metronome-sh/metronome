@@ -415,7 +415,8 @@ export const projectErrors: ProjectError[] = Array.from({ length: 10 }, (_, i) =
     firstSeen: faker.date.past().getTime(),
     occurrences: faker.number.int({ min: 1, max: 100 }),
     hash: faker.string.uuid(),
-    kind: faker.number.int({ min: 1, max: 5 }).toString(),
+    status: faker.helpers.arrayElement(['unresolved', 'resolved', 'archived']),
+    kind: faker.number.int({ min: 1, max: 5 }),
     name: error.name,
     message: error.message,
     versions: Array.from({ length: faker.number.int({ min: 1, max: 5 }) }, () =>
@@ -433,3 +434,5 @@ export const projectErrors: ProjectError[] = Array.from({ length: 10 }, (_, i) =
     ],
   };
 });
+
+export const error = projectErrors[0];

@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react';
+import { ReactNode, type FunctionComponent } from 'react';
 
 import { Separator } from '#app/components';
 import { cn } from '#app/components/utils';
@@ -6,8 +6,8 @@ import { cn } from '#app/components/utils';
 export type PageHeaderProps = {
   className?: string;
   separatorClassName?: string;
-  title: string;
-  description?: string;
+  title: ReactNode;
+  description?: ReactNode;
 };
 
 export const Heading: FunctionComponent<PageHeaderProps> = ({

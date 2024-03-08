@@ -1,4 +1,4 @@
-import { unstable_vitePlugin as remixPlugin } from '@remix-run/dev';
+import { vitePlugin } from '@remix-run/dev';
 import { installGlobals } from '@remix-run/node';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -11,7 +11,7 @@ installGlobals();
 
 const isStorybook = process.argv[1]?.includes('storybook');
 
-const remix = remixPlugin({
+const remix = vitePlugin({
   ignoredRouteFiles: ['**/.*'],
   routes: async () => routeExtensions(path.resolve(__dirname, 'app')),
   serverModuleFormat: 'esm',

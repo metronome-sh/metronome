@@ -18,3 +18,4 @@ export { refreshAggregation } from './utils/aggregations';
 
 export type * from './types';
 export type { ProjectError, ErrorHousekeepingStatus } from './models/errors/errors.types';
+export type { StackTraceSource } from './models/sourcemaps/sourcemaps.types';

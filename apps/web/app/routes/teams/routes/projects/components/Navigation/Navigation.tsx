@@ -11,7 +11,6 @@ import { useTeamProjectEventData, useTeamProjectLoaderData } from '../../hooks';
 export const Navigation: FunctionComponent = () => {
   const { team } = useTeamLoaderData();
   const { project } = useTeamProjectLoaderData();
-  const location = useLocation();
 
   const { unseenErrorsCount } = useTeamProjectLoaderData();
   const { unseenErrorsCount: unseenErrorsCountEvent } = useTeamProjectEventData(unseenErrorsCount);
@@ -133,8 +132,6 @@ export const Navigation: FunctionComponent = () => {
                     <Suspense fallback={null}>
                       <Await resolve={unseenErrorsCount}>
                         {() => {
-                          console.log({ unseenErrorsCountEvent });
-
                           if (!unseenErrorsCountEvent || unseenErrorsCountEvent === 0) return null;
 
                           return (

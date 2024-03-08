@@ -1,5 +1,6 @@
 import { SetFieldType } from 'type-fest';
 import { errorsHousekeeping } from '../../schema';
+import { StackTraceSource } from '../sourcemaps/sourcemaps.types';
 
 export type ProjectError = {
   occurrences: number;
@@ -15,7 +16,19 @@ export type ProjectError = {
   status: ErrorHousekeepingStatus;
 };
 
-export type ClickHouseProjectError = SetFieldType<ProjectError, 'firstSeen' | 'lastSeen', string>;
+export type ClickHouseProjectErrorListItem = SetFieldType<
+  ProjectError,
+  'firstSeen' | 'lastSeen',
+  string
+>;
+
+export type ClickHouseProjectError = ClickHouseProjectErrorListItem & {
+  stacktrace: string;
+};
+
+export type ProjectErrorWithSources = ProjectError & {
+  sources: StackTraceSource[];
+};
 
 export type ErrorHousekeeping = typeof errorsHousekeeping.$inferSelect;
 

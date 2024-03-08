@@ -7,7 +7,15 @@ import { errorsHousekeeping } from '../../schema';
 import { clickhouse } from '../../modules/clickhouse';
 import { ClickHouseEvent } from '../events/events.types';
 import { observable, operators, throttleTime } from '../../utils/events';
-import { ClickHouseProjectError, ErrorHousekeepingStatus, ProjectError } from './errors.types';
+import {
+  ClickHouseProjectError,
+  ClickHouseProjectErrorListItem,
+  ErrorHousekeepingStatus,
+  ProjectError,
+  ProjectErrorWithSources,
+} from './errors.types';
+import { invariant } from 'ts-invariant';
+import { getSourcesFromStackTrace } from '../sourcemaps/sourcemaps';
 
 export async function createErrorHouseKeepingFromEvents({
   events,
@@ -99,7 +107,7 @@ export async function all({
     },
   });
 
-  const errors = (await result.json<ClickHouseProjectError[]>()).map((error) => ({
+  const errors = (await result.json<ClickHouseProjectErrorListItem[]>()).map((error) => ({
     ...error,
     occurrences: Number(error.occurrences),
     lastSeen: Number(error.lastSeen),
@@ -178,4 +186,67 @@ export async function watch(
     });
 
   return () => subscription.unsubscribe();
+}
+
+export async function findByHash({
+  project,
+  hash,
+}: {
+  project: Project;
+  hash: string;
+}): Promise<ProjectErrorWithSources | null> {
+  const result = await clickhouse.query({
+    query: `
+      select
+        sum(occurrences) as occurrences,
+        hash,
+        any(kind) as kind,
+        any(name) as name,
+        any(message) as message,
+        any(stacktrace) as stacktrace,
+        any(errors_housekeeping.status) as status,
+        minMerge(first_seen) as firstSeen,
+        maxMerge(last_seen) as lastSeen,
+        groupUniqArrayMerge(versions) as versions,
+        groupUniqArrayMerge(event_ids) as eventIds,
+        groupUniqArrayMerge(route_ids) as routeIds
+      from
+        errors
+      inner join errors_housekeeping 
+        on errors_housekeeping.project_id = errors.project_id
+        and errors_housekeeping.hash = errors.hash
+      where
+        hash = {hash: String}
+        and project_id = {projectId: String}
+      group by
+        hash;
+    `,
+    query_params: {
+      projectId: project.id,
+      hash,
+    },
+    format: 'JSONEachRow',
+  });
+
+  const error = (await result.json<ClickHouseProjectError[]>()).map((e) => ({
+    ...e,
+    occurrences: Number(e.occurrences),
+    lastSeen: Number(e.lastSeen),
+    firstSeen: Number(e.firstSeen),
+  }))[0];
+
+  if (!error) return null;
+
+  const version = error.versions.at(-1);
+
+  invariant(version, 'version should be defined');
+
+  const sources = await getSourcesFromStackTrace({
+    project,
+    version,
+    stacktrace: error.stacktrace,
+    hash,
+  });
+
+  return { ...error, sources };
 }

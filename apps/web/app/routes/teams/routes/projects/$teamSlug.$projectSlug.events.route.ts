@@ -27,26 +27,30 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     '$teamSlug.$projectSlug',
     request,
     async (send) => {
-      const cleanupProjectSemVer = await projects.watch(project, async ({ ts }) => {
-        const updatedProject = await projects.find(project.id);
+      // const cleanupProjectSemVer = await projects.watch(project, async ({ ts }) => {
+      //   const updatedProject = await projects.find(project.id);
 
-        invariant(updatedProject, `Cannot find project with id ${project.id}`);
+      //   invariant(updatedProject, `Cannot find project with id ${project.id}`);
 
-        const semver = await checkForProjectClientUpdates(updatedProject.clientVersion ?? '0.0.0');
-        send({ semver }, ts);
-      });
+      //   const semver = await checkForProjectClientUpdates(updatedProject.clientVersion ?? '0.0.0');
 
-      const cleanupError = await errors.watch(project, async ({ ts }) => {
-        const pathname = new URL(request.url).searchParams.get('__pathname__') ?? '';
+      //   send({ semver }, ts);
+      // });
 
-        if (pathname.endsWith('errors')) return;
+      // const cleanupError = await errors.watch(project, async ({ ts }) => {
+      //   const pathname = new URL(request.url).searchParams.get('__pathname__') ?? '';
 
-        const unseenErrorsCount = await errors.unseenErrorsCount({ project, user });
-        send({ unseenErrorsCount }, ts);
-      });
+      //   if (pathname.endsWith('errors')) return;
+
+      //   const unseenErrorsCount = await errors.unseenErrorsCount({ project, user });
+      //   send({ unseenErrorsCount }, ts);
+      // });
 
       return async function cleanup() {
-        await Promise.all([cleanupProjectSemVer(), cleanupError()]);
+        await Promise.all([
+          // cleanupProjectSemVer(),
+          // cleanupError()
+        ]);
       };
     },
   );

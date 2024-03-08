@@ -1,3 +1,4 @@
+import { type NullableMappedPosition } from 'source-map';
 import { CamelCasedProperties } from 'type-fest';
 
 export interface ClickHouseSourcemap {
@@ -10,3 +11,11 @@ export interface ClickHouseSourcemap {
 }
 
 export type Sourcemap = CamelCasedProperties<ClickHouseSourcemap>;
+
+export type StackTraceSource = {
+  code: string | null;
+  at: string | null;
+  filename: string | null;
+  entries: { lineNumber: number | null; column: number | null }[];
+  source: string | null;
+};
