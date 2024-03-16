@@ -26,7 +26,48 @@ import { getScore } from './getScore';
 
 export function isWebVitalEvent(event: unknown): event is WebVitalEvent {
   const result = WebVitalEventSchema.safeParse(event);
+
+  if (!result.success) {
+    prettyPrintZodError(result.error);
+  }
+
   return result.success;
+}
+
+export function convertMetricToWebVitalEvent(metric: any): WebVitalEvent {
+  const name = 'web-vital';
+
+  const details = {
+    timestamp: metric.timestamp,
+    metric: {
+      id: metric.id,
+      name: metric.name,
+      value: metric.value,
+      rating: metric.attributes?.['web_vital.rating'],
+      navigationType: metric.attributes?.['web_vital.navigation_type'],
+    },
+    pathname: metric.attributes?.['http.pathname'],
+    query: new URL(metric.attributes?.['url.query'] ?? 'http://localhost').search,
+    screen: metric.attributes?.['client.screen'],
+    referrer: metric.attributes?.['client.referrer'],
+    hostname: metric.attributes?.['app.hostname'],
+    language: metric.attributes?.['client.language'],
+    connection: metric.attributes?.['client.connection'],
+    deviceCategory: metric.attributes?.['client.device_category'],
+    hash: metric.attributes?.['app.version'],
+    routeId: metric.attributes?.['remix.route_id'],
+    routePath: metric.attributes?.['remix.route_path'],
+    ip: metric.attributes?.['client.address'],
+    ua: metric.attributes?.['user_agent.original'],
+  };
+
+  const webVitalEvent = { name, details };
+
+  if (!isWebVitalEvent(webVitalEvent)) {
+    throw new Error('Invalid web-vital event');
+  }
+
+  return webVitalEvent;
 }
 
 export async function insert(project: Project, webVitalEvent: WebVitalEvent) {

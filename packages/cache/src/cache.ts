@@ -37,7 +37,7 @@ function createRememberFunction(connection: typeof ioredis) {
   return async function remember<Data>(
     key: Key | Key[],
     callback: () => Promise<Data> | Data,
-    ttl: number,
+    seconds: number,
   ) {
     const stringifiedKey = PREFIX + JSON.stringify(key);
 
@@ -53,7 +53,7 @@ function createRememberFunction(connection: typeof ioredis) {
     const newValue = await callback();
 
     if (newValue !== null || newValue !== undefined) {
-      await connection.set(stringifiedKey, JSON.stringify(await callback()), 'EX', ttl);
+      await connection.set(stringifiedKey, JSON.stringify(await callback()), 'EX', seconds);
     }
 
     return newValue as Data;
@@ -61,7 +61,7 @@ function createRememberFunction(connection: typeof ioredis) {
 }
 
 function createForgetFunction(connection: typeof ioredis) {
-  return async function forget<T extends Key>(key: T) {
+  return async function forget<T extends Key>(key: T | T[]) {
     const stringifiedKey = PREFIX + JSON.stringify(key);
     await connection.del(stringifiedKey);
   };

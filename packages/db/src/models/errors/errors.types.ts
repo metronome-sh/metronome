@@ -26,8 +26,8 @@ export type ClickHouseProjectError = ClickHouseProjectErrorListItem & {
   stacktrace: string;
 };
 
-export type ProjectErrorWithSources = ProjectError & {
-  sources: StackTraceSource[];
+export type ProjectErrorWithStacktrace = ProjectError & {
+  stacktrace: string;
 };
 
 export type ErrorHousekeeping = typeof errorsHousekeeping.$inferSelect;

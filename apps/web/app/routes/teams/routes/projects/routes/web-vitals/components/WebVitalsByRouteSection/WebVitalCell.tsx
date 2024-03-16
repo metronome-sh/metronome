@@ -11,7 +11,7 @@ export type WebVitalCellProps = {
 };
 
 export const WebVitalCell: FunctionComponent<WebVitalCellProps> = ({ value, name, score }) => {
-  if (!value || !score) {
+  if ((value !== 0 && !value) || !score) {
     return <span>-</span>;
   }
 

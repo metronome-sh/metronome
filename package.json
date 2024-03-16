@@ -53,6 +53,10 @@
   "pnpm": {
     "patchedDependencies": {
       "bullmq@5.1.9": "patches/bullmq@5.1.9.patch"
+    },
+    "overrides": {
+      "react": "18.3.0-canary-eb33bd747-20240312",
+      "react-dom": "18.3.0-canary-eb33bd747-20240312"
     }
   }
 }

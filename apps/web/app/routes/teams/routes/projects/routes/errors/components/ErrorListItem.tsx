@@ -2,33 +2,18 @@ import { DropdownMenu } from '#app/components/DropdownMenu';
 import { Icon } from '#app/components/Icon';
 import { Button } from '#app/components/Button/Button';
 import { Link, useFetcher, useSubmit } from '@remix-run/react';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { ProjectError } from '@metronome/db';
-import { Temporal } from '@js-temporal/polyfill';
-import { formatTemporalDuration } from '#app/utils/formatTemporalDuration';
 import { ErrorListRoutesPill } from './ErrorListRoutesPill';
 import { cn } from '#app/components/utils';
+import { useRelativeErrorDates } from '../hooks/useRelativeErrorDates';
 
 type ErrorListItemProps = {
   error: ProjectError;
 };
 
 export const ErrorListItem: FunctionComponent<ErrorListItemProps> = ({ error }) => {
-  const [relativeFirstSeen, relativeLastSeen] = useMemo(() => {
-    const now = Temporal.Now.plainDateTimeISO('UTC');
-    const firstSeen = Temporal.Instant.fromEpochMilliseconds(error.firstSeen).toZonedDateTimeISO(
-      'UTC',
-    );
-
-    const lastSeen = Temporal.Instant.fromEpochMilliseconds(error.lastSeen).toZonedDateTimeISO(
-      'UTC',
-    );
-
-    return [
-      formatTemporalDuration(now.until(firstSeen).negated()),
-      formatTemporalDuration(now.until(lastSeen).negated()),
-    ];
-  }, [error.firstSeen]);
+  const { relativeFirstSeen, relativeLastSeen } = useRelativeErrorDates(error);
 
   const fetcher = useFetcher({
     key: `error-action-${error.hash}`,

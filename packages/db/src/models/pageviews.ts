@@ -20,6 +20,35 @@ export function isPageviewEvent(event: unknown): event is PageviewEvent {
   return result.success;
 }
 
+export function convertMetricToPageviewEvent(metric: any): PageviewEvent {
+  const name = 'pageview';
+
+  const details = {
+    timestamp: metric.timestamp,
+    pathname: metric.attributes?.['http.pathname'],
+    query: new URL(metric.attributes?.['url.full'] ?? 'http://localhost').search,
+    screen: metric.attributes?.['client.screen'],
+    referrer: metric.attributes?.['client.referrer'],
+    hostname: metric.attributes?.['app.hostname'],
+    language: metric.attributes?.['client.language'],
+    connection: metric.attributes?.['client.connection'],
+    deviceCategory: metric.attributes?.['client.device_category'],
+    hash: metric.attributes?.['app.version'],
+    routeId: metric.attributes?.['remix.route_id'],
+    routePath: metric.attributes?.['remix.route_path'],
+    ip: metric.attributes?.['client.address'],
+    ua: metric.attributes?.['user_agent.original'],
+  };
+
+  const pageviewEvent = { name, details };
+
+  if (!isPageviewEvent(pageviewEvent)) {
+    throw new Error('Invalid pageview event');
+  }
+
+  return pageviewEvent;
+}
+
 export async function insert(project: Project, pageviewEvent: PageviewEvent) {
   const { sessionId, userId } = await upsertSession(project, pageviewEvent);
 

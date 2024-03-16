@@ -11,6 +11,7 @@ export * as sourcemaps from './models/sourcemaps/sourcemaps';
 export * as spans from './models/spans/spans';
 export * as errors from './models/errors/errors';
 export * as webVitals from './models/webVitals/webVitals';
+export * as events from './models/events/events';
 
 export { insertMetrics } from './insertMetrics';
 export { insertLegacyMetrics } from './legacy/insertLegacyMetrics';

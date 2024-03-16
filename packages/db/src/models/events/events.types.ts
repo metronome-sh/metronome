@@ -1,6 +1,7 @@
 import { CamelCasedProperties, SetFieldType } from 'type-fest';
 import { type EventSchema } from './events';
 import { z } from 'zod';
+import { Span } from '../spans/spans.types';
 
 export interface ClickHouseEvent {
   project_id: string;
@@ -12,4 +13,18 @@ export interface ClickHouseEvent {
   'event_attributes.value': string[];
 }
 
-export type Event = z.infer<typeof EventSchema>;
+export type EventInput = z.infer<typeof EventSchema>;
+
+export type Event = {
+  id: string;
+  projectId: string;
+  traceId: string;
+  spanId: string;
+  timestamp: number;
+  name: string;
+  eventAttributes: Record<string, string>;
+};
+
+export type EventWithSpan = Event & {
+  span: Span;
+};

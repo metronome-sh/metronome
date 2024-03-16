@@ -1,11 +1,14 @@
 import { Breadcrumb, Heading, NotificationsOutlet } from '#app/components';
-import { defer, json, useParams } from '@remix-run/react';
-import { Code } from './components/Code';
+import { defer, useParams } from '@remix-run/react';
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { invariant } from 'ts-invariant';
 import { handle } from '#app/handlers/handle';
-import { errors, projects } from '@metronome/db';
+import { errors, projects, sourcemaps, events } from '@metronome/db';
 import { notFound } from '#app/responses/notFound';
+import { useErrorHashLoaderData } from './hooks/useErrorHashLoaderData';
+import { Sources } from './components/Sources';
+import { Event } from './components/Event';
+import { Error } from './components/Error';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '', hash = '' } = params;
@@ -30,11 +33,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!error) throw notFound();
 
-  return json({ error });
+  const sources = sourcemaps.getSourcesFromStackTrace({
+    project,
+    version: error.versions.at(-1)!,
+    stacktrace: error.stacktrace,
+    hash,
+  });
+
+  const event = events.find({ project, id: error.eventIds.at(-1)! });
+
+  return defer({ error, sources, event });
 }
 
 export default function Hash() {
   const { hash } = useParams();
+  const { error } = useErrorHashLoaderData();
 
   return (
     <div className="w-full flex-grow flex flex-col">
@@ -42,21 +55,13 @@ export default function Hash() {
       <Breadcrumb>{hash?.slice(0, 8)}</Breadcrumb>
       <div className="mx-auto w-full rounded-lg">
         <NotificationsOutlet />
-        <Heading
-          title="Error"
-          description={
-            <span className="space-y-2">
-              <span className="block text-base">This is an example Remix exception</span>
-              <span className="block border w-fit rounded-md px-2 divide-x">
-                <span className="inline-block py-1 pr-2 text-white">Error id: </span>
-                <span className="inline-block py-1 text-muted-foreground pl-2">{hash}</span>
-              </span>
-            </span>
-          }
-          separatorClassName="md:mb-4"
-        />
+        <Heading title={error.name} description={error.message} separatorClassName="md:mb-4" />
       </div>
-      <Code />
+      <div className="space-y-4">
+        <Error />
+        <Event />
+        <Sources />
+      </div>
     </div>
   );
 }

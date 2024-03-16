@@ -12,7 +12,7 @@ import {
   ClickHouseProjectErrorListItem,
   ErrorHousekeepingStatus,
   ProjectError,
-  ProjectErrorWithSources,
+  ProjectErrorWithStacktrace,
 } from './errors.types';
 import { invariant } from 'ts-invariant';
 import { getSourcesFromStackTrace } from '../sourcemaps/sourcemaps';
@@ -194,7 +194,7 @@ export async function findByHash({
 }: {
   project: Project;
   hash: string;
-}): Promise<ProjectErrorWithSources | null> {
+}): Promise<ProjectErrorWithStacktrace | null> {
   const result = await clickhouse.query({
     query: `
       select
@@ -241,12 +241,5 @@ export async function findByHash({
 
   invariant(version, 'version should be defined');
 
-  const sources = await getSourcesFromStackTrace({
-    project,
-    version,
-    stacktrace: error.stacktrace,
-    hash,
-  });
-
-  return { ...error, sources };
+  return error;
 }

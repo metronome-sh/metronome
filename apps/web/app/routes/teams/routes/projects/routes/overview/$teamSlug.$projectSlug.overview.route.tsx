@@ -154,7 +154,7 @@ export default function Component() {
         <div className="px-2 space-y-4">
           <WebAnalyticsSection />
           <WebVitalsSection />
-          <RequestsSection />
+          {/* <RequestsSection /> */}
           <LoadersSection />
           <ActionsSection />
         </div>

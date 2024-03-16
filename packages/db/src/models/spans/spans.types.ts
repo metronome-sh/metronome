@@ -13,4 +13,16 @@ export interface ClickHouseSpan {
   'span_attributes.value': string[];
 }
 
-export type Span = z.infer<typeof SpanSchema>;
+export type SpanInput = z.infer<typeof SpanSchema>;
+
+export type Span = {
+  projectId: string;
+  traceId: string;
+  spanId: string;
+  kind: number;
+  parentSpanId: string;
+  name: string;
+  startTime: number;
+  endTime: number;
+  spanAttributes: Record<string, string>;
+};

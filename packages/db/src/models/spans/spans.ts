@@ -1,6 +1,6 @@
 import { prettyPrintZodError } from 'src/utils/prettyPrintZodError';
 import { clickhouse } from '../../modules/clickhouse';
-import { ClickHouseSpan, Span } from './spans.types';
+import { ClickHouseSpan, SpanInput } from './spans.types';
 import { z } from 'zod';
 import { Project } from '../../types';
 import * as events from '../events/events';
@@ -17,7 +17,7 @@ export const SpanSchema = z.object({
   context: z.object({ traceId: z.string() }).passthrough(),
 });
 
-export function valid(spanOrSpans: unknown): spanOrSpans is Span | Span[] {
+export function valid(spanOrSpans: unknown): spanOrSpans is SpanInput | SpanInput[] {
   const schema = z.array(SpanSchema);
   const result = schema.safeParse(spanOrSpans);
 
@@ -32,14 +32,25 @@ export async function create({
   spanOrSpans,
   project,
 }: {
-  spanOrSpans: Span | Span[];
+  spanOrSpans: SpanInput | SpanInput[];
   project: Project;
 }): Promise<void> {
   const spans = Array.isArray(spanOrSpans) ? spanOrSpans : [spanOrSpans];
 
   const values: ClickHouseSpan[] = spans.map((s) => {
-    const attributesKeys = Object.keys(s.attributes);
-    const attributesValues = Object.values(s.attributes);
+    // Do not store client.address or user_agent.original
+    const attributeDenyList = ['client.address', 'user_agent.original'];
+    const attributesEntries = Object.entries(s.attributes).filter(
+      ([key]) => !attributeDenyList.includes(key),
+    );
+
+    const [attributesKeys, attributesValues] = attributesEntries.reduce(
+      (acc, [key, value]) => [
+        [...acc[0], key],
+        [...acc[1], value],
+      ],
+      [[], []] as [string[], string[]],
+    );
 
     return {
       project_id: project.id,

@@ -47,6 +47,7 @@ import { Monitor } from './Monitor';
 import { MoodSadDizzy } from './MoodSadDizzy';
 import { Quote } from './Quote';
 import { Refresh } from './Refresh';
+import { RemixLetterDark } from './RemixLetterDark';
 import { Rocket } from './Rocket';
 import { RotateTwo } from './RotateTwo';
 import { RouteSquareTwo } from './RouteSquareTwo';
@@ -135,5 +136,6 @@ export const Icon = {
   TriangleInvertedFilled,
   UserScan,
   World,
+  RemixLetterDark,
   X,
 };
