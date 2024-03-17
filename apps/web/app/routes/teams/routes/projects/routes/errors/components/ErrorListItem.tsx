@@ -7,6 +7,7 @@ import { ProjectError } from '@metronome/db';
 import { ErrorListRoutesPill } from './ErrorListRoutesPill';
 import { cn } from '#app/components/utils';
 import { useRelativeErrorDates } from '../hooks/useRelativeErrorDates';
+import { invariant } from 'ts-invariant';
 
 type ErrorListItemProps = {
   error: ProjectError;
@@ -15,15 +16,13 @@ type ErrorListItemProps = {
 export const ErrorListItem: FunctionComponent<ErrorListItemProps> = ({ error }) => {
   const { relativeFirstSeen, relativeLastSeen } = useRelativeErrorDates(error);
 
-  const fetcher = useFetcher({
-    key: `error-action-${error.hash}`,
-  });
-
   const submit = useSubmit();
 
   const handleOnSelect = useCallback(
     (e: Event) => {
       const intent = (e.target as HTMLElement).getAttribute('data-intent');
+
+      invariant(intent, 'intent must be defined');
 
       const form = new FormData();
 
@@ -37,7 +36,7 @@ export const ErrorListItem: FunctionComponent<ErrorListItemProps> = ({ error }) 
         unstable_flushSync: true,
       });
     },
-    [fetcher],
+    [error],
   );
 
   return (

@@ -1,6 +1,6 @@
 import { Breadcrumb, Heading, NotificationsOutlet } from '#app/components';
 import { defer, useParams } from '@remix-run/react';
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from '@remix-run/node';
 import { invariant } from 'ts-invariant';
 import { handle } from '#app/handlers/handle';
 import { errors, projects, sourcemaps, events } from '@metronome/db';
@@ -9,6 +9,7 @@ import { useErrorHashLoaderData } from './hooks/useErrorHashLoaderData';
 import { Sources } from './components/Sources';
 import { Event } from './components/Event';
 import { Error } from './components/Error';
+import { namedAction } from '#app/utils/namedAction';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { teamSlug = '', projectSlug = '', hash = '' } = params;
@@ -43,6 +44,41 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const event = events.find({ project, id: error.eventIds.at(-1)! });
 
   return defer({ error, sources, event });
+}
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const { teamSlug, projectSlug, hash } = params;
+
+  invariant(teamSlug, 'teamSlug should be defined');
+  invariant(projectSlug, 'projectSlug should be defined');
+  invariant(hash, 'hash should be defined');
+
+  const { auth } = await handle(request);
+
+  const user = await auth.user();
+
+  const project = await projects.findBySlugs({
+    teamSlug,
+    projectSlug,
+    userId: user.id,
+  });
+
+  if (!project) throw notFound();
+
+  return namedAction(request, {
+    async archive() {
+      await errors.archive({ project, hashes: [hash] });
+      return json({ success: true, intent: 'archive' });
+    },
+    async resolve() {
+      await errors.resolve({ project, hashes: [hash] });
+      return json({ success: true, intent: 'resolve' });
+    },
+    async unresolve() {
+      await errors.unresolve({ project, hashes: [hash] });
+      return json({ success: true, intent: 'unresolve' });
+    },
+  });
 }
 
 export default function Hash() {
