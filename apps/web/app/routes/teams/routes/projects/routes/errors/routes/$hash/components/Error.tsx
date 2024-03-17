@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, SyntheticEvent, useCallback, useMemo } from 'react';
+import { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
 import { useErrorHashLoaderData } from '../hooks/useErrorHashLoaderData';
 import { cn } from '#app/components/utils';
 import { Icon } from '#app/components/Icon';
@@ -6,19 +6,6 @@ import { useRelativeErrorDates } from '../../../hooks/useRelativeErrorDates';
 import { Select } from '#app/components/Select';
 import { useFetchers, useSubmit } from '@remix-run/react';
 import { invariant } from 'ts-invariant';
-
-// const intents = Object.fromEntries(
-//   [
-//     ['resolved', 'resolve'],
-//     ['archived', 'archive'],
-//     ['unresolved', 'unresolve'],
-//   ].flatMap(([key, value]) => {
-//     return [
-//       [key, value],
-//       [value, key],
-//     ];
-//   }),
-// );
 
 export const Error: FunctionComponent = () => {
   const { error } = useErrorHashLoaderData();
