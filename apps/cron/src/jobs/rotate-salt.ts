@@ -1,4 +1,4 @@
-import { projects } from '@metronome/db.server';
+import { projects } from '@metronome/db';
 
 await projects.rotateSalts();
 
